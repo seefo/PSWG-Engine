@@ -745,7 +745,6 @@ public abstract class SWGObject implements ISWGObject {
 		for(Client client : observers) {
 			float distance = client.getParent().getPosition().getDistance2D(position);
 			if(client != null && client.getSession() != null && distance <= range) {
-				System.out.println("Distance: " + distance);
 				client.getSession().write(data);
 			}
 		}
