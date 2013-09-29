@@ -48,6 +48,7 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 	private MessageCRC messageCRC;
 	private SimpleBufferAllocator bufferPool;
 	private String maxSessions = "5";
+	private static final boolean enable = false;
 
 
 	SOEProtocolDecoder() {
@@ -55,6 +56,10 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 		this.messageEncryption = new MessageEncryption();
 		this.messageCRC = new MessageCRC();
 		bufferPool = new SimpleBufferAllocator();
+		if(enable) {
+			maxSessions = String.valueOf(Integer.MAX_VALUE);
+		}
+
 	}
 	
 	

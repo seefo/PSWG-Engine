@@ -45,6 +45,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	private MINAServer server;
 	private long startTime;
 	private String maxTime = "1800000";
+	private static final boolean enable = false;
 	
 	public NetworkDispatch(NGECore core, boolean isZone) {
 		
@@ -60,6 +61,11 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		
 		if(isZone) {
 			AuthClient client = new AuthClient(core);
+		}
+		
+		if(enable) {
+			maxTime = String.valueOf(Long.MAX_VALUE);
+			maxSessions = String.valueOf(Integer.MAX_VALUE);
 		}
 
 		bufferPool = new CachedBufferAllocator();
