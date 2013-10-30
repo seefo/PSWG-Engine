@@ -11,7 +11,7 @@ import engine.resources.objects.SWGObject;
 public class Client {
 
 	protected IoSession session;
-	protected int accountId;
+	protected long accountId;
 	protected String accountName;
 	protected String password;
 	protected String email;
@@ -31,7 +31,7 @@ public class Client {
 	public void setSession(IoSession s) { this.session = s; }
 	
 	public long getAccountId() { return accountId; }
-	public void setAccountId(int accountID) { this.accountId = accountID; }
+	public void setAccountId(long accountID) { this.accountId = accountID; }
 	
 	public String getAccountName() { return accountName; }
 	public void setAccountName(String accountName) { this.accountName = accountName; }
