@@ -57,12 +57,15 @@ public class DataChannelA extends SOEMessage implements ISequenced, ICombinable 
 		if (messages.size() > 1) {
 			message.putShort((short)0x0019);
 			for (int i = 0; i < messages.size(); i++) {
+				if(messages.get(i).array().length - 3 > message.remaining())
+					continue;
 				message.put(getMessageSize(i));
 				message.put(messages.get(i).array());
 			}
 		}
 		else {
-			message.put(messages.get(0).array());
+			if(message.remaining() >= messages.get(0).array().length)
+				message.put(messages.get(0).array());
 		}
 		
 		int size = message.position();
