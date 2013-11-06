@@ -107,7 +107,8 @@ public class FragmentedChannelA extends SOEMessage implements ICombinable, ISequ
 	
 	public IoBuffer serialize() {
 		IoBuffer message = IoBuffer.wrap(data);
-		
+		if(data.length < 2)
+			return message;
 		message.putShort(2, sequence);
 		data = message.array();
 		return message;

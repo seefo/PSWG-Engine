@@ -1019,6 +1019,19 @@ public abstract class SWGObject implements ISWGObject {
 		
 		return true;
 	}
+	
+	public String getSlotNameForObject(SWGObject object) {
+		if((slotDescriptor == null || slotArrangement == null) && template != null)
+			getContainerInfo(getTemplate());
+		int arrangementId = getCorrectArrangementId(object);
+		synchronized(objectMutex) {
+			for(Integer i : object.slotArrangement.getArrangement().get(arrangementId - 4)) {
+				Integer slotIndex = slotDescriptor.getIndexOf(i);
+				return slots[slotIndex].getName();
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Traverses through the children of these objects with by implementing the Traverser interface with an anonymous class.

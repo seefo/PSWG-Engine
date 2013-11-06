@@ -57,7 +57,7 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 		this.messageCRC = new MessageCRC();
 		bufferPool = new SimpleBufferAllocator();
 		if(enable) {
-			maxSessions = String.valueOf(Integer.MAX_VALUE);
+			maxSessions = "100000";
 		}
 
 	}

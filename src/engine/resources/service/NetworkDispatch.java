@@ -64,8 +64,8 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		}
 		
 		if(enable) {
-			maxTime = String.valueOf(Long.MAX_VALUE);
-			maxSessions = String.valueOf(Integer.MAX_VALUE);
+			maxTime = "18000000000000";
+			maxSessions = "100000";
 		}
 
 		bufferPool = new CachedBufferAllocator();
