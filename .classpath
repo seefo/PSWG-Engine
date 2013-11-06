@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="lib/hemesh/javolution-5.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/hemesh/jts.jar"/>
 	<classpathentry kind="lib" path="lib/hemesh/quickhull3d.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
