@@ -143,8 +143,9 @@ public class VBLoginProvider implements ILoginProvider {
 		ResultSet resultSet;
 		boolean success = false;
 		boolean needRename = false;
-		String vbUsername = username;
-		String coreUsername = "";
+		String vbUsername = "undef";
+		// = username;
+		//String coreUsername = "";
 		
 		try
 		{
@@ -154,9 +155,9 @@ public class VBLoginProvider implements ILoginProvider {
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next())
 			{
-				
+				vbUsername = resultSet.getString("user"); 
 				success = true;
-				if (!coreUsername.equalsIgnoreCase(resultSet.getString("user"))) {
+				if (!username.equalsIgnoreCase(vbUsername)) {
 					needRename = true;
 				}
 				
@@ -164,7 +165,7 @@ public class VBLoginProvider implements ILoginProvider {
 			preparedStatement.close();
 			if (needRename)
 			{
-				System.out.println("userid needs renaming: AccId " + username + " , core name: " + coreUsername + " , vB name: " + vbUsername);
+				System.out.println("userid needs renaming: AccId " + accId + " , core name: " + username + " , vB name: " + vbUsername);
 				preparedStatement = databaseConnection.preparedStatement("UPDATE \"accounts\" SET \"user\"=? WHERE \"id\"=?");
 				preparedStatement.setString(1, vbUsername);
 				preparedStatement.setLong(2, accId);
