@@ -20,7 +20,10 @@ public class LocalDbLoginProvider implements ILoginProvider {
 	//would condense things to like 1 line.
 	@Override
 	public int getAccountId(String username, String password, String remoteAddress) {
-
+		return getAccount(username, password, remoteAddress);
+	}
+	
+	private int getAccount(String username, String password, String remoteAddress) {
 		//don't check bans, only check for cleartext passwords stored in DB
 		try {
 			while (true) {

@@ -20,12 +20,14 @@ public class VBLoginProvider implements ILoginProvider {
 
 	@Override
 	public int getAccountId(String username, String password, String remoteAddress) {
+		return getAccount(username, password, remoteAddress);
+	}
 		
+	private int getAccount(String username, String password, String remoteAddress) {
 		PreparedStatement preparedStatement;
 		ResultSet resultSet;
 		
 		try {
-			
 			
 			// this sucks a bit, MySQL doesn't support passing arrays (yet) apparently.
 			preparedStatement = databaseConnection2.preparedStatement("SELECT u.userid, u.email FROM user u WHERE LOWER(u.username)=LOWER(?) AND usergroupid NOT IN(?,?,?,?) AND MD5(CONCAT(MD5(?),u.salt))=u.password");
