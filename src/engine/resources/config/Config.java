@@ -26,6 +26,10 @@ public class Config {
 		System.out.println("File Path: " + getFilePath());
 		configData.list(System.out);
 	}
+	
+	public boolean keyExists(String key) {
+		return (configData.getProperty(key) != null);
+	}
 
 	public double getDouble(String key) {
 		return Double.parseDouble(getString(key));
