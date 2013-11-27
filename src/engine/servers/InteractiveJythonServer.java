@@ -3,6 +3,8 @@ package engine.servers;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
+import main.NGECore;
+
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
@@ -11,15 +13,19 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import engine.resources.service.InteractiveJythonAcceptor;
 
 public class InteractiveJythonServer {
-	
-	public InteractiveJythonServer(IoHandler iohandler, int port) {
-		this.port = port;
-		this.iohandler = iohandler;
-	}
-	
+
 	private NioSocketAcceptor nioacceptor;
+	private NGECore core;
 	private int port;
 	private IoHandler iohandler;
+
+	
+	public InteractiveJythonServer(IoHandler iohandler, int port, NGECore core) {
+		this.port = port;
+		this.iohandler = iohandler;
+		this.core = core;
+	}
+	
 
 	private void createDependencies() throws Exception {
 		nioacceptor = new NioSocketAcceptor();
@@ -29,6 +35,7 @@ public class InteractiveJythonServer {
 		nioacceptor.bind(new InetSocketAddress("127.0.0.1", port));
 		if(iohandler instanceof InteractiveJythonAcceptor) {
 			((InteractiveJythonAcceptor) iohandler).setServer(this);
+			((InteractiveJythonAcceptor) iohandler).setCore(core);
 		}
 	}
 

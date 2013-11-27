@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import main.NGECore;
+
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
@@ -20,6 +22,7 @@ public class InteractiveJythonAcceptor extends IoHandlerAdapter {
 
 	protected ExecutorService eventThreadPool;
 	private InteractiveJythonServer server;
+	private NGECore core;
 	
 	public void setServer(InteractiveJythonServer server) {
 		this.server =server;
@@ -69,6 +72,11 @@ public class InteractiveJythonAcceptor extends IoHandlerAdapter {
 		PythonInterpreter python = new PythonInterpreter();
 		python.setOut(new SessionOutputStream(session));
 		session.setAttribute("JythonSession", python);
+		if (core != null) {
+			python.set("core", core);
+			session.write("core set.");
+		}
+		session.write(">>>");
 	}
 	
 	private class SessionOutputStream extends OutputStream {
@@ -94,6 +102,10 @@ public class InteractiveJythonAcceptor extends IoHandlerAdapter {
 			
 		}
 		
+	}
+
+	public void setCore(NGECore core) {
+		this.core = core;
 	}
 
 }
