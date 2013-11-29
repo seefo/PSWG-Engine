@@ -39,6 +39,8 @@ import engine.resources.config.DefaultConfig;
 import engine.resources.service.NetworkDispatch;
 import engine.servers.MINAServer;
 
+
+
 public class SOEProtocolDecoder implements ProtocolDecoder {
 	
 	private MessageCompression messageCompression;
@@ -46,13 +48,15 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 	private MessageCRC messageCRC;
 	private SimpleBufferAllocator bufferPool;
 	private String maxSessions = "5";
+	private static final boolean enable = false;
+
 
 	SOEProtocolDecoder() {
 		this.messageCompression = new MessageCompression();
 		this.messageEncryption = new MessageEncryption();
 		this.messageCRC = new MessageCRC();
 		bufferPool = new SimpleBufferAllocator();
-		if(engine.NGEngine.ENABLE) {
+		if(enable) {
 			maxSessions = "100000";
 		}
 

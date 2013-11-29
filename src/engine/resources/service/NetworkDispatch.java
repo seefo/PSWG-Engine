@@ -45,6 +45,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	private MINAServer server;
 	private long startTime;
 	private String maxTime = "1800000";
+	private static final boolean enable = false;
 	
 	public NetworkDispatch(NGECore core, boolean isZone) {
 		
@@ -62,7 +63,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 			AuthClient client = new AuthClient(core);
 		}
 		
-		if(engine.NGEngine.ENABLE) {
+		if(enable) {
 			maxTime = "18000000000000";
 			maxSessions = "100000";
 		}
