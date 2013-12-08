@@ -24,7 +24,7 @@ public class BoundaryCircle extends BoundaryLayer {
 		float v4 = z - pz;
 		float dist = v4 * v4 + v3 * v3;
 
-		if( dist < radiusSquared) {
+		if( dist <= radiusSquared) {
 		
 			float fCircle = (float) Math.pow((1.0 - feather_amount) * rad, 2);
 			

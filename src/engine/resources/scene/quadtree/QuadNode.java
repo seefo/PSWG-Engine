@@ -55,7 +55,7 @@ public class QuadNode<T> {
 			// spinlock
 		}
 		try {
-			if (this.leaf != null && this.leaf.x == x && this.leaf.y == y && this.leaf.values != null && value != null && this.leaf.values.contains(value)) {
+			if (this.leaf != null && /*this.leaf.x == x && this.leaf.y == y &&*/ this.leaf.values != null && value != null && this.leaf.values.contains(value)) {
 				if (this.leaf.values.remove(value)) {
 					if (this.leaf.values.size() == 0) {
 						this.leaf = null;

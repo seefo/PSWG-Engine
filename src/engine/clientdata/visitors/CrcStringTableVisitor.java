@@ -3,10 +3,12 @@ package engine.clientdata.visitors;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.clientdata.VisitorInterface;
+import engine.resources.common.CRC;
 
 public class CrcStringTableVisitor implements VisitorInterface {
 
@@ -14,11 +16,13 @@ public class CrcStringTableVisitor implements VisitorInterface {
 	ArrayList<Integer> crcList;
 	ArrayList<Integer> startList;
 	ArrayList<String> stringList;
+	ConcurrentHashMap<Integer, String> crcMap;
 	
 	public CrcStringTableVisitor() {
 		crcList = new ArrayList<Integer>();
 		startList = new ArrayList<Integer>();
 		stringList = new ArrayList<String>();
+		crcMap = new ConcurrentHashMap<Integer, String>();
 	}
 	
 	@Override
@@ -51,7 +55,9 @@ public class CrcStringTableVisitor implements VisitorInterface {
 			for(int i=0; i < count; ++i) {
 				
 				data.position(startList.get(i));
-				stringList.add(data.getString(cd));
+				String str = data.getString(cd);
+				crcMap.put(CRC.StringtoCRC(str), str);
+				stringList.add(str);
 				cd.reset();
 				
 			}
@@ -64,6 +70,10 @@ public class CrcStringTableVisitor implements VisitorInterface {
 			return false;
 		return true;
 		
+	}
+	
+	public String getTemplateString(int crc) {
+		return crcMap.get(crc);
 	}
 	
 	public void dispose() {

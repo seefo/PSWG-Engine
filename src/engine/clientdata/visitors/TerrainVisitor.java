@@ -458,9 +458,9 @@ public class TerrainVisitor implements VisitorInterface {
 						//transform_value = pair.first;
 						base_value = pair.second;
 						//System.out.println("Child Layer Height: " + base_value);
-					} else {
+					} /*else {
 						break;
-					}
+					}*/
 				}
 			}
 		}

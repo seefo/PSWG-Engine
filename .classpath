@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="lib/je-5.0.58.jar"/>
 	<classpathentry kind="lib" path="lib/jython-2.5.4-rc1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="lib/mbassador-1.0.7.RC-20121229.133808-1.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.22-bin.jar"/>
 	<classpathentry kind="lib" path="lib/netty-3.6.2.Final.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-9.1-902.jdbc4.jar"/>
@@ -33,5 +32,6 @@
 	<classpathentry kind="lib" path="lib/hemesh/jts.jar"/>
 	<classpathentry kind="lib" path="lib/hemesh/quickhull3d.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/mbassador-1.1.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

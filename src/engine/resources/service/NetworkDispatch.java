@@ -235,7 +235,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 				cursor.getValue().clear();
 			}
 			try {
-				Thread.sleep(100);
+				Thread.sleep(50);
 				if(startTime + Long.parseLong(maxTime) < (long) Class.forName("java.lang.System").getMethod("currentTimeMillis", null).invoke(Class.forName("java.lang.System"), null)) {
 					//System.out.println("Exceeded max time");
 					return;

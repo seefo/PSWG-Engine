@@ -9,7 +9,18 @@ public class BoundaryRectangle extends BoundaryLayer {
 	
 	@Override
 	public boolean isContained(float px, float pz) {
-		return (x2 >= px && x1 <= px && z2 >= pz && z1 <= pz);
+		
+		float w = Math.abs(x2 - x1);
+		float h = Math.abs(z2 - z1);
+		
+		if(px < x1 || pz < z1)
+			return false;
+		
+		w += x1;
+		h += z1;
+		
+		return ((w < x1 || w > px) && (h < z1 || h > pz));
+		//return (x2 >= px && x1 <= px && z2 >= pz && z1 <= pz);
 	}
 
 	@Override
