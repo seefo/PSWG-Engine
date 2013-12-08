@@ -181,7 +181,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 			    				e.printStackTrace();
 			    			}
 			    		} else {
-			    			//System.out.println("Unknown ObjController Opcode Found : 0x"+ Integer.toHexString(objControllerOpcode));
+			    			System.out.println("Unknown ObjController Opcode Found : 0x"+ Integer.toHexString(objControllerOpcode));
 			    		}
 			    		return;
 		    		}
@@ -194,7 +194,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		    				e.printStackTrace();
 		    			}
 		    		} else {
-		    			//System.out.println("Unknown Opcode Found : 0x"+ Integer.toHexString(opcode) + "Data: " + Utilities.getHexString(packet.array()));
+		    			System.out.println("Unknown Opcode Found : 0x"+ Integer.toHexString(opcode) + "Data: " + Utilities.getHexString(packet.array()));
 		    		}
 		    	}
 		    }
