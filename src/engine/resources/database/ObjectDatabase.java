@@ -2,46 +2,46 @@ package engine.resources.database;
 
 import java.io.File;
 
-
-
 import com.sleepycat.je.CheckpointConfig;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
-import com.sleepycat.persist.PrimaryIndex;
 import com.sleepycat.persist.StoreConfig;
-
-import engine.resources.objects.SWGObject;
-
+import com.sleepycat.persist.model.AnnotationModel;
+import com.sleepycat.persist.model.EntityModel;
 
 public class ObjectDatabase implements Runnable {
 	
 	private Environment environment;
 	private EnvironmentConfig EnvConfig;
-	private DatabaseConfig dbConfig;
+	//private DatabaseConfig dbConfig;
 	private EntityStore entityStore;
 	private Thread checkpointThread;
 	private CheckpointConfig checkpointConfig;
 	
 	public ObjectDatabase(String name, boolean allowCreate, boolean useCheckpointThread, boolean allowTransactional) {
 		
-		
 		EnvConfig = new EnvironmentConfig();
 		EnvConfig.setAllowCreate(allowCreate);
 		EnvConfig.setTransactional(allowTransactional);
+		
+		EntityModel model = new AnnotationModel();
+		model.registerClass(CopyOnWriteArrayListProxy.class);
+		model.registerClass(MultimapProxy.class);
+		model.registerClass(VectorProxy.class);
+		
 	    StoreConfig storeConfig = new StoreConfig();
+	    storeConfig.setModel(model);
 	    storeConfig.setAllowCreate(allowCreate);
 	    storeConfig.setTransactional(allowTransactional);
 	    
         environment = new Environment(new File(".", "odb/" + name), EnvConfig);
         entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);
 
-        if(useCheckpointThread) {
+        if (useCheckpointThread) {
         	checkpointConfig = new CheckpointConfig();
         	checkpointThread = new Thread(this);
         }
@@ -49,7 +49,6 @@ public class ObjectDatabase implements Runnable {
         /*dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);
         dbConfig.setTransactional(false);*/
-        
 
 	}
 	
@@ -61,9 +60,7 @@ public class ObjectDatabase implements Runnable {
 	 */
 	@SuppressWarnings("unchecked")
 	public <K, V> void put(Object value, Class<K> keyClass, Class<V> valueClass) {
-		
 		entityStore.getPrimaryIndex(keyClass, valueClass).put((V) value);
-		
 	}
 	
 	/**
@@ -74,9 +71,7 @@ public class ObjectDatabase implements Runnable {
 	 */
 	@SuppressWarnings("unchecked")
 	public <K, V> void put(Object value, Class<K> keyClass, Class<V> valueClass, Transaction txn) {
-		
 		entityStore.getPrimaryIndex(keyClass, valueClass).put(txn, (V) value);
-		
 	}
 	
 	/**
@@ -88,9 +83,7 @@ public class ObjectDatabase implements Runnable {
 	 */
 	@SuppressWarnings("unchecked")
 	public <K, V> V get(Object key, Class<K> keyClass, Class<V> valueClass) {
-		
 		return entityStore.getPrimaryIndex(keyClass, valueClass).get((K) key);
-		
 	}
 	
 	/**
@@ -102,9 +95,7 @@ public class ObjectDatabase implements Runnable {
 	 */
 	@SuppressWarnings("unchecked")
 	public <K, V> void delete(Object key, Class<K> keyClass, Class<V> valueClass) {
-		
 		entityStore.getPrimaryIndex(keyClass, valueClass).delete((K) key);
-
 	}
 	
 	/**
@@ -116,9 +107,7 @@ public class ObjectDatabase implements Runnable {
 	 */
 	@SuppressWarnings("unchecked")
 	public <K, V> void delete(Object key, Class<K> keyClass, Class<V> valueClass, Transaction txn) {
-		
 		entityStore.getPrimaryIndex(keyClass, valueClass).delete(txn, (K) key);
-
 	}
 	
 	/**
@@ -127,11 +116,8 @@ public class ObjectDatabase implements Runnable {
 	 * @param valueClass The Class of the Values that are stored.
 	 * @return The EntityCursor of this EntityStore.
 	 */
-	@SuppressWarnings("unchecked")
 	public <K, V> EntityCursor<V> getCursor(Class<K> keyClass, Class<V> valueClass) {
-		
 		return entityStore.getPrimaryIndex(keyClass, valueClass).entities();
-
 	}
 	
 	/**
@@ -142,12 +128,9 @@ public class ObjectDatabase implements Runnable {
 	 */
 	@SuppressWarnings("unchecked")
 	public <K, V> boolean contains(Object key, Class<K> keyClass, Class<V> valueClass) {
-		
 		return entityStore.getPrimaryIndex(keyClass, valueClass).contains((K) key);
-		
 	}
 	
-		
 	// not needed, we will store stuff in our EntityStore and have an enviroment for each type of object
 	/*public Database openDatabase(String dbName) {
 		
@@ -162,9 +145,7 @@ public class ObjectDatabase implements Runnable {
 	public EntityStore getEntityStore() { return entityStore; }
 	
 	public void compress() {
-		
 		environment.compress();
-		
 	}
 	
     public void close() {
@@ -180,12 +161,10 @@ public class ObjectDatabase implements Runnable {
             }
         }
     }
-
+    
 	@Override
 	public void run() {
-
 		while(environment != null && environment.isValid()) {
-			
 			try {
 				Thread.sleep(300000);
 				environment.flushLog(true);
@@ -193,11 +172,7 @@ public class ObjectDatabase implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
 		}
-		
 	}
 	
-	
-
 }
