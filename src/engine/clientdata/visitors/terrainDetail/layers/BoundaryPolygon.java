@@ -45,8 +45,9 @@ public class BoundaryPolygon extends BoundaryLayer {
 	@Override
 	public boolean isContained(float x, float y) {
 		int j;
-		boolean odd_nodes = false;
+		//boolean odd_nodes = false;
 		float x1, x2;
+		int crossings = 0;
 	
 		for ( int i = 0; i < verts.size(); ++i )
 		{
@@ -84,11 +85,15 @@ public class BoundaryPolygon extends BoundaryLayer {
 				float z2 = k * x + m;
 				if ( y <= z2 )
 				{
-					odd_nodes=!odd_nodes;
+					//odd_nodes=!odd_nodes;
+					crossings++;
 				}
 			}
 		}
-		return odd_nodes;
+		if(crossings % 2 == 1)
+			return true;
+		return false;
+		//return odd_nodes;
 	}
 
 	@Override

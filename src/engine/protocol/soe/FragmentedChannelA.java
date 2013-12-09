@@ -18,6 +18,8 @@ public class FragmentedChannelA extends SOEMessage implements ICombinable, ISequ
 	public FragmentedChannelA(byte[] data) {
 		
 		super(data);
+		if(data.length < 8)
+			return;
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		sequence = buffer.getShort(2);
 		length = buffer.getInt(4);

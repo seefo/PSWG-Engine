@@ -21,21 +21,28 @@ public class QuadNode<T> {
 
 	public boolean put(QuadLeaf<T> leaf) {
 		if (this.hasChildren) return getChild(leaf.x, leaf.y).put(leaf);
-		if (this.leaf == null) {
-			this.leaf = leaf;
-			return true;
+		while(!lock()) {
+			// spinlock
 		}
-		if (this.leaf.x == leaf.x && this.leaf.y == leaf.y) {
-			boolean changed = false;
-			for (T value : leaf.values) {
-				if (!this.leaf.values.contains(value)) {
-					changed = this.leaf.values.add(value) || changed;
-				}
+		try {
+			if (this.leaf == null) {
+				this.leaf = leaf;
+				return true;
 			}
-			return changed;
+			if (this.leaf.x == leaf.x && this.leaf.y == leaf.y) {
+				boolean changed = false;
+				for (T value : leaf.values) {
+					if (!this.leaf.values.contains(value)) {
+						changed = this.leaf.values.add(value) || changed;
+					}
+				}
+				return changed;
+			}
+			this.divide();
+			return getChild(leaf.x, leaf.y).put(leaf);
+		} finally {
+			unlock();
 		}
-		this.divide();
-		return getChild(leaf.x, leaf.y).put(leaf);
 	}
 
 	public boolean put(float x, float y, T value) {
@@ -43,14 +50,22 @@ public class QuadNode<T> {
 	}
 
 	public boolean remove(float x, float y, T value) {
-		if (this.hasChildren) return getChild(x, y).remove(x, y, value);
-		if (this.leaf != null && this.leaf.x == x && this.leaf.y == y && this.leaf.values != null && value != null && this.leaf.values.contains(value)) {
-			if (this.leaf.values.remove(value)) {
-				if (this.leaf.values.size() == 0) {
-					this.leaf = null;
+		if (this.hasChildren && value != null && getChild(x, y) != null) return getChild(x, y).remove(x, y, value);
+		while(!lock()) {
+			// spinlock
+		}
+		try {
+			if (this.leaf != null && /*this.leaf.x == x && this.leaf.y == y &&*/ this.leaf.values != null && value != null && this.leaf.values.contains(value)) {
+				if (this.leaf.values.remove(value)) {
+					if (this.leaf.values.size() == 0) {
+						this.leaf = null;
+					}
+					unlock();
+					return true;
 				}
-				return true;
 			}
+		} finally {
+			unlock();
 		}
 		return false;
 	}
@@ -102,18 +117,28 @@ public class QuadNode<T> {
 				if (value != null) { closest = value; }
 			}
 			return closest;
+		}			
+		
+		while(!lock()) {
+			// spinlock
 		}
-		if (this.leaf != null && this.leaf.values.size() > 0) {
-			T value = this.leaf.values.get(0);
-			float distance = (float) Math.sqrt(
-					(this.leaf.x - x) * (this.leaf.x - x)
-					+ (this.leaf.y - y) * (this.leaf.y - y));
-			if (distance < bestDistance.value) {
-				bestDistance.value = distance;
-				return value;
+
+		try {
+			if (this.leaf != null && this.leaf.values.size() > 0) {
+				T value = this.leaf.values.get(0);
+				float distance = (float) Math.sqrt(
+						(this.leaf.x - x) * (this.leaf.x - x)
+						+ (this.leaf.y - y) * (this.leaf.y - y));
+				if (distance < bestDistance.value) {
+					bestDistance.value = distance;
+					return value;
+				}
 			}
+			return null;
+		} finally {
+			unlock();
 		}
-		return null;
+
 	}
 
 	public ArrayList<T> get(float x, float y, float maxDistance, ArrayList<T> values) {

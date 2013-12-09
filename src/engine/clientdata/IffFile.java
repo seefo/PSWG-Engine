@@ -47,9 +47,9 @@ public class IffFile {
 			fis.close();
 			
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("!File not found: " + file.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("!IO Error: " + file.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	

@@ -14,6 +14,13 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.Descriptor;
+
+import main.NGECore;
+import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.SyncMessageBus;
+import net.engio.mbassy.bus.config.BusConfiguration;
+import net.engio.mbassy.listener.Listener;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.mina.core.buffer.IoBuffer;
 
@@ -22,6 +29,7 @@ import protocol.swg.SceneCreateObjectByCrc;
 import protocol.swg.SceneDestroyObject;
 import protocol.swg.SceneEndBaselines;
 import protocol.swg.UpdateContainmentMessage;
+import resources.objects.building.BuildingObject;
 import resources.objects.player.PlayerObject;
 
 import com.sleepycat.persist.model.Entity;
@@ -41,6 +49,7 @@ import engine.clientdata.visitors.SlotDescriptorVisitor;
 import engine.clientdata.visitors.SlotDefinitionVisitor.SlotDefinition;
 import engine.clients.Client;
 import engine.resources.common.CRC;
+import engine.resources.common.Event;
 import engine.resources.container.AbstractSlot;
 import engine.resources.container.AllPermissions;
 import engine.resources.container.ContainerPermissions;
@@ -107,6 +116,8 @@ public abstract class SWGObject implements ISWGObject {
 	private PortalVisitor portalVisitor;
 	private Map<String, String> attributes = new TreeMap<String, String>();
 	private Map<String, Object> attachments = new HashMap<String, Object>();
+	@NotPersistent
+	private SyncMessageBus<Event> eventBus = new SyncMessageBus<Event>(NGECore.getInstance().getEventBusConfig());
 
 
 	public SWGObject() { 
@@ -197,6 +208,8 @@ public abstract class SWGObject implements ISWGObject {
 		
 		try {
 			portalVisitor = ClientFileManager.loadFile((String) getTemplateData().getAttribute("portalLayoutFilename"), PortalVisitor.class);
+			if(portalVisitor.cells.isEmpty())
+				return;
 			String fileName = portalVisitor.cells.get(0).mesh;
 
 			if(fileName.contains(".msh"))
@@ -587,6 +600,8 @@ public abstract class SWGObject implements ISWGObject {
 
 		if(getSlottedObject("ghost") != null)
 			makeAware(getSlottedObject("ghost"));
+		if(!obj.isInSnapshot() && !(obj instanceof BuildingObject))
+			obj.sendSceneEndBaselines(getClient());
 		
 		obj.viewChildren(this, true, true, new Traverser() {
 
@@ -600,9 +615,9 @@ public abstract class SWGObject implements ISWGObject {
 			}
 				
 		});
-		if(!obj.isInSnapshot())
-			obj.sendSceneEndBaselines(getClient());
 
+		if(!obj.isInSnapshot() && obj instanceof BuildingObject)
+			obj.sendSceneEndBaselines(getClient());
 
 	}
 	
@@ -1032,6 +1047,21 @@ public abstract class SWGObject implements ISWGObject {
 		}
 		return null;
 	}
+	
+	public Vector<String> getSlotNamesForObject(SWGObject object) {
+		if((slotDescriptor == null || slotArrangement == null) && template != null)
+			getContainerInfo(getTemplate());
+		Vector<String> slotNames = new Vector<String>();
+		int arrangementId = getCorrectArrangementId(object);
+		synchronized(objectMutex) {
+			for(Integer i : object.slotArrangement.getArrangement().get(arrangementId - 4)) {
+				Integer slotIndex = slotDescriptor.getIndexOf(i);
+				slotNames.add(slots[slotIndex].getName());
+			}
+		}
+		return slotNames;
+	}
+	
 
 	/**
 	 * Traverses through the children of these objects with by implementing the Traverser interface with an anonymous class.
@@ -1206,6 +1236,10 @@ public abstract class SWGObject implements ISWGObject {
 		synchronized(objectMutex) {
 			attachments.put(attachmentName, value);
 		}
+	}
+	
+	public SyncMessageBus<Event> getEventBus() {
+		return eventBus;
 	}
 
 }

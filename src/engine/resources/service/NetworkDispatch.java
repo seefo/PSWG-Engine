@@ -181,7 +181,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 			    				e.printStackTrace();
 			    			}
 			    		} else {
-			    			//System.out.println("Unknown ObjController Opcode Found : 0x"+ Integer.toHexString(objControllerOpcode));
+			    			System.out.println("Unknown ObjController Opcode Found : 0x"+ Integer.toHexString(objControllerOpcode));
 			    		}
 			    		return;
 		    		}
@@ -194,7 +194,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		    				e.printStackTrace();
 		    			}
 		    		} else {
-		    			//System.out.println("Unknown Opcode Found : 0x"+ Integer.toHexString(opcode) + "Data: " + Utilities.getHexString(packet.array()));
+		    			System.out.println("Unknown Opcode Found : 0x"+ Integer.toHexString(opcode) + "Data: " + Utilities.getHexString(packet.array()));
 		    		}
 		    	}
 		    }
@@ -235,7 +235,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 				cursor.getValue().clear();
 			}
 			try {
-				Thread.sleep(100);
+				Thread.sleep(50);
 				if(startTime + Long.parseLong(maxTime) < (long) Class.forName("java.lang.System").getMethod("currentTimeMillis", null).invoke(Class.forName("java.lang.System"), null)) {
 					//System.out.println("Exceeded max time");
 					return;

@@ -16,10 +16,14 @@ public class DatatableVisitor implements VisitorInterface {
 	Object[][] table;
 	
 	public int getRowCount() {
+		if(table == null)
+			return 0;
 		return table.length;
 	}
 	
 	public int getColumnCount() {
+		if(table == null)
+			return 0;
 		return columnNames.length;
 	}
 	

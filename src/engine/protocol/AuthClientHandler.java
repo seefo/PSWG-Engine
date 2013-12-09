@@ -1,6 +1,7 @@
 package engine.protocol;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteOrder;
@@ -109,6 +110,8 @@ public class AuthClientHandler extends IoHandlerAdapter implements Runnable {
 
 			serverConnection.write(response);
 
+		} catch (FileNotFoundException e) {
+			System.out.println("!File not found: ngengine_public.jar");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
