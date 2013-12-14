@@ -109,7 +109,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	        session.setAttribute("connectionId", new Integer(0));
 	        session.setAttribute("CRC", new Integer(0));
 	        session.setAttribute("sent", new Long(0));
-	        session.setAttribute("recieved", new Long(0));
+	        session.setAttribute("recieved", new Long(0));	        
 
 	}
 	

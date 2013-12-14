@@ -157,6 +157,9 @@ public class MultiProtocol extends SOEMessage {
 			//	break;
 			if (buffer.remaining() < length || !buffer.hasArray())
 				break;
+			
+			if(length < 0)
+				break;
 
 			IoBuffer packet = IoBuffer.allocate(length);
 			packet.setAutoExpand(true);

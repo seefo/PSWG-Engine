@@ -30,6 +30,7 @@ import protocol.swg.SceneDestroyObject;
 import protocol.swg.SceneEndBaselines;
 import protocol.swg.UpdateContainmentMessage;
 import resources.objects.building.BuildingObject;
+import resources.objects.cell.CellObject;
 import resources.objects.player.PlayerObject;
 
 import com.sleepycat.persist.model.Entity;
@@ -598,18 +599,18 @@ public abstract class SWGObject implements ISWGObject {
 			//obj.sendSceneEndBaselines(getClient());
 		}
 
-		if(getSlottedObject("ghost") != null)
-			makeAware(getSlottedObject("ghost"));
+		if(obj.getSlottedObject("ghost") != null)
+			makeAware(obj.getSlottedObject("ghost"));
 		if(!obj.isInSnapshot() && !(obj instanceof BuildingObject))
 			obj.sendSceneEndBaselines(getClient());
-		
-		obj.viewChildren(this, true, true, new Traverser() {
+				
+		obj.viewChildren(this, true, false, new Traverser() {
 
 			@Override
 			public void process(SWGObject object) {
-				if(object instanceof PlayerObject)
+				if(object instanceof PlayerObject || object == null)
 					return;
-				if(object.getClient() != null)
+				if(object.getClient() != null && object != SWGObject.this)
 					object.makeAware(SWGObject.this);
 				makeAware(object);
 			}
@@ -626,10 +627,12 @@ public abstract class SWGObject implements ISWGObject {
 		if(!awareObjects.contains(obj) || obj == this)
 			return;
 		
-		obj.viewChildren(this, false, true, new Traverser() {
+		obj.viewChildren(this, false, false, new Traverser() {
 
 			@Override
 			public void process(SWGObject object) {
+				if(object == null)
+					return;
 				if(object.getClient() != null)
 					object.makeUnaware(SWGObject.this);
 				makeUnaware(object);
@@ -661,6 +664,12 @@ public abstract class SWGObject implements ISWGObject {
 	}
 	
 	public void sendCreate(Client destination) {
+		
+		if(this instanceof BuildingObject && getAttachment("cellsSorted") == null) {
+			((ContainerSlot) slots[0]).sortCells();
+			((ContainerSlot) slots[0]).inverse();
+			setAttachment("cellsSorted", new Boolean(true));
+		}
 		
 		if(destination == null || destination.getSession() == null)
 			return;

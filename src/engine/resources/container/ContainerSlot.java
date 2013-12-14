@@ -1,8 +1,11 @@
 package engine.resources.container;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import resources.objects.cell.CellObject;
 
 import com.sleepycat.persist.model.Persistent;
 
@@ -61,4 +64,17 @@ public class ContainerSlot extends AbstractSlot {
 			return null;
 		}
 		
+		public void inverse() {
+			Collections.reverse(objects);
+		}
+		
+		public void sortCells() {
+			SWGObject[] cells = new SWGObject[objects.size() + 1];
+			for(SWGObject obj : objects) {
+				if(!(obj instanceof CellObject))
+					return;
+				cells[((CellObject) obj).getCellNumber()] = obj;
+			}
+			objects = Arrays.asList(cells);
+		}
 	}

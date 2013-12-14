@@ -3,6 +3,7 @@ package engine.protocol;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -271,22 +272,29 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 
 				System.out.println("OOO incoming for sequence : " + sequence + " last ACK sequence: " + lastAcknowledgedSequence.shortValue());
 
-				if((Boolean) session.getAttribute("isOutOfOrder") == false)
+				if((Boolean) session.getAttribute("isOutOfOrder") == false) {
 					session.setAttribute("isOutOfOrder", new Boolean(true));
+					session.setAttribute("oooTimestamp", new Date());
+				}
 					
 				//if(sequence < (lastAcknowledgedSequence - 1))
 				//	return;
+				@SuppressWarnings("unchecked")
+				Map<Short, byte[]> resentPackets = ((Map<Short, byte[]>) session.getAttribute("resentPackets"));
+
+				@SuppressWarnings("unchecked")
+				Map<Short, byte[]> sentPackets = ((Map<Short, byte[]>) session.getAttribute("sentPackets"));
+				
+				Date oooTimestamp = (Date) session.getAttribute("oooTimestamp");
+				
+				if(oooTimestamp != null && new Date().getTime() - oooTimestamp.getTime() > 30000)
+					resentPackets.clear();
 
 				if((sequence - lastAcknowledgedSequence) > 300) {
 					session.close(true);
 					return;
 				}
 				
-				@SuppressWarnings("unchecked")
-				Map<Short, byte[]> resentPackets = ((Map<Short, byte[]>) session.getAttribute("resentPackets"));
-
-				@SuppressWarnings("unchecked")
-				Map<Short, byte[]> sentPackets = ((Map<Short, byte[]>) session.getAttribute("sentPackets"));
 				
 				synchronized(sentPackets) {
 					Iterator<Short> it = sentPackets.keySet().iterator();
@@ -332,7 +340,7 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 				short sequence = packetBody.getShort();
 				session.setAttribute("lastAcknowledgedSequence", new Integer(sequence));
 				session.setAttribute("isOutOfOrder", new Boolean(false));
-
+				session.setAttribute("oooTimestamp", null);
 				packetBody.position(0);
 				@SuppressWarnings("unchecked")
 				Map<Short, byte[]> resentPackets = ((Map<Short, byte[]>) session.getAttribute("resentPackets"));
