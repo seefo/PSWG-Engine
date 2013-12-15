@@ -34,7 +34,8 @@ public class VectorProxy<E> implements PersistentProxy<Vector<E>> {
 	private int size = 0;
 	private E[] elements;
 	
-	private VectorProxy() { }
+	private VectorProxy() { 
+	}
 	
 	public void initializeProxy(Vector<E> object) {
 		List<E> elementList = new ArrayList<E>();
@@ -45,7 +46,7 @@ public class VectorProxy<E> implements PersistentProxy<Vector<E>> {
 		
 		size = object.size();
 		
-		elements = elementList.toArray(elements);
+		elements = (E[]) elementList.toArray();
 	}
 	
 	public Vector<E> convertProxy() {
