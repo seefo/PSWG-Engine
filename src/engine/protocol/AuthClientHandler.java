@@ -191,7 +191,7 @@ public class AuthClientHandler extends IoHandlerAdapter implements Runnable {
 		
 		while(true) {
 			
-			ConcurrentHashMap<Integer, Client> clients = core.getActiveConnectionsMap();
+			ConcurrentHashMap<IoSession, Client> clients = core.getActiveConnectionsMap();
 			Iterator<Client> it = clients.values().iterator();
 			
 			int amount = 0;

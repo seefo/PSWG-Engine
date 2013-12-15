@@ -32,7 +32,7 @@ public class DataChannelA extends SOEMessage implements ISequenced, ICombinable 
 		int messageLength = messageData.length;
 		//System.out.println(messageLength);
 
-		if(messageLength > 487)
+		if(messageLength > 489)
 			return false;
 		
 		if (messages == null)
@@ -84,7 +84,7 @@ public class DataChannelA extends SOEMessage implements ISequenced, ICombinable 
 					length = buffer.getShort();
 				//if (length > Utilities.getActiveLengthOfBuffer(buffer) - buffer.position())
 				//	break;
-				if (length > buffer.remaining() || !buffer.hasArray())
+				if (length > buffer.remaining() || !buffer.hasArray() || length < 0)
 					break;
 
 				messages.add(IoBuffer.allocate(length).put(buffer.array(), buffer.position(), length));
@@ -125,8 +125,9 @@ public class DataChannelA extends SOEMessage implements ISequenced, ICombinable 
 				size += currentLength + (currentLength > 254 ? 3 : 1);
 			}
 		}
-		else
+		else {
 			size += messages.get(0).array().length;
+		}
 		return size;
 	}
 

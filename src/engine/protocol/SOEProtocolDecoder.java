@@ -12,6 +12,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 
+import main.NGECore;
+
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.mina.core.buffer.CachedBufferAllocator;
 import org.apache.mina.core.buffer.IoBuffer;
@@ -191,7 +193,18 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 		
 			case 5:
 			{
-				session.close(false);
+				NetworkDispatch dispatch = (NetworkDispatch) session.getHandler();
+				NGECore core = dispatch.getCore();
+				
+				if(dispatch.isZone()) {
+					core.simulationService.handleDisconnect(session);
+					session.close(true);
+					return;
+				}
+				
+				core.removeClient(session);
+				session.close(true);
+				
 				break;
 			}
 			

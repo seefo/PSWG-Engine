@@ -22,9 +22,6 @@ import org.apache.mina.core.session.IoSession;
 
 import engine.clients.Client;
 import engine.protocol.AuthClient;
-import engine.protocol.packager.MessageCRC;
-import engine.protocol.packager.MessageCompression;
-import engine.protocol.packager.MessageEncryption;
 import engine.protocol.packager.MessagePackager;
 import resources.common.Opcodes;
 import engine.resources.common.Utilities;
@@ -90,10 +87,11 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		Map<Short, byte[]> resentPackets = ((Map<Short, byte[]>) session.getAttribute("resentPackets"));
 		resentPackets.clear();
 
-		if(isZone) {
+		// disabled for now
+		/*if(isZone) {
 			core.simulationService.handleDisconnect(session);
 		}
-		core.removeClient((Integer) session.getAttribute("connectionId"));
+		core.removeClient((Integer) session.getAttribute("connectionId"));*/
     }
 	@Override
 	public void sessionCreated(IoSession session) throws Exception {
@@ -161,7 +159,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
     				if(Utilities.IsSOETypeMessage(packet.array()) && packet.get(1) == 1) {
     					if(isZone) {
     						//System.out.println("SOE packet on zone recieved");
-    						core.addClient(packet.getInt(6), new Client(session.getRemoteAddress()));
+    						core.addClient(session, new Client(session.getRemoteAddress()));
     					}
     					return;
     				}
@@ -238,6 +236,8 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 				if(cursor.getValue() == null)
 					continue;
 				IoSession session = cursor.getKey();
+				if((Boolean) session.getAttribute("isOutOfOrder"))
+					continue;
 				Vector<byte[]> messageData = getClientQueue(session, cursor.getValue());
 				for (byte[] data : messageData) {
 					session.write(data);
@@ -293,6 +293,10 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 
 	public boolean isZone() {
 		return isZone;
+	}
+
+	public NGECore getCore() {
+		return core;
 	}
 
 

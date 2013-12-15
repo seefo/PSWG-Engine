@@ -56,11 +56,11 @@ public class MessagePackager
 				int opcode = message.getInt(2);
 				if(opcode == Integer.reverseBytes(0x1B24F808) || opcode == Integer.reverseBytes(0xC867AB5A))
 					continue;
-				if (!dataChannelA.addMessage(message) && message.array().length <= 487) {
+				if (!dataChannelA.addMessage(message) && message.array().length < 489) {
 					soeMessages.add(dataChannelA.serialize());
 					dataChannelA = new DataChannelA();
 					dataChannelA.addMessage(message);
-				} else if(message.array().length > 487) {
+				} else if(message.array().length >= 486) {
 					if (dataChannelA.hasMessages()) {
 						soeMessages.add(dataChannelA.serialize());
 						dataChannelA = new DataChannelA();
