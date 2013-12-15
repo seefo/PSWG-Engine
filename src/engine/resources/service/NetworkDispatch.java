@@ -167,8 +167,15 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
     				}
 		    		if(!packet.hasRemaining())
 		    			return;
-		    		short operandCount = Short.reverseBytes(packet.getShort());
-		    		int opcode = Integer.reverseBytes(packet.getInt());
+		    		short operandCount;
+	    			int opcode;
+		    		try {
+		    			operandCount = Short.reverseBytes(packet.getShort());
+			    		opcode = Integer.reverseBytes(packet.getInt());
+		    		} catch (Exception e) {
+		    			System.out.println("NULL packet with less than 6 bytes.  Caught to prevent deadlock.");
+		    			return;
+		    		}
 		    		if(opcode == Opcodes.ObjControllerMessage) {
 		    			packet.getInt();
 		    			int objControllerOpcode = packet.getInt();
