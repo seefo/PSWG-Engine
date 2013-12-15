@@ -19,13 +19,17 @@ public class Client {
 	protected long lastPacket;
 	protected boolean disconnected = false;
 	public boolean ready = false;
-
+	private boolean isGM;
+	
 	public Connection connection;
 	public SWGObject parent;
 	
 	public Client(SocketAddress endPoint) {
 		this.connection = new Connection(endPoint);
 	}
+	
+	public boolean isGM() { return isGM; }
+	public void setGM(boolean isGM) { this.isGM = isGM; }
 	
 	public IoSession getSession() { return session; }
 	public void setSession(IoSession s) { this.session = s; }
