@@ -176,6 +176,9 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		    			//System.out.println("NULL packet with less than 6 bytes.");
 		    			return;
 		    		}
+		    		if (session.isWriteSuspended()) {
+		    			session.resumeWrite();
+		    		}
 		    		if(opcode == Opcodes.ObjControllerMessage) {
 		    			packet.getInt();
 		    			int objControllerOpcode = packet.getInt();
