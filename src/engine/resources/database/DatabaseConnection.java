@@ -110,8 +110,10 @@ public class DatabaseConnection {
 		}
 		return null;
 	}
-	public PreparedStatement preparedStatement(String preparedStatement) throws SQLException {
-		return connection.prepareStatement(preparedStatement);
+	public PreparedStatement preparedStatement(String statement) throws SQLException {
+		PreparedStatement preparedStatement = connection.prepareStatement(statement);
+		preparedStatement.setQueryTimeout(30);
+		return preparedStatement;
 	}
 
 }
