@@ -30,13 +30,14 @@ public class VBLoginProvider implements ILoginProvider {
 		try {
 			
 			// this sucks a bit, MySQL doesn't support passing arrays (yet) apparently.
-			preparedStatement = databaseConnection2.preparedStatement("SELECT u.userid, u.email FROM user u WHERE LOWER(u.username)=LOWER(?) AND usergroupid NOT IN(?,?,?,?) AND MD5(CONCAT(MD5(?),u.salt))=u.password");
+			preparedStatement = databaseConnection2.preparedStatement("SELECT u.userid, u.email FROM user u WHERE LOWER(u.username)=LOWER(?) AND usergroupid NOT IN(?,?,?,?,?) AND MD5(CONCAT(MD5(?),u.salt))=u.password");
 			preparedStatement.setString(1, username);
-			preparedStatement.setInt(2, 1);
-			preparedStatement.setInt(3, 3);
-			preparedStatement.setInt(4, 4);
-			preparedStatement.setInt(5, 8);
-			preparedStatement.setString(6, password);
+			preparedStatement.setInt(2, 1); // Guests
+			preparedStatement.setInt(3, 3); // Awaiting Email Confirmation
+			preparedStatement.setInt(4, 4); // Awaiting Moderation
+			preparedStatement.setInt(5, 233); // Banned Users
+			preparedStatement.setInt(6, 210); // Inactive Users
+			preparedStatement.setString(7, password);
 		
 			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next())
