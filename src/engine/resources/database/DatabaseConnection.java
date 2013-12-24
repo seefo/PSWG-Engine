@@ -112,7 +112,11 @@ public class DatabaseConnection {
 	}
 	public PreparedStatement preparedStatement(String statement) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement(statement);
-		preparedStatement.setQueryTimeout(30);
+		try {
+			//preparedStatement.setQueryTimeout(30);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return preparedStatement;
 	}
 
