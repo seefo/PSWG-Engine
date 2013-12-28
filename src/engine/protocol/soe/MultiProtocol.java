@@ -75,7 +75,7 @@ public class MultiProtocol extends SOEMessage {
 		if(swgMessages == null)
 			swgMessages = new Vector<IoBuffer>();
 		
-		int messageLength = Utilities.getActiveLengthOfBuffer(message);
+		int messageLength = message.array().length;
 		
 		if(messageLength + 1 > getRemainingSize())
 			return false;
@@ -128,17 +128,15 @@ public class MultiProtocol extends SOEMessage {
 			
 			byte[] packet = swgMsg.array();
 			int length = packet.length;
-			
-			if(message.position() + length > message.capacity())
-				continue;
-			
+						
 			message.put((byte) length);
 			message.put(packet);
 			
 		}
 		
 		int size = message.position();
-		return IoBuffer.allocate(size).put(message.array(), 0, size);
+		IoBuffer message2 = IoBuffer.allocate(size).put(message.array(), 0, size);
+		return message2.flip();
 		
 	}
 	public IoBuffer[] getMessages() { 
@@ -177,7 +175,7 @@ public class MultiProtocol extends SOEMessage {
 
 		return tmp; 
 	}
-	public boolean hasMessages() { return messages != null && messages.size() > 0; }
+	public boolean hasMessages() { return swgMessages != null && swgMessages.size() > 0; }
 
 	public byte[] GetData() { return null; }
 	private int getRemainingSize() { return 493 - getSize(); }
@@ -186,7 +184,7 @@ public class MultiProtocol extends SOEMessage {
 		int currentLength;
 		
 		for (int i = 0; i < swgMessages.size(); i++) {
-			currentLength = Utilities.getActiveLengthOfBuffer(swgMessages.get(i));
+			currentLength = swgMessages.get(i).array().length;
 			size += currentLength + 1;
 		}
 		

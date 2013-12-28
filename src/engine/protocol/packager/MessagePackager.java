@@ -54,13 +54,13 @@ public class MessagePackager
 				if (message == null) continue;
 				if (message.array().length < 6) continue;
 				int opcode = message.getInt(2);
-				if(opcode == Integer.reverseBytes(0x1B24F808) || opcode == Integer.reverseBytes(0xC867AB5A))
+				if(opcode == 0x1B24F808 || opcode == 0xC867AB5A)
 					continue;
-				if (!dataChannelA.addMessage(message) && message.array().length < 489) {
+				if (!dataChannelA.addMessage(message) && message.array().length <= 487) {
 					soeMessages.add(dataChannelA.serialize());
 					dataChannelA = new DataChannelA();
 					dataChannelA.addMessage(message);
-				} else if(message.array().length >= 486) {
+				} else if(message.array().length > 487) {
 					if (dataChannelA.hasMessages()) {
 						soeMessages.add(dataChannelA.serialize());
 						dataChannelA = new DataChannelA();
@@ -85,10 +85,12 @@ public class MessagePackager
 			}*/
 			MultiProtocol multiProtocol = new MultiProtocol();
 			for (IoBuffer message : swgMessages) {
+				if (message == null) continue;
+				if (message.array().length < 6) continue;
 				int opcode = message.getInt(2);
-				if(opcode != Integer.reverseBytes(0x1B24F808) && opcode != Integer.reverseBytes(0xC867AB5A))
+				if(opcode != 0x1B24F808 && opcode != 0xC867AB5A)
 					continue;
-				if(Utilities.getActiveLengthOfBuffer(message) > 255)
+				if(message.array().length > 255)
 					continue;
 				if(!multiProtocol.addSWGMessage(message)) {
 					 soeMessages.add(multiProtocol.serialize());
@@ -97,7 +99,9 @@ public class MessagePackager
 				}
 				
 			}
-			
+			 if (multiProtocol.hasMessages())
+				 soeMessages.add(multiProtocol.serialize());
+
 			
 			
 			/* MultiProtocol multiProtocol = new MultiProtocol(); 

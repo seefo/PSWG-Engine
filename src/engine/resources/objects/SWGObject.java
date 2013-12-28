@@ -599,6 +599,8 @@ public abstract class SWGObject implements ISWGObject {
 			//obj.sendSceneEndBaselines(getClient());
 		}
 
+		if(obj.getSlottedObject("appearance_inventory") != null)
+			makeAware(obj.getSlottedObject("appearance_inventory"));
 		if(obj.getSlottedObject("ghost") != null)
 			makeAware(obj.getSlottedObject("ghost"));
 		if(!obj.isInSnapshot() && !(obj instanceof BuildingObject))
@@ -624,7 +626,7 @@ public abstract class SWGObject implements ISWGObject {
 	
 	public void makeUnaware(final SWGObject obj) {
 		
-		if(!awareObjects.contains(obj) || obj == this)
+		if(!awareObjects.contains(obj) || obj == this || !obj.getObservers().contains(getClient()))
 			return;
 		
 		obj.viewChildren(this, false, false, new Traverser() {

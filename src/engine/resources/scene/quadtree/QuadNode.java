@@ -60,7 +60,6 @@ public class QuadNode<T> {
 					if (this.leaf.values.size() == 0) {
 						this.leaf = null;
 					}
-					unlock();
 					return true;
 				}
 			}

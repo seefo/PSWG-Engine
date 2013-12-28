@@ -300,7 +300,7 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 				
 				Date oooTimestamp = (Date) session.getAttribute("oooTimestamp");
 				
-				if(oooTimestamp != null && new Date().getTime() - oooTimestamp.getTime() > 30000)
+				if(oooTimestamp != null && new Date().getTime() - oooTimestamp.getTime() > 1000)
 					resentPackets.clear();
 
 				if((sequence - lastAcknowledgedSequence) > 300) {

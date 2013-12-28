@@ -107,7 +107,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	        session.setAttribute("connectionId", new Integer(0));
 	        session.setAttribute("CRC", new Integer(0));
 	        session.setAttribute("sent", new Long(0));
-	        session.setAttribute("recieved", new Long(0));	        
+	        session.setAttribute("recieved", new Long(0));
 
 	}
 	
@@ -238,14 +238,34 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 				IoSession session = cursor.getKey();
 				if((Boolean) session.getAttribute("isOutOfOrder"))
 					continue;
-				Vector<byte[]> messageData = getClientQueue(session, cursor.getValue());
-				for (byte[] data : messageData) {
-					session.write(data);
+				int dataSize = cursor.getValue().size();
+				synchronized(cursor.getValue()) {
+					if(dataSize > 25) {
+						//System.out.println("Activated bandwidth throttle queue size: " + dataSize + " bytes.");
+						Vector<IoBuffer> packets = new Vector<IoBuffer>();
+						int size = 0;
+						for(IoBuffer buffer : cursor.getValue()) {
+							if(size > 25)
+								break;
+							packets.add(buffer);
+							size++; 
+						}
+						Vector<byte[]> messageData = getClientQueue(session, packets);
+						for (byte[] data : messageData) {
+							session.write(data);
+						}
+						cursor.getValue().removeAll(packets);
+					} else {
+						Vector<byte[]> messageData = getClientQueue(session, cursor.getValue());
+						for (byte[] data : messageData) {
+							session.write(data);
+						}
+						cursor.getValue().clear();
+					}
 				}
-				cursor.getValue().clear();
 			}
 			try {
-				Thread.sleep(50);
+				Thread.sleep(1);
 				if(startTime + Long.parseLong(maxTime) < (long) Class.forName("java.lang.System").getMethod("currentTimeMillis", null).invoke(Class.forName("java.lang.System"), null)) {
 					//System.out.println("Exceeded max time");
 					return;
@@ -254,6 +274,8 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 				e.printStackTrace();
 			}
     		try {
+    			if(server == null)
+    				continue;
 				if((int) server.getClass().getMethod("getNioacceptor", null).invoke(server, null).getClass().getMethod("getManagedSessionCount", null).invoke(server.getClass().getMethod("getNioacceptor", null).invoke(server, null), null) > Integer.parseInt(maxSessions)) {
 					//System.out.println("Exceeded max sessions");
 					return;
