@@ -1,6 +1,8 @@
 package engine.clientdata;
 
 import java.io.File;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

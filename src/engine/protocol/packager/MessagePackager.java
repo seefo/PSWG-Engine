@@ -27,6 +27,10 @@ public class MessagePackager
 	private MessageEncryption messageEncryption;
 	private MessageCompression messageCompression;
 	private CachedBufferAllocator bufferPool;
+	private Vector<IoBuffer> soeMessages = new Vector<IoBuffer>();
+	private Vector<IoBuffer> swgMessages = new Vector<IoBuffer>();
+	private Vector<byte[]> outgoingMessages = new Vector<byte[]>();
+
 
 	public MessagePackager(CachedBufferAllocator bufferPool) {
 		bufferPool = bufferPool;
@@ -35,9 +39,6 @@ public class MessagePackager
 	public Vector<byte[]> assemble(IoBuffer[] messages, IoSession connection, int crcSeed)
 	{
 		{
-			Vector<IoBuffer> soeMessages = new Vector<IoBuffer>();
-			Vector<IoBuffer> swgMessages = new Vector<IoBuffer>();
-			Vector<byte[]> outgoingMessages = new Vector<byte[]>();
 			
 			createDependencies();
 			
@@ -48,61 +49,61 @@ public class MessagePackager
 				else
 					soeMessages.add(messages[i]);
 			}
-			
-			DataChannelA dataChannelA = new DataChannelA();
-			for (IoBuffer message : swgMessages) {
-				if (message == null) continue;
-				if (message.array().length < 6) continue;
-				int opcode = message.getInt(2);
-				if(opcode == 0x1B24F808 || opcode == 0xC867AB5A)
-					continue;
-				if (!dataChannelA.addMessage(message) && message.array().length <= 487) {
-					soeMessages.add(dataChannelA.serialize());
-					dataChannelA = new DataChannelA();
-					dataChannelA.addMessage(message);
-				} else if(message.array().length > 487) {
-					if (dataChannelA.hasMessages()) {
+			if(!swgMessages.isEmpty()) {
+
+				DataChannelA dataChannelA = new DataChannelA();
+				for (IoBuffer message : swgMessages) {
+					if (message == null) continue;
+					if (message.array().length < 6) continue;
+					int opcode = message.getInt(2);
+					if(opcode == 0x1B24F808 || opcode == 0xC867AB5A)
+						continue;
+					if (!dataChannelA.addMessage(message) && message.array().length <= 487) {
 						soeMessages.add(dataChannelA.serialize());
 						dataChannelA = new DataChannelA();
+						dataChannelA.addMessage(message);
+					} else if(message.array().length > 487) {
+						if (dataChannelA.hasMessages()) {
+							soeMessages.add(dataChannelA.serialize());
+							dataChannelA = new DataChannelA();
+						}
+						FragmentedChannelA fragChanA = new FragmentedChannelA();
+						for (FragmentedChannelA fragChanASection : fragChanA.create(message.array())) {
+							soeMessages.add(fragChanASection.serialize());
+						}
 					}
-					FragmentedChannelA fragChanA = new FragmentedChannelA();
-					for (FragmentedChannelA fragChanASection : fragChanA.create(message.array())) {
-						soeMessages.add(fragChanASection.serialize());
-					}
+					
 				}
-				
-			}
-			if (dataChannelA.hasMessages()) 
-				soeMessages.add(dataChannelA.serialize());
-			/*for (IoBuffer message : swgMessages) {
-				int opcode = message.getInt(2);
-				if (message.array().length > 487 && opcode != 0x1B24F808 && opcode != 0xC867AB5A) {
-					FragmentedChannelA fragChanA = new FragmentedChannelA();
-					for (FragmentedChannelA fragChanASection : fragChanA.create(message.array())) {
-						soeMessages.add(fragChanASection.serialize());
+				if (dataChannelA.hasMessages()) 
+					soeMessages.add(dataChannelA.serialize());
+				/*for (IoBuffer message : swgMessages) {
+					int opcode = message.getInt(2);
+					if (message.array().length > 487 && opcode != 0x1B24F808 && opcode != 0xC867AB5A) {
+						FragmentedChannelA fragChanA = new FragmentedChannelA();
+						for (FragmentedChannelA fragChanASection : fragChanA.create(message.array())) {
+							soeMessages.add(fragChanASection.serialize());
+						}
 					}
+				}*/
+				MultiProtocol multiProtocol = new MultiProtocol();
+				for (IoBuffer message : swgMessages) {
+					if (message == null) continue;
+					if (message.array().length < 6) continue;
+					int opcode = message.getInt(2);
+					if(opcode != 0x1B24F808 && opcode != 0xC867AB5A)
+						continue;
+					if(message.array().length > 255)
+						continue;
+					if(!multiProtocol.addSWGMessage(message)) {
+						 soeMessages.add(multiProtocol.serialize());
+						 multiProtocol = new MultiProtocol();
+						 multiProtocol.addSWGMessage(message); 
+					}
+					
 				}
-			}*/
-			MultiProtocol multiProtocol = new MultiProtocol();
-			for (IoBuffer message : swgMessages) {
-				if (message == null) continue;
-				if (message.array().length < 6) continue;
-				int opcode = message.getInt(2);
-				if(opcode != 0x1B24F808 && opcode != 0xC867AB5A)
-					continue;
-				if(message.array().length > 255)
-					continue;
-				if(!multiProtocol.addSWGMessage(message)) {
+				 if (multiProtocol.hasMessages())
 					 soeMessages.add(multiProtocol.serialize());
-					 multiProtocol = new MultiProtocol();
-					 multiProtocol.addSWGMessage(message); 
-				}
-				
 			}
-			 if (multiProtocol.hasMessages())
-				 soeMessages.add(multiProtocol.serialize());
-
-			
 			
 			/* MultiProtocol multiProtocol = new MultiProtocol(); 
 			 for (int i = 0; i < soeMessages.size(); i++) { 
@@ -175,9 +176,7 @@ public class MessagePackager
 				
 			}*/
 			soeMessages.clear();
-			soeMessages = null;
 			swgMessages.clear();
-			swgMessages = null;
 			return outgoingMessages;
 		}
 		

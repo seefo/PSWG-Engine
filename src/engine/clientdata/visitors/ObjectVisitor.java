@@ -45,7 +45,8 @@ public class ObjectVisitor implements VisitorInterface {
 				if(data.get() != 0) {
 					attributes.put(attributeName, data.getString(Charset.forName("US-ASCII").newDecoder()));
 				}
-			} else if(attributeName.equals("collisionActionBlockFlags") || attributeName.equals("collisionMaterialFlags") || attributeName.equals("collisionMaterialBlockFlags") || attributeName.equals("collisionMaterialPassFlags") || attributeName.equals("collisionActionPassFlags") || attributeName.equals("collisionActionFlags") /*|| attributeName.equals("gameObjectType")*/) {
+			} else if(attributeName.equals("collisionActionBlockFlags") || attributeName.equals("collisionMaterialFlags") || attributeName.equals("collisionMaterialBlockFlags") || attributeName.equals("collisionMaterialPassFlags")
+					|| attributeName.equals("collisionActionPassFlags") || attributeName.equals("collisionActionFlags")) {
 				byte byteVal = data.get();
 				if(byteVal != 0) {
 					int value = data.getInt();
@@ -57,6 +58,12 @@ public class ObjectVisitor implements VisitorInterface {
 			} else if(attributeName.equals("detailedDescription")) {
 				attributes.put("detailFilename", data.getString(Charset.forName("US-ASCII").newDecoder()));
 				attributes.put("detailName", data.getString(Charset.forName("US-ASCII").newDecoder()));
+			} else if(attributeName.equals("speed") || attributeName.equals("scale") || attributeName.equals("turnRate")) {
+				byte byteVal = data.get();
+				if(byteVal != 0) {
+					int value = data.getInt();
+					attributes.put(attributeName, new Float(value));
+				}
 			}
 		}
 	}

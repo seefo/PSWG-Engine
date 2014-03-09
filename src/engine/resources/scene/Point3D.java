@@ -1,5 +1,8 @@
 package engine.resources.scene;
 
+import resources.objects.cell.CellObject;
+
+import com.sleepycat.persist.model.NotPersistent;
 import com.sleepycat.persist.model.Persistent;
 
 @Persistent
@@ -8,6 +11,8 @@ public class Point3D {
 	public float z;
 	public float x;
 	public float y;
+	@NotPersistent
+	private CellObject cell;
 	
 	public Point3D() { }
 
@@ -42,5 +47,25 @@ public class Point3D {
 		
 	}
 
+	public CellObject getCell() {
+		return cell;
+	}
+
+	public void setCell(CellObject cell) {
+		this.cell = cell;
+	}
+
+	public Point3D getWorldPosition() {
+		
+		if(cell == null)
+			return this;
+		
+		Point3D cellPos = this;
+		Point3D buildingPos = cell.getContainer().getPosition();
+		float length = (float) Math.sqrt(cellPos.x * cellPos.x + cellPos.z * cellPos.z);
+		float angle = (float) (cell.getContainer().getRadians() + Math.atan2(cellPos.x, cellPos.z));
+		return new Point3D(buildingPos.x + (float) (Math.sin(angle) * length), buildingPos.y + cellPos.y,  buildingPos.z + (float) (Math.cos(angle) * length));
+
+	}
 
 }

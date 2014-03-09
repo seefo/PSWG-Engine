@@ -75,7 +75,7 @@ public class MeshVisitor implements VisitorInterface {
 				
 				Vertex v = new Vertex();
 				v.position = new Vector3D(data.getFloat(), data.getFloat(), data.getFloat());
-				v.normal = new Vector3D(data.getFloat(), data.getFloat(), data.getFloat());
+				/*v.normal = */new Vector3D(data.getFloat(), data.getFloat(), data.getFloat());
 
 				if(hasColor)
 					v.color = data.getInt();
@@ -85,7 +85,7 @@ public class MeshVisitor implements VisitorInterface {
 					UVPair uvPair = new UVPair();
 					uvPair.x = data.getFloat();
 					uvPair.y = data.getFloat();
-					v.uvs.add(uvPair);
+					//v.uvs.add(uvPair);
 				}
 				currentMesh.vertices.add(v);
 			}

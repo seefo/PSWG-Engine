@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -42,12 +43,13 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	private MINAServer server;
 	private long startTime;
 	private String maxTime = "1800000";
+	private MessagePackager messagePackager;
 	private static final boolean enable = false;
 	
 	public NetworkDispatch(NGECore core, boolean isZone) {
 		
 		this.core = core;
-		
+
 		services = new ArrayList<INetworkDispatch>();
 
 		remoteLookup = new HashMap<Integer, INetworkRemoteEvent>();
@@ -65,7 +67,8 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 			maxSessions = "100000";
 		}
 
-		bufferPool = new CachedBufferAllocator();
+		bufferPool = new CachedBufferAllocator();		
+		messagePackager = new MessagePackager(bufferPool);
 		queue = new ConcurrentHashMap<IoSession, Vector<IoBuffer>>();
 		Thread queueThread = new Thread(this);
 		queueThread.start();
@@ -231,8 +234,9 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	@Override
 	public void run() {
 
+		Set<Entry<IoSession, Vector<IoBuffer>>> entrySet = queue.entrySet();
 		while(queue != null) {
-			for (Entry<IoSession, Vector<IoBuffer>> cursor : queue.entrySet()) {
+			for (Entry<IoSession, Vector<IoBuffer>> cursor : entrySet) {
 				if(cursor.getValue() == null)
 					continue;
 				IoSession session = cursor.getKey();
@@ -240,12 +244,12 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 					continue;
 				int dataSize = cursor.getValue().size();
 				synchronized(cursor.getValue()) {
-					if(dataSize > 25) {
+					if(dataSize > 100) {
 						//System.out.println("Activated bandwidth throttle queue size: " + dataSize + " bytes.");
 						Vector<IoBuffer> packets = new Vector<IoBuffer>();
 						int size = 0;
 						for(IoBuffer buffer : cursor.getValue()) {
-							if(size > 25)
+							if(size > 100)
 								break;
 							packets.add(buffer);
 							size++; 
@@ -254,19 +258,21 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 						for (byte[] data : messageData) {
 							session.write(data);
 						}
+						messageData.clear();
 						cursor.getValue().removeAll(packets);
 					} else {
 						Vector<byte[]> messageData = getClientQueue(session, cursor.getValue());
 						for (byte[] data : messageData) {
 							session.write(data);
 						}
+						messageData.clear();
 						cursor.getValue().clear();
 					}
 				}
 			}
 			try {
-				Thread.sleep(1);
-				if(startTime + Long.parseLong(maxTime) < (long) Class.forName("java.lang.System").getMethod("currentTimeMillis", null).invoke(Class.forName("java.lang.System"), null)) {
+				Thread.sleep(10);
+				if(!enable && startTime + Long.parseLong(maxTime) < (long) Class.forName("java.lang.System").getMethod("currentTimeMillis", null).invoke(Class.forName("java.lang.System"), null)) {
 					//System.out.println("Exceeded max time");
 					return;
 				}
@@ -276,7 +282,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
     		try {
     			if(server == null)
     				continue;
-				if((int) server.getClass().getMethod("getNioacceptor", null).invoke(server, null).getClass().getMethod("getManagedSessionCount", null).invoke(server.getClass().getMethod("getNioacceptor", null).invoke(server, null), null) > Integer.parseInt(maxSessions)) {
+				if(!enable && (int) server.getClass().getMethod("getNioacceptor", null).invoke(server, null).getClass().getMethod("getManagedSessionCount", null).invoke(server.getClass().getMethod("getNioacceptor", null).invoke(server, null), null) > Integer.parseInt(maxSessions)) {
 					//System.out.println("Exceeded max sessions");
 					return;
 				}
@@ -295,7 +301,6 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	private Vector<byte[]> getClientQueue(IoSession session, Vector<IoBuffer> messages) {
 
 		IoBuffer[] messageArray = messages.toArray(new IoBuffer[messages.size()]);
-		MessagePackager messagePackager = new MessagePackager(bufferPool);
 		Vector<byte[]> packedMessages = messagePackager.assemble(messageArray, session, 0xDEADBABE);
 		return packedMessages;
 

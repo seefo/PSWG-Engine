@@ -30,13 +30,35 @@ public class QuadTree<T> {
 	}
 
 	public boolean remove(float x, float y, T value) {
+		boolean found = false;
 		if (this.root.remove(x, y, value)) {
 			decreaseSize();
 			return true;
+		// fail safe: iterate through all leafs and find our value if x and y
+		} else {
+			QuadLeaf<T> leaf = firstLeaf();
+			do {
+				if(leaf.values.contains(value)) {
+					leaf.values.remove(value);
+					found = true;
+					QuadNode<T> currentNode = leaf.node;
+					if(currentNode.getLeaf() == leaf)
+						currentNode.clearLeaf();
+					else
+						System.out.println("Wrong node reference in quad tree leaf");
+					decreaseSize();
+				}
+				leaf = nextLeaf(leaf);
+			} while(leaf != null && !found);
 		}
-		return false;
+		if(!found)
+			return !contains(value);
+		return found;
 	}
 	
+	public boolean contains(T value) {
+		return root.contains(value);
+	}
 
 	public void clear() {
 		this.root.clear();

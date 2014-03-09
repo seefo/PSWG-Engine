@@ -584,7 +584,7 @@ public abstract class SWGObject implements ISWGObject {
 	
 	public void makeAware(final SWGObject obj) {
 		
-		if(awareObjects.contains(obj)) {
+		if(awareObjects.contains(obj) || !obj.getPermissions().canView(this, obj)) {
 			//System.out.println("Already aware of: " + obj.getTemplate());
 			return;
 		}
@@ -599,19 +599,21 @@ public abstract class SWGObject implements ISWGObject {
 			//obj.sendSceneEndBaselines(getClient());
 		}
 
-		if(obj.getSlottedObject("appearance_inventory") != null)
-			makeAware(obj.getSlottedObject("appearance_inventory"));
-		if(obj.getSlottedObject("ghost") != null)
-			makeAware(obj.getSlottedObject("ghost"));
-		if(!obj.isInSnapshot() && !(obj instanceof BuildingObject))
-			obj.sendSceneEndBaselines(getClient());
+	//	if(obj.getSlottedObject("appearance_inventory") != null)
+	//		makeAware(obj.getSlottedObject("appearance_inventory"));
+	//	if(obj.getSlottedObject("ghost") != null)
+	//		makeAware(obj.getSlottedObject("ghost"));
+		//if(!obj.isInSnapshot() && !(obj instanceof BuildingObject))
+		//	obj.sendSceneEndBaselines(getClient());
 				
 		obj.viewChildren(this, true, false, new Traverser() {
 
 			@Override
 			public void process(SWGObject object) {
-				if(object instanceof PlayerObject || object == null)
+				if(object == null)
 					return;
+				//if(object instanceof PlayerObject && obj != SWGObject.this)
+				//	return;
 				if(object.getClient() != null && object != SWGObject.this)
 					object.makeAware(SWGObject.this);
 				makeAware(object);
@@ -619,7 +621,7 @@ public abstract class SWGObject implements ISWGObject {
 				
 		});
 
-		if(!obj.isInSnapshot() && obj instanceof BuildingObject)
+		if(!obj.isInSnapshot() /*&& obj instanceof BuildingObject*/)
 			obj.sendSceneEndBaselines(getClient());
 
 	}
@@ -628,6 +630,15 @@ public abstract class SWGObject implements ISWGObject {
 		
 		if(!awareObjects.contains(obj) || obj == this || !obj.getObservers().contains(getClient()))
 			return;
+		
+		/*if(getObjectID() == obj.getObjectID()) {
+			try {
+				throw new Exception("Trying to make an object unaware of itself");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return;
+		}*/
 		
 		obj.viewChildren(this, false, false, new Traverser() {
 

@@ -40,7 +40,6 @@ public class ObjectDatabase implements Runnable {
 	    
         environment = new Environment(new File(".", "odb/" + name), EnvConfig);
         entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);
-
         if (useCheckpointThread) {
         	checkpointConfig = new CheckpointConfig();
         	checkpointThread = new Thread(this);

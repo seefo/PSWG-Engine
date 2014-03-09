@@ -27,6 +27,7 @@ public class QuadNode<T> {
 		try {
 			if (this.leaf == null) {
 				this.leaf = leaf;
+				this.leaf.node = this;
 				return true;
 			}
 			if (this.leaf.x == leaf.x && this.leaf.y == leaf.y) {
@@ -46,7 +47,7 @@ public class QuadNode<T> {
 	}
 
 	public boolean put(float x, float y, T value) {
-		return put(new QuadLeaf<T>(x, y, value));
+		return put(new QuadLeaf<T>(x, y, value, this));
 	}
 
 	public boolean remove(float x, float y, T value) {
@@ -298,4 +299,31 @@ public class QuadNode<T> {
 	public boolean unlock() {
 	    return lock.compareAndSet(true, false);
 	}
+	
+	public QuadLeaf<T> getLeaf() {
+		return this.leaf;
+	}
+	
+	public void clearLeaf() {
+		this.leaf = null;
+	}
+	
+	public boolean contains(T value) {
+		if(leaf.values.contains(value))
+			return true;
+		if(hasChildren) {
+			if(NW.contains(value))
+				return true;
+			if(NE.contains(value))
+				return true;
+			if(SW.contains(value))
+				return true;
+			if(SE.contains(value))
+				return true;
+			return false;
+		} else {
+			return false;
+		}
+	}
+
 }

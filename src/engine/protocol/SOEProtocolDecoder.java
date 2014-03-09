@@ -300,14 +300,15 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 				
 				Date oooTimestamp = (Date) session.getAttribute("oooTimestamp");
 				
-				if(oooTimestamp != null && new Date().getTime() - oooTimestamp.getTime() > 1000)
+				if(oooTimestamp != null && new Date().getTime() - oooTimestamp.getTime() > 5000)
 					resentPackets.clear();
 
-				if((sequence - lastAcknowledgedSequence) > 300) {
+			/*	if((sequence - lastAcknowledgedSequence) > 300) {
+					System.out.println("Sequence difference too big, disconnecting client, ooo sequence: " + sequence + " last ACK sequence: " + lastAcknowledgedSequence);
 					session.close(true);
 					return;
 				}
-				
+				*/
 				
 				synchronized(sentPackets) {
 					Iterator<Short> it = sentPackets.keySet().iterator();
