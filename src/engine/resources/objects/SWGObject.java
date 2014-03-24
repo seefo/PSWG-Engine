@@ -915,9 +915,9 @@ public abstract class SWGObject implements ISWGObject {
 	 */
 	public boolean transferTo(SWGObject requester, SWGObject otherContainer, SWGObject object) {
 		
-		System.out.println("Transfer: " + object.getTemplate() + " Arrangement ID: " + object.getArrangementId() + " Correct Arrangement ID: " + otherContainer.getCorrectArrangementId(object)
+		/*System.out.println("Transfer: " + object.getTemplate() + " Arrangement ID: " + object.getArrangementId() + " Correct Arrangement ID: " + otherContainer.getCorrectArrangementId(object)
 				+ "Old Container: " + getTemplate() + " New Container: " + otherContainer.getTemplate()
-				);
+				);*/
 		
 		if(!permissions.canRemove(requester, this) || !otherContainer.getPermissions().canInsert(requester, otherContainer))
 			return false;
@@ -957,7 +957,7 @@ public abstract class SWGObject implements ISWGObject {
 				c.makeAware(object);
 			}
 		}
-		System.out.println("Transfer complete New Parent: " + object.getContainer().getTemplate() + "Arrangement ID: " + object.getArrangementId());
+		//System.out.println("Transfer complete New Parent: " + object.getContainer().getTemplate() + "Arrangement ID: " + object.getArrangementId());
 		return false;
 	}
 
