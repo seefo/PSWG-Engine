@@ -17,7 +17,7 @@ public class FilterFractal extends FilterLayer {
 	}
 	
 	@Override
-	public float process(float x, float z, float transform_value, float base_value, TerrainVisitor ti) {
+	public float process(float x, float z, float transform_value, float base_value, TerrainVisitor ti, FilterRectangle rectangle) {
 		FractalFamily fractal = ti.getFractal(fractal_id);
 
 		float noise_result = fractal.getNoise(x, z) * step;
@@ -48,6 +48,13 @@ public class FilterFractal extends FilterLayer {
 		min = buffer.getFloat();
 		max = buffer.getFloat();
 		step = buffer.getFloat();
+	}
+
+	@Override
+	public float process(float x, float y, float transform_value,
+			float base_value, TerrainVisitor ti) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

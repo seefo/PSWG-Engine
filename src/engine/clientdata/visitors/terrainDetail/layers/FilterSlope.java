@@ -44,7 +44,7 @@ public class FilterSlope extends FilterLayer {
 	}
 	
 	@Override
-	public float process(float x, float y, float transform_value, float base_value, TerrainVisitor ti) {
+	public float process(float x, float y, float transform_value, float base_value, TerrainVisitor ti, FilterRectangle rectangle) {
 		float result;
 
 		if (base_value > min && base_value < max) {
@@ -79,6 +79,13 @@ public class FilterSlope extends FilterLayer {
 			feather_amount = 1;
 		else if (feather_amount < 0)
 			feather_amount = 0;	
+	}
+
+	@Override
+	public float process(float x, float y, float transform_value,
+			float base_value, TerrainVisitor ti) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

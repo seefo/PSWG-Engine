@@ -55,4 +55,24 @@ public class BoundaryCircle extends BoundaryLayer {
 			feather_amount = 1;
 	}
 
+	@Override
+	public float getMinX() {
+		return x - rad;
+	}
+
+	@Override
+	public float getMinZ() {
+		return z - rad;
+	}
+
+	@Override
+	public float getMaxX() {
+		return x + rad;
+	}
+
+	@Override
+	public float getMaxZ() {
+		return z + rad;
+	}
+
 }

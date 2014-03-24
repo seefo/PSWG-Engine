@@ -27,4 +27,10 @@ public abstract class BoundaryLayer extends Layer {
 	public float process(float x, float y, float transform_value, float base_value, TerrainVisitor ti) {
 		return 0.0f;
 	}
+	
+	public abstract float getMinX();
+	public abstract float getMinZ();
+	public abstract float getMaxX();
+	public abstract float getMaxZ();
+	
 }

@@ -10,7 +10,7 @@ public class FilterHeight extends FilterLayer {
 	float maxHeight;
 	
 	@Override
-	public float process(float x, float z, float transform_value, float base_value, TerrainVisitor ti) {
+	public float process(float x, float z, float transform_value, float base_value, TerrainVisitor ti, FilterRectangle rectangle) {
 		float result;
 
 		if ((base_value > minHeight) && (base_value < maxHeight)) {
@@ -37,6 +37,13 @@ public class FilterHeight extends FilterLayer {
 		maxHeight = buffer.getFloat();
 		feather_type = buffer.getInt();
 		feather_amount = buffer.getFloat();
+	}
+
+	@Override
+	public float process(float x, float y, float transform_value,
+			float base_value, TerrainVisitor ti) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

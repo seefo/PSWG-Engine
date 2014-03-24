@@ -222,4 +222,24 @@ public class BoundaryPolygon extends BoundaryLayer {
 		water_shader = buffer.getString(Charset.forName("US-ASCII").newDecoder());
 	}
 
+	@Override
+	public float getMinX() {
+		return min_x;
+	}
+
+	@Override
+	public float getMinZ() {
+		return min_z;
+	}
+
+	@Override
+	public float getMaxX() {
+		return max_x;
+	}
+
+	@Override
+	public float getMaxZ() {
+		return max_z;
+	}
+
 }

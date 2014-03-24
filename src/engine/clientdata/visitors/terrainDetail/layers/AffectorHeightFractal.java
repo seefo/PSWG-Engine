@@ -4,6 +4,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.clientdata.visitors.TerrainVisitor;
 import engine.clientdata.visitors.terrainDetail.FractalFamily;
+import engine.resources.common.Utilities;
 
 public class AffectorHeightFractal extends HeightLayer {
 
@@ -45,6 +46,7 @@ public class AffectorHeightFractal extends HeightLayer {
 
 	@Override
 	public void loadData(IoBuffer buffer) {
+		//System.out.println(Utilities.getHexString(buffer.array()));
 		fractal_id = buffer.getInt();
 		transform_type = buffer.getInt();
 		height_val = buffer.getFloat();

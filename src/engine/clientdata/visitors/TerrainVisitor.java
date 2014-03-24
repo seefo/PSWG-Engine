@@ -13,6 +13,8 @@ import org.apache.mina.core.buffer.IoBuffer;
 
 
 import engine.clientdata.VisitorInterface;
+import engine.clientdata.visitors.terrainDetail.BitmapFamily;
+import engine.clientdata.visitors.terrainDetail.BitmapGroup;
 import engine.clientdata.visitors.terrainDetail.FractalFamily;
 import engine.clientdata.visitors.terrainDetail.layers.AffectorHeightConstant;
 import engine.clientdata.visitors.terrainDetail.layers.AffectorHeightFractal;
@@ -22,10 +24,13 @@ import engine.clientdata.visitors.terrainDetail.layers.BoundaryLayer;
 import engine.clientdata.visitors.terrainDetail.layers.BoundaryPolyLine;
 import engine.clientdata.visitors.terrainDetail.layers.BoundaryPolygon;
 import engine.clientdata.visitors.terrainDetail.layers.BoundaryRectangle;
+import engine.clientdata.visitors.terrainDetail.layers.FilterBitmap;
 import engine.clientdata.visitors.terrainDetail.layers.FilterDirection;
 import engine.clientdata.visitors.terrainDetail.layers.FilterFractal;
 import engine.clientdata.visitors.terrainDetail.layers.FilterHeight;
 import engine.clientdata.visitors.terrainDetail.layers.FilterLayer;
+import engine.clientdata.visitors.terrainDetail.layers.FilterRectangle;
+import engine.clientdata.visitors.terrainDetail.layers.FilterShader;
 import engine.clientdata.visitors.terrainDetail.layers.FilterSlope;
 import engine.clientdata.visitors.terrainDetail.layers.HeightLayer;
 import engine.clientdata.visitors.terrainDetail.layers.Layer;
@@ -40,6 +45,7 @@ public class TerrainVisitor implements VisitorInterface {
 	private Deque<String> foldername_stack;
 	private CharsetDecoder ascii_charset;
 	FractalFamily lastFamily;
+	private BitmapGroup bitmapGroup;
 	
 	//Static Data
 	private static Map<String, Class<? extends Layer>> layerLookup;
@@ -74,10 +80,12 @@ public class TerrainVisitor implements VisitorInterface {
 			map.put("BPLNFORM", BoundaryPolyLine.class);
 			map.put("BRECFORM", BoundaryRectangle.class);
 			
+			map.put("FBITFORM", FilterBitmap.class);
 			map.put("FDIRFORM", FilterDirection.class);
 			map.put("FFRAFORM", FilterFractal.class);
 			map.put("FHGTFORM", FilterHeight.class);
 			map.put("FSLPFORM", FilterSlope.class);
+			map.put("FSHDFORM", FilterShader.class);
 			
 			layerLookup = map;
 		}
@@ -90,6 +98,7 @@ public class TerrainVisitor implements VisitorInterface {
 		//These contain the data required.
 		fractal_families = new TreeMap<Integer, FractalFamily>();
 		water_boundaries = new ArrayList<BoundaryPolygon>();
+		bitmapGroup = new BitmapGroup();
 		
 		head_nodes = new ListLayer();
 		layer_stack.push(new Pair<Layer, Integer>(head_nodes, -1));
@@ -124,7 +133,7 @@ public class TerrainVisitor implements VisitorInterface {
 				}
 			} else if(	lt == LayerType.AHCN || lt == LayerType.AHFR || lt == LayerType.AHTR || 
 						lt == LayerType.FHGT || lt == LayerType.FFRA || 
-						lt == LayerType.FSLP || lt == LayerType.FDIR) {
+						lt == LayerType.FSLP || lt == LayerType.FDIR || lt == LayerType.FBIT) {
 				++count;
 			} else if(	lt == LayerType.BCIR || lt == LayerType.BPLN ||
 						lt == LayerType.BPOL || lt == LayerType.BREC) {
@@ -204,6 +213,7 @@ public class TerrainVisitor implements VisitorInterface {
 		popToParent(depth);
 		
 		String last_folder = foldername_stack.peekFirst();
+		//System.out.println(last_folder);
 		if(nodename.endsWith("DATA")) {
 			if("IHDRFORM".equals(last_folder)) {
 				
@@ -245,15 +255,30 @@ public class TerrainVisitor implements VisitorInterface {
 				use_global_water_height = data.getInt();
 				global_water_height = data.getFloat();
 				
-			} else if("MFAMDATA".equals(nodename)) {
-				FractalFamily fractal = new FractalFamily();
+			} /*else if("MGRPFORM".equals(last_folder)) {
 				
+				if("MFAMDATA".equals(nodename)) {
+					BitmapFamily family = new BitmapFamily();
+					family.loadData(data);
+					bitmapGroup.addBitmapFamily(family);
+				}
+				
+			}*/ else if("MFAMDATA".equals(nodename)) {
+				FractalFamily fractal = new FractalFamily();
+				int position = data.position();
 				fractal.setFractal_id(data.getInt());
 				fractal.setFractal_label(data.getString(ascii_charset));
 				ascii_charset.reset();
-				
-				fractal_families.put(fractal.getFractal_id(), fractal);
-				lastFamily = fractal;
+				if(data.hasRemaining()) {
+					data.position(position);
+					BitmapFamily family = new BitmapFamily();
+					family.loadData(data);
+					bitmapGroup.addBitmapFamily(family);
+					ascii_charset.reset();
+				} else {
+					fractal_families.put(fractal.getFractal_id(), fractal);
+					lastFamily = fractal;
+				}
 			} else if("MFRCFORM".equals(last_folder)) {
 				FractalFamily f = lastFamily;
 				
@@ -393,8 +418,15 @@ public class TerrainVisitor implements VisitorInterface {
 	
 		float transform_value = 0.0f;
 		boolean has_boundaries = false;
-		float result = 0.0f;
-	
+		//float result = 0.0f;
+		FilterRectangle rectangle = new FilterRectangle();
+		rectangle.minX = Float.MAX_VALUE;
+		rectangle.minZ = Float.MAX_VALUE;
+		//rectangle.maxX = Float.MIN_VALUE;
+		//rectangle.maxZ = Float.MIN_VALUE;
+		rectangle.maxX = -Float.MAX_VALUE;
+		rectangle.maxZ = -Float.MAX_VALUE;
+		
 		for (BoundaryLayer boundary : boundaries)
 		{
 				
@@ -403,7 +435,20 @@ public class TerrainVisitor implements VisitorInterface {
 			else
 				has_boundaries = true;
 	
-			float r = calculateFeathering(boundary.process(x, z), boundary.getFeatherType());
+			float boundaryResult = boundary.process(x, z);
+			
+			if(boundaryResult != 0) {
+				if(boundary.getMinX() < rectangle.minX)
+					rectangle.minX = boundary.getMinX();
+				if(boundary.getMinZ() < rectangle.minZ)
+					rectangle.minZ = boundary.getMinZ();
+				if(boundary.getMaxX() > rectangle.maxX)
+					rectangle.maxX = boundary.getMaxX();
+				if(boundary.getMaxZ() > rectangle.maxZ)
+					rectangle.maxZ = boundary.getMaxZ();
+			}
+			
+			float r = calculateFeathering(boundaryResult, boundary.getFeatherType());
 	
 			if (r > transform_value)
 				transform_value = r;
@@ -425,7 +470,7 @@ public class TerrainVisitor implements VisitorInterface {
 				if (!filter.isEnabled())
 					continue;
 	
-				float r = calculateFeathering(filter.process(x, z, transform_value, base_value, this), filter.getFeatherType());
+				float r = calculateFeathering(filter.process(x, z, transform_value, base_value, this, rectangle), filter.getFeatherType());
 	
 				if (transform_value > r)
 					transform_value = r;
@@ -483,6 +528,14 @@ public class TerrainVisitor implements VisitorInterface {
 		}
 	}
 	
+	public BitmapGroup getBitmapGroup() {
+		return bitmapGroup;
+	}
+
+	public void setBitmapGroup(BitmapGroup bitmapGroup) {
+		this.bitmapGroup = bitmapGroup;
+	}
+
 	public class Pair<T,V> {
 
 		public T first;

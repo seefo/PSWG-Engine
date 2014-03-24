@@ -2,6 +2,8 @@ package engine.resources.database;
 
 import java.io.File;
 
+import resources.objects.creature.CreatureObject;
+
 import com.sleepycat.je.CheckpointConfig;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -10,6 +12,8 @@ import com.sleepycat.je.Transaction;
 import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.StoreConfig;
+import com.sleepycat.persist.evolve.Deleter;
+import com.sleepycat.persist.evolve.Mutations;
 import com.sleepycat.persist.model.AnnotationModel;
 import com.sleepycat.persist.model.EntityModel;
 
@@ -33,10 +37,13 @@ public class ObjectDatabase implements Runnable {
 		model.registerClass(MultimapProxy.class);
 		model.registerClass(VectorProxy.class);
 		
+		Mutations mutation = new Mutations();
+		mutation.addDeleter(new Deleter(CreatureObject.class.getName(), 0, "performanceAudience"));
 	    StoreConfig storeConfig = new StoreConfig();
 	    storeConfig.setModel(model);
 	    storeConfig.setAllowCreate(allowCreate);
 	    storeConfig.setTransactional(allowTransactional);
+	    storeConfig.setMutations(mutation);
 	    
         environment = new Environment(new File(".", "odb/" + name), EnvConfig);
         entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);

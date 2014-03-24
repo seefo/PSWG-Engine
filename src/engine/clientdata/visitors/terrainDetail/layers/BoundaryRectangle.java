@@ -38,7 +38,7 @@ public class BoundaryRectangle extends BoundaryLayer {
 			float x_length = x2 - x1;
 			float length = z2 - z1;
 	
-			if (x_length < length)
+			if (x_length <= length)
 				length = x_length;
 	
 			float feather_length = feather_amount * length * 0.5f;
@@ -96,6 +96,26 @@ public class BoundaryRectangle extends BoundaryLayer {
 			z1 = z2;
 			z2 = temp;
 		}
+	}
+
+	@Override
+	public float getMinX() {
+		return x1;
+	}
+
+	@Override
+	public float getMinZ() {
+		return z1;
+	}
+
+	@Override
+	public float getMaxX() {
+		return x2;
+	}
+
+	@Override
+	public float getMaxZ() {
+		return z2;
 	}
 
 }

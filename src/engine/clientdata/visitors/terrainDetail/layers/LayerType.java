@@ -10,6 +10,7 @@ public enum LayerType {
 		FDIR, //Filter Direction
 		FFRA, //Filter Fractal
 		FHGT, //Filter Height
+		FBIT, // Filter Bitmap
 		FSLP, //Filter Slope
 		ASCN, //Affector Shader Constant
 		ACCN, //Affector Color Constant

@@ -129,4 +129,24 @@ public class BoundaryPolyLine extends BoundaryLayer {
 		max_z = max_z + line_width;
 	}
 
+	@Override
+	public float getMinX() {
+		return min_x;
+	}
+
+	@Override
+	public float getMinZ() {
+		return min_z;
+	}
+
+	@Override
+	public float getMaxX() {
+		return max_x;
+	}
+
+	@Override
+	public float getMaxZ() {
+		return max_z;
+	}
+
 }

@@ -309,7 +309,7 @@ public class QuadNode<T> {
 	}
 	
 	public boolean contains(T value) {
-		if(leaf.values.contains(value))
+		if(leaf != null && leaf.values.contains(value))
 			return true;
 		if(hasChildren) {
 			if(NW.contains(value))

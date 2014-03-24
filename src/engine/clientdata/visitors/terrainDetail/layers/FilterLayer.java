@@ -1,5 +1,7 @@
 package engine.clientdata.visitors.terrainDetail.layers;
 
+import engine.clientdata.visitors.TerrainVisitor;
+
 public abstract class FilterLayer extends Layer {
 
 	protected int feather_type;
@@ -13,6 +15,7 @@ public abstract class FilterLayer extends Layer {
 		return feather_amount;
 	}
 	
-	
+	public abstract float process(float x, float y, float transform_value, float base_value, TerrainVisitor ti, FilterRectangle rectangle);
+
 	
 }
