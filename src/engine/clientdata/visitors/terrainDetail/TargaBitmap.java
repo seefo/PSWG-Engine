@@ -87,9 +87,18 @@ public class TargaBitmap {
 		bitsperpixel = buffer.get();
 		imagedescriptor = buffer.get();
 		
-		pixelData = new TargaPixel[width * height];
+		int length = 0;
 		
-		for (int i=0; i < width * height; i++) {
+		if(width == height)
+			length = width * height;
+		else if(width > height)
+			length = width * width;
+		else if(height > width)
+			length = height * height;
+
+		pixelData = new TargaPixel[length];
+			
+		for (int i=0; i < length; i++) {
 			TargaPixel pixel = null;
 			switch(datatypecode) {
 				case 3:
