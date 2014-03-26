@@ -875,7 +875,7 @@ public abstract class SWGObject implements ISWGObject {
 		for(Client c : observers) {
 			c.makeUnaware(object);
 		}
-		
+		makeUnaware(object);
 		
 		/*final Client client = object.getClient();
 		if(client != null) {
@@ -1029,7 +1029,7 @@ public abstract class SWGObject implements ISWGObject {
 				object.setParent(this);
 				object.setParentId(getObjectID());
 			}
-		} else {	
+		} else if(arrangementId > 0){	
 			synchronized(objectMutex) {
 				for(Integer i : object.slotArrangement.getArrangement().get(arrangementId - 4)) {
 					Integer slotIndex = slotDescriptor.getIndexOf(i);
@@ -1052,6 +1052,8 @@ public abstract class SWGObject implements ISWGObject {
 			object.setParent(this);
 			object.setParentId(getObjectID());
 			
+		} else {
+			System.out.println("Found bad arrangement Id for: " + object.getTemplate() + " parent: " + getTemplate() + "arrangement Id: " + arrangementId);
 		}
 		
 		return true;

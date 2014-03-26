@@ -303,7 +303,8 @@ public class TerrainVisitor implements VisitorInterface {
 				f.setCombination_type(data.getInt());
 				
 			} else if(nodename.equals("DATA")) {
-				layer_stack.peek().first.loadData(data);
+				if(data.remaining() >= 4)
+					layer_stack.peek().first.loadData(data);
 			}
 		} else if(nodename.equals("ADTA")) {
 			layer_stack.peek().first.loadData(data);
