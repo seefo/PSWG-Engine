@@ -6,14 +6,15 @@ import wblut.geom.WB_Distance;
 import wblut.geom.WB_ExplicitTriangle;
 import wblut.geom.WB_Intersection;
 import wblut.geom.WB_Point3d;
-
+import wblut.geom.WB_Ray;
 import engine.resources.scene.Point3D;
 
 public class Ray {
 	
 	Point3D origin = null;
     Vector3D dir = null;
-    public static final float SMALL_NUM = 0.00000001f;
+
+    public static final float SMALL_NUM = 0.000001f;
     
     public Ray(Point3D origin, Vector3D dir) {
         this.origin = origin;
@@ -27,8 +28,119 @@ public class Ray {
     public Vector3D getDirection() {
         return dir;
     }
-
+    
+    /**
+     * Algorithm from Moller, Trumbore, "Fast, Minimum Storage
+	 *  Ray / Triangle Intersection", Journal of Graphics Tools, Volume 2,
+	 *  Number 1, 1997, pp. 21-28. 
+    */
     public Point3D intersectsTriangle(Mesh3DTriangle triangle) {
+    	
+    	Vector3D vert0 = new Vector3D(triangle.getPointOne().x, triangle.getPointOne().y, triangle.getPointOne().z);
+   	
+    	Vector3D edge1 = triangle.getEdge1();
+    	Vector3D edge2 = triangle.getEdge2();
+    	
+    	if(triangle.getN().getNorm() == 0)
+    		return null;
+
+        // Begin calculating determinant -- also used to calculate U parameter
+    	Vector3D pvec = getDirection().crossProduct(edge2);
+        
+        // If determinant is near zero, ray lies in plane of triangle
+        float det = (float) edge1.dotProduct(pvec);
+
+        if (det > -SMALL_NUM && det < SMALL_NUM)
+          return null;
+
+        float invDet = 1.0f / det;
+
+        // Calculate distance from vert0 to ray origin
+        Vector3D tvec = new Vector3D(origin.x, origin.y, origin.z).subtract(vert0);
+        float a = (float) -(triangle.getN().dotProduct(tvec));
+        float b = (float) triangle.getN().dotProduct(getDirection());
+        
+        if(a / b < 0)
+        	return null;
+
+        // Calculate U parameter and test bounds
+        float u = (float) (tvec.dotProduct(pvec) * invDet);
+        if (u < 0.0f || u > 1.0f)
+          return null;
+
+        // Prepare to test V parameter
+        Vector3D qvec = tvec.crossProduct(edge1);
+
+        // Calculate V parameter and test bounds
+        float v = (float) (getDirection().dotProduct(qvec) * invDet);
+        if (v < 0.0f || (u + v) > 1.0f)
+          return null;
+
+        // Calculate t, ray intersects triangle
+        float t = (float) (edge2.dotProduct(qvec) * invDet);
+
+        return new Point3D(t, u, v);
+    }
+    
+    /**
+     * Algorithm from Moller, Trumbore, "Fast, Minimum Storage
+	 *  Ray / Triangle Intersection", Journal of Graphics Tools, Volume 2,
+	 *  Number 1, 1997, pp. 21-28. 
+    */
+    public Point3D intersectsTriangle(Mesh3DTriangle triangle, float distance) {
+    	
+    	WB_Point3d closestPoint = WB_Intersection.closestPointToTriangle(new WB_Point3d(getOrigin().x, getOrigin().y, getOrigin().z), new WB_Point3d(triangle.getPointOne().x, triangle.getPointOne().y, triangle.getPointOne().z), new WB_Point3d(triangle.getPointTwo().x, triangle.getPointTwo().y, triangle.getPointTwo().z), new WB_Point3d(triangle.getPointThree().x, triangle.getPointThree().y, triangle.getPointThree().z));
+    	if(new Point3D(getOrigin().x, getOrigin().y, getOrigin().z).getDistance(new Point3D((float) closestPoint.x, (float) closestPoint.y, (float) closestPoint.z)) > distance)
+    		return null;
+    	
+    	Vector3D vert0 = new Vector3D(triangle.getPointOne().x, triangle.getPointOne().y, triangle.getPointOne().z);
+       	
+    	Vector3D edge1 = triangle.getEdge1();
+    	Vector3D edge2 = triangle.getEdge2();
+    	
+    	if(triangle.getN().getNorm() == 0)
+    		return null;
+
+        // Begin calculating determinant -- also used to calculate U parameter
+    	Vector3D pvec = getDirection().crossProduct(edge2);
+        
+        // If determinant is near zero, ray lies in plane of triangle
+        float det = (float) edge1.dotProduct(pvec);
+
+        if (det > -SMALL_NUM && det < SMALL_NUM)
+          return null;
+
+        float invDet = 1.0f / det;
+
+        // Calculate distance from vert0 to ray origin
+        Vector3D tvec = new Vector3D(origin.x, origin.y, origin.z).subtract(vert0);
+        float a = (float) -(triangle.getN().dotProduct(tvec));
+        float b = (float) triangle.getN().dotProduct(getDirection());
+        
+        if(a / b < 0)
+        	return null;
+
+        // Calculate U parameter and test bounds
+        float u = (float) (tvec.dotProduct(pvec) * invDet);
+        if (u < 0.0f || u > 1.0f)
+          return null;
+
+        // Prepare to test V parameter
+        Vector3D qvec = tvec.crossProduct(edge1);
+
+        // Calculate V parameter and test bounds
+        float v = (float) (getDirection().dotProduct(qvec) * invDet);
+        if (v < 0.0f || (u + v) > 1.0f)
+          return null;
+
+        // Calculate t, ray intersects triangle
+        float t = (float) (edge2.dotProduct(qvec) * invDet);
+
+        return new Point3D(t, u, v);
+    }
+
+
+    /*public Point3D intersectsTriangle(Mesh3DTriangle triangle) {
     	
     	Point3D I = new Point3D();
         Vector3D    u, v, n;
@@ -91,7 +203,7 @@ public class Ray {
     }
     
     public Point3D intersectsTriangle(Mesh3DTriangle triangle, float distance) {
-    	
+
     	WB_Point3d closestPoint = WB_Intersection.closestPointToTriangle(new WB_Point3d(getOrigin().x, getOrigin().y, getOrigin().z), new WB_Point3d(triangle.getPointOne().x, triangle.getPointOne().y, triangle.getPointOne().z), new WB_Point3d(triangle.getPointTwo().x, triangle.getPointTwo().y, triangle.getPointTwo().z), new WB_Point3d(triangle.getPointThree().x, triangle.getPointThree().y, triangle.getPointThree().z));
     	if(new Point3D(getOrigin().x, getOrigin().y, getOrigin().z).getDistance(new Point3D((float) closestPoint.x, (float) closestPoint.y, (float) closestPoint.z)) > distance)
     		return null;
@@ -154,6 +266,6 @@ public class Ray {
         return I;          // I is in T
 
     	
-    }
+    }*/
 
 }

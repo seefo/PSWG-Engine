@@ -122,6 +122,9 @@ public abstract class SWGObject implements ISWGObject {
 
 
 	public SWGObject() { 
+		loadAppearanceData();
+		if(meshVisitor != null)
+			meshVisitor.getTriangles();
 	}
 	
 	public SWGObject(long objectID, Planet planet, Point3D position, Quaternion orientation, String Template) {
@@ -135,6 +138,8 @@ public abstract class SWGObject implements ISWGObject {
 		loadSTFInfo();
 		loadDetailedDescription();
 		loadAppearanceData();
+		if(meshVisitor != null)
+			meshVisitor.getTriangles();
 	}
 	
 	private void loadAppearanceData() {
@@ -200,7 +205,6 @@ public abstract class SWGObject implements ISWGObject {
 					
 				}
 			}
-
 		}
 		
 	}

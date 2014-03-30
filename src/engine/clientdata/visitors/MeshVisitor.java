@@ -33,6 +33,8 @@ public class MeshVisitor implements VisitorInterface {
 	public Vector<Triangle> tris = new Vector<Triangle>();
 	public MeshData currentMesh;
 	public Vector<MeshData> meshes = new Vector<MeshData>();
+	private WB_AABBTree aabbTree;
+	private List<Mesh3DTriangle> triangles;
 
 	@Override
 	public void parseData(String nodename, IoBuffer data, int depth, int size) throws Exception {
@@ -153,7 +155,7 @@ public class MeshVisitor implements VisitorInterface {
 		
 		if(tris.isEmpty())
 			return null;
-		System.out.println("Parsed tricount: " + totalTris);
+		//System.out.println("Parsed tricount: " + totalTris);
 		HEC_FromTriangles<MeshTriangle> creator = new HEC_FromTriangles<MeshTriangle>();
 		creator.setTriangles(tris);
 		//creator.
@@ -205,59 +207,61 @@ public class MeshVisitor implements VisitorInterface {
 	
 	public List<Mesh3DTriangle> getTriangles() {
 		
-		List<Mesh3DTriangle> triangles = new ArrayList<Mesh3DTriangle>();
-		
-		for(MeshData meshData : meshes) {
+		if(this.triangles == null) {
+			List<Mesh3DTriangle> triangles = new ArrayList<Mesh3DTriangle>();
 			
-			for(Triangle tri : meshData.triangles) {
+			for(MeshData meshData : meshes) {
 				
-				if(tri.a >= meshData.vertices.size() || tri.b >= meshData.vertices.size() || tri.c >= meshData.vertices.size())
-					continue;
+				for(Triangle tri : meshData.triangles) {
 					
-				Vertex vert1 = meshData.vertices.get(tri.a);
-				Vertex vert2 = meshData.vertices.get(tri.b);
-				Vertex vert3 = meshData.vertices.get(tri.c);
-				Point3D vertex1 = new Point3D();
-				Point3D vertex2 = new Point3D();
-				Point3D vertex3 = new Point3D();
-
-				vertex1.x = (float) vert1.position.getX();
-				vertex1.y = (float) vert1.position.getY();
-				vertex1.z = (float) vert1.position.getZ();
+					if(tri.a >= meshData.vertices.size() || tri.b >= meshData.vertices.size() || tri.c >= meshData.vertices.size())
+						continue;
+						
+					Vertex vert1 = meshData.vertices.get(tri.a);
+					Vertex vert2 = meshData.vertices.get(tri.b);
+					Vertex vert3 = meshData.vertices.get(tri.c);
+					Point3D vertex1 = new Point3D();
+					Point3D vertex2 = new Point3D();
+					Point3D vertex3 = new Point3D();
+	
+					vertex1.x = (float) vert1.position.getX();
+					vertex1.y = (float) vert1.position.getY();
+					vertex1.z = (float) vert1.position.getZ();
+					
+					vertex2.x = (float) vert2.position.getX();
+					vertex2.y = (float) vert2.position.getY();
+					vertex2.z = (float) vert2.position.getZ();
+	
+					vertex3.x = (float) vert3.position.getX();
+					vertex3.y = (float) vert3.position.getY();
+					vertex3.z = (float) vert3.position.getZ();
+	
+					Mesh3DTriangle triangle = new Mesh3DTriangle(vertex1, vertex2, vertex3);
+					triangles.add(triangle);
+				}
 				
-				vertex2.x = (float) vert2.position.getX();
-				vertex2.y = (float) vert2.position.getY();
-				vertex2.z = (float) vert2.position.getZ();
-
-				vertex3.x = (float) vert3.position.getX();
-				vertex3.y = (float) vert3.position.getY();
-				vertex3.z = (float) vert3.position.getZ();
-
-				Mesh3DTriangle triangle = new Mesh3DTriangle(vertex1, vertex2, vertex3);
-				triangles.add(triangle);
 			}
-			
+			this.triangles = triangles;
 		}
-
 		return triangles;
 	}
 	
-	public WB_AABBTree getAABBTree(HE_Mesh mesh) {
-		
+	public void createAABBTree(HE_Mesh mesh) {
 		if(mesh == null)
-			return null;
-		
-		WB_AABBTree aabbTree = new WB_AABBTree(mesh, mesh.numberOfEdges());
-		return aabbTree;
-		
+			return;
+		aabbTree = new WB_AABBTree(mesh, 100);
 	}
-
+	
 	@Override
 	public void notifyFolder(String nodeName, int depth) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
 	
+	public WB_AABBTree getAABBTree() {
+		return aabbTree;
+	}
+
 	// used to link 3 vertices together by using the triangles as indexes for the vector 
 	private class MeshData {
 		
