@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +38,7 @@ import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.NotPersistent;
 import com.sleepycat.persist.model.Persistent;
 import com.sleepycat.persist.model.PrimaryKey;
+
 import engine.clientdata.ClientFileManager;
 import engine.clientdata.visitors.AppearanceVisitor;
 import engine.clientdata.visitors.ComponentAppearanceVisitor;
@@ -62,7 +64,7 @@ import engine.resources.scene.Point3D;
 import engine.resources.scene.Quaternion;
 
 @SuppressWarnings("unused")
-@Persistent
+@Persistent(version=1)
 public abstract class SWGObject implements ISWGObject {
 	
 	@PrimaryKey
@@ -115,7 +117,7 @@ public abstract class SWGObject implements ISWGObject {
 	private MeshVisitor meshVisitor;
 	@NotPersistent
 	private PortalVisitor portalVisitor;
-	private Map<String, String> attributes = new TreeMap<String, String>();
+	private Map<String, String> attributes = new LinkedHashMap<String, String>();
 	private Map<String, Object> attachments = new HashMap<String, Object>();
 	@NotPersistent
 	private SyncMessageBus<Event> eventBus = new SyncMessageBus<Event>(NGECore.getInstance().getEventBusConfig());
