@@ -1,6 +1,8 @@
 package engine.resources.database;
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import resources.objects.creature.CreatureObject;
 
@@ -12,10 +14,14 @@ import com.sleepycat.je.Transaction;
 import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.StoreConfig;
+import com.sleepycat.persist.evolve.Conversion;
+import com.sleepycat.persist.evolve.Converter;
 import com.sleepycat.persist.evolve.Deleter;
 import com.sleepycat.persist.evolve.Mutations;
 import com.sleepycat.persist.model.AnnotationModel;
 import com.sleepycat.persist.model.EntityModel;
+
+import engine.resources.objects.SWGObject;
 
 public class ObjectDatabase implements Runnable {
 	
@@ -36,9 +42,9 @@ public class ObjectDatabase implements Runnable {
 		model.registerClass(CopyOnWriteArrayListProxy.class);
 		model.registerClass(MultimapProxy.class);
 		model.registerClass(VectorProxy.class);
-		
+
 		Mutations mutation = new Mutations();
-		mutation.addDeleter(new Deleter(CreatureObject.class.getName(), 0, "performanceAudience"));
+		mutation.addDeleter(new Deleter(CreatureObject.class.getName(), 0, "performanceAudience"));		
 	    StoreConfig storeConfig = new StoreConfig();
 	    storeConfig.setModel(model);
 	    storeConfig.setAllowCreate(allowCreate);
@@ -180,5 +186,6 @@ public class ObjectDatabase implements Runnable {
 			}
 		}
 	}
+	
 	
 }

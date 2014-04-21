@@ -10,7 +10,7 @@ public class FilterShader extends FilterLayer {
 	public float process(float x, float y, float transform_value,
 			float base_value, TerrainVisitor ti, FilterRectangle rectangle) {
 		// TODO Auto-generated method stub
-		return 0;
+		return base_value;
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class FilterShader extends FilterLayer {
 	public float process(float x, float y, float transform_value,
 			float base_value, TerrainVisitor ti) {
 		// TODO Auto-generated method stub
-		return 0;
+		return base_value;
 	}
 
 }

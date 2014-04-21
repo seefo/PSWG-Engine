@@ -18,13 +18,13 @@ public class FilterDirection extends FilterLayer {
 
 	@Override
 	public float process(float x, float y, float transform_value, float base_value, TerrainVisitor ti, FilterRectangle rectangle) {
-		return 0;
+		return base_value;
 	}
 
 	@Override
 	public float process(float x, float y, float transform_value,
 			float base_value, TerrainVisitor ti) {
-		return 0;
+		return base_value;
 	}
 
 }
