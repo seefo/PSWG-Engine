@@ -1,12 +1,15 @@
 package engine.resources.container;
 
+import java.io.Serializable;
+
 import com.sleepycat.persist.model.Persistent;
 
 import engine.resources.objects.SWGObject;
 
 @Persistent
-public class CreaturePermissions implements ContainerPermissions {
+public class CreaturePermissions implements ContainerPermissions, Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	public final static CreaturePermissions CREATURE_PERMISSIONS = new CreaturePermissions();
 	
 	public CreaturePermissions() {}

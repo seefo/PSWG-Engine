@@ -1,18 +1,21 @@
 package engine.resources.scene;
 
+import java.io.Serializable;
+
 import resources.objects.cell.CellObject;
 
 import com.sleepycat.persist.model.NotPersistent;
 import com.sleepycat.persist.model.Persistent;
 
 @Persistent
-public class Point3D {
+public class Point3D implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	public float z;
 	public float x;
 	public float y;
 	@NotPersistent
-	private CellObject cell;
+	private transient CellObject cell;
 	
 	public Point3D() { }
 

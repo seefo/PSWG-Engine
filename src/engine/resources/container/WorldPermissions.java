@@ -1,12 +1,15 @@
 package engine.resources.container;
 
+import java.io.Serializable;
+
 import com.sleepycat.persist.model.Persistent;
 
 import engine.resources.objects.SWGObject;
 
 @Persistent
-public class WorldPermissions implements ContainerPermissions {
+public class WorldPermissions implements ContainerPermissions , Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	public final static WorldPermissions WORLD_PERMISSIONS = new WorldPermissions();
 	
 	public WorldPermissions() {}

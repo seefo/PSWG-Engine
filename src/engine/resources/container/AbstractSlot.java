@@ -1,12 +1,16 @@
 package engine.resources.container;
 
+import java.io.Serializable;
+
 import com.sleepycat.persist.model.Persistent;
 
 import engine.resources.objects.SWGObject;
 
 
 @Persistent
-public abstract class AbstractSlot {
+public abstract class AbstractSlot implements Serializable {
+	
+		private static final long serialVersionUID = 1L;
 		protected String name;
 		
 		public AbstractSlot() { }
