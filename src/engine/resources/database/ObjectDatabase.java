@@ -97,6 +97,14 @@ public class ObjectDatabase implements Runnable {
 		db.put(null, theKey, theData);
 	}
 	
+	public void put(String key, Object value) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(key.getBytes());
+        DatabaseEntry theData = new DatabaseEntry();
+        dataBinding.objectToEntry(value, theData);
+		db.put(null, theKey, theData);
+	}
+	
 	public Object get(Long key) {
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
@@ -105,6 +113,16 @@ public class ObjectDatabase implements Runnable {
         // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
         return dataBinding.entryToObject(theData);
 	}
+	
+	public Object get(String key) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(key.getBytes());
+        DatabaseEntry theData = new DatabaseEntry();
+        db.get(null, theKey, theData, LockMode.DEFAULT);
+        // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
+        return dataBinding.entryToObject(theData);
+	}
+
 
 	public void remove(Long key) {
         DatabaseEntry theKey = new DatabaseEntry();    
@@ -122,6 +140,14 @@ public class ObjectDatabase implements Runnable {
         DatabaseEntry theData = new DatabaseEntry();
         return db.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS;
 	}
+	
+	public boolean contains(String key) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(key.getBytes());
+        DatabaseEntry theData = new DatabaseEntry();
+        return db.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS;
+	}
+
 	
 	public Environment getEnvironment() { return environment; }
 		

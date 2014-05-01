@@ -686,7 +686,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void sendCreate(Client destination) {
 		
-		if(this instanceof BuildingObject && getAttachment("cellsSorted") == null) {
+		if(this instanceof BuildingObject && getAttachment("cellsSorted") == null && slots[0] != null && slots[0] instanceof ContainerSlot) {
 			((ContainerSlot) slots[0]).sortCells();
 			((ContainerSlot) slots[0]).inverse();
 			setAttachment("cellsSorted", new Boolean(true));
