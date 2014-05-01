@@ -1,15 +1,25 @@
 package engine.resources.database;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import resources.objects.creature.CreatureObject;
 
+import com.sleepycat.bind.EntryBinding;
+import com.sleepycat.bind.serial.SerialBinding;
+import com.sleepycat.bind.serial.StoredClassCatalog;
 import com.sleepycat.je.CheckpointConfig;
+import com.sleepycat.je.Cursor;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
@@ -27,18 +37,22 @@ public class ObjectDatabase implements Runnable {
 	
 	private Environment environment;
 	private EnvironmentConfig EnvConfig;
-	//private DatabaseConfig dbConfig;
+	private DatabaseConfig dbConfig;
 	private EntityStore entityStore;
 	private Thread checkpointThread;
 	private CheckpointConfig checkpointConfig;
+	private EntryBinding dataBinding;
+	private StoredClassCatalog classCatalog;
+	private Database db;
+	private Database classCatalogDb;
 	
-	public ObjectDatabase(String name, boolean allowCreate, boolean useCheckpointThread, boolean allowTransactional) {
+	public ObjectDatabase(String name, boolean allowCreate, boolean useCheckpointThread, boolean allowTransactional, Class targetClass) {
 		
 		EnvConfig = new EnvironmentConfig();
 		EnvConfig.setAllowCreate(allowCreate);
-		EnvConfig.setTransactional(allowTransactional);
+		//EnvConfig.setTransactional(allowTransactional);
 		
-		EntityModel model = new AnnotationModel();
+		/*EntityModel model = new AnnotationModel();
 		model.registerClass(CopyOnWriteArrayListProxy.class);
 		model.registerClass(MultimapProxy.class);
 		model.registerClass(VectorProxy.class);
@@ -49,125 +63,108 @@ public class ObjectDatabase implements Runnable {
 	    storeConfig.setModel(model);
 	    storeConfig.setAllowCreate(allowCreate);
 	    storeConfig.setTransactional(allowTransactional);
-	    storeConfig.setMutations(mutation);
+	    storeConfig.setMutations(mutation);*/
 	    
         environment = new Environment(new File(".", "odb/" + name), EnvConfig);
-        entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);
+        //entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);
         if (useCheckpointThread) {
         	checkpointConfig = new CheckpointConfig();
         	checkpointThread = new Thread(this);
         }
         
-        /*dbConfig = new DatabaseConfig();
+        dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);
-        dbConfig.setTransactional(false);*/
+       // dbConfig.setTransactional(false);
+        
+		classCatalogDb =
+        		environment.openDatabase(null,
+                                   "ClassCatalogDB",
+                                   dbConfig);
+
+            // Create our class catalog
+        classCatalog = new StoredClassCatalog(classCatalogDb);
+        dataBinding = new SerialBinding(classCatalog, targetClass);
+		db = environment.openDatabase(null, name, dbConfig);
 
 	}
-	
-	/**
-	 * Puts an object into the EntityStore(non-transactional)
-	 * @param value The Object that gets stored.
-	 * @param keyClass The Class of the PrimaryKey
-	 * @param valueClass The Class of the object that gets stored.
-	 */
-	@SuppressWarnings("unchecked")
-	public <K, V> void put(Object value, Class<K> keyClass, Class<V> valueClass) {
-		entityStore.getPrimaryIndex(keyClass, valueClass).put((V) value);
-	}
-	
-	/**
-	 * Puts an object into the EntityStore(transactional)
-	 * @param value The Object that gets stored.
-	 * @param keyClass The Class of the PrimaryKey
-	 * @param valueClass The Class of the object that gets stored.
-	 */
-	@SuppressWarnings("unchecked")
-	public <K, V> void put(Object value, Class<K> keyClass, Class<V> valueClass, Transaction txn) {
-		entityStore.getPrimaryIndex(keyClass, valueClass).put(txn, (V) value);
-	}
-	
-	/**
-	 * Gets an object by its PrimaryKey(usually objectId).
-	 * @param key The Primary Key of the object that you want to get.
-	 * @param keyClass The Class of the Primary Key.
-	 * @param valueClass The Class of the Object that you want to get.
-	 * @return The Object that is matching to the given PrimaryKey.
-	 */
-	@SuppressWarnings("unchecked")
-	public <K, V> V get(Object key, Class<K> keyClass, Class<V> valueClass) {
-		return entityStore.getPrimaryIndex(keyClass, valueClass).get((K) key);
-	}
-	
-	/**
-	 * Deletes an object by its PrimaryKey(usually objectId).
-	 * (Non-transactional)
-	 * @param key The Primary Key of the object that gets deleted.
-	 * @param keyClass The Class of the Primary Key.
-	 * @param valueClass The Class of the Object that gets deleted.
-	 */
-	@SuppressWarnings("unchecked")
-	public <K, V> void delete(Object key, Class<K> keyClass, Class<V> valueClass) {
-		entityStore.getPrimaryIndex(keyClass, valueClass).delete((K) key);
-	}
-	
-	/**
-	 * Deletes an object by its PrimaryKey(usually objectId).
-	 * (Transactional)
-	 * @param key The Primary Key of the object that gets deleted.
-	 * @param keyClass The Class of the Primary Key.
-	 * @param valueClass The Class of the Object that gets deleted.
-	 */
-	@SuppressWarnings("unchecked")
-	public <K, V> void delete(Object key, Class<K> keyClass, Class<V> valueClass, Transaction txn) {
-		entityStore.getPrimaryIndex(keyClass, valueClass).delete(txn, (K) key);
-	}
-	
-	/**
-	 * Gets a Cursor for iterating through the DB records. Useful for spawning objects like buildings at server start.
-	 * @param keyClass The Class of the Primary Key.
-	 * @param valueClass The Class of the Values that are stored.
-	 * @return The EntityCursor of this EntityStore.
-	 */
-	public <K, V> EntityCursor<V> getCursor(Class<K> keyClass, Class<V> valueClass) {
-		return entityStore.getPrimaryIndex(keyClass, valueClass).entities();
-	}
-	
-	/**
-	 * Checks if the Database contains a value associated to the given key.
-	 * @param key The Primary Key.
-	 * @param keyClass The class of the Primary Key.
-	 * @param valueClass The class of the Value.
-	 */
-	@SuppressWarnings("unchecked")
-	public <K, V> boolean contains(Object key, Class<K> keyClass, Class<V> valueClass) {
-		return entityStore.getPrimaryIndex(keyClass, valueClass).contains((K) key);
-	}
-	
-	// not needed, we will store stuff in our EntityStore and have an enviroment for each type of object
-	/*public Database openDatabase(String dbName) {
 		
-		Database db = environment.openDatabase(null, dbName, dbConfig);
+	
+	public void put(Long key, Object value) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
+        DatabaseEntry theData = new DatabaseEntry();
+        dataBinding.objectToEntry(value, theData);
+		db.put(null, theKey, theData);
+	}
+	
+	public void put(String key, Object value) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(key.getBytes());
+        DatabaseEntry theData = new DatabaseEntry();
+        dataBinding.objectToEntry(value, theData);
+		db.put(null, theKey, theData);
+	}
+	
+	public Object get(Long key) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
+        DatabaseEntry theData = new DatabaseEntry();
+        db.get(null, theKey, theData, LockMode.DEFAULT);
+        // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
+        return dataBinding.entryToObject(theData);
+	}
+	
+	public Object get(String key) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(key.getBytes());
+        DatabaseEntry theData = new DatabaseEntry();
+        db.get(null, theKey, theData, LockMode.DEFAULT);
+        // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
+        return dataBinding.entryToObject(theData);
+	}
 
-		return db;
-		
-	}*/
+
+	public void remove(Long key) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
+		db.removeSequence(null, theKey);
+	}
+	
+	public ODBCursor getCursor() {
+		return new ODBCursor(db.openCursor(null, null), dataBinding);
+	}
+	
+	public boolean contains(Long key) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
+        DatabaseEntry theData = new DatabaseEntry();
+        return db.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS;
+	}
+	
+	public boolean contains(String key) {
+        DatabaseEntry theKey = new DatabaseEntry();    
+        theKey.setData(key.getBytes());
+        DatabaseEntry theData = new DatabaseEntry();
+        return db.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS;
+	}
+
 	
 	public Environment getEnvironment() { return environment; }
-	
-	public EntityStore getEntityStore() { return entityStore; }
-	
+		
 	public void compress() {
 		environment.compress();
 	}
 	
     public void close() {
-        if (environment != null && entityStore != null) {
+        if (environment != null) {
             try {
             	if(checkpointThread != null) 
-            		checkpointThread.wait();
+            		checkpointThread.interrupt();
+				environment.flushLog(true);          	
+            	db.close();
+            	classCatalogDb.close();
             	environment.close();
-            	entityStore.close();
-            } catch(DatabaseException | InterruptedException dbe) {
+            } catch(DatabaseException dbe) {
                 System.err.println("Error closing environment" + 
                      dbe.toString());
             }
@@ -180,7 +177,6 @@ public class ObjectDatabase implements Runnable {
 			try {
 				Thread.sleep(300000);
 				environment.flushLog(true);
-				environment.checkpoint(checkpointConfig);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

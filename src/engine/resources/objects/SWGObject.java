@@ -1,5 +1,6 @@
 package engine.resources.objects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,15 +66,16 @@ import engine.resources.scene.Quaternion;
 
 @SuppressWarnings("unused")
 @Persistent(version=1)
-public abstract class SWGObject implements ISWGObject {
+public abstract class SWGObject implements ISWGObject, Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	@PrimaryKey
 	private long objectID;
 	private long objectId; // store a second id as objects which are not stored directly will have their primary key overwritten when their container gets saved to DB
 	@NotPersistent
-	private Planet planet;
+	private transient Planet planet;
 	@NotPersistent
-	private SWGObject parent;	// we store the id only because we only need this loaded from db if we have a creature inside a cell
+	private transient SWGObject parent;	// we store the id only because we only need this loaded from db if we have a creature inside a cell
 	private int planetId;
 	private long parentId;
 	private int containmentType;
@@ -90,19 +92,19 @@ public abstract class SWGObject implements ISWGObject {
 	private float collisionHeight;
 	private boolean collidable;
 	@NotPersistent
-	private ObjectVisitor templateData;
+	private transient ObjectVisitor templateData;
 	@NotPersistent
-	protected SlotDescriptorVisitor slotDescriptor;
+	protected transient SlotDescriptorVisitor slotDescriptor;
 	@NotPersistent
-	protected SlotArrangementVisitor slotArrangement;
+	protected transient SlotArrangementVisitor slotArrangement;
 	@NotPersistent
-	private Client client;
+	private transient Client client;
 	@NotPersistent
-	private Set<Client> observers = Collections.synchronizedSet(new HashSet<Client>());
+	private transient Set<Client> observers = Collections.synchronizedSet(new HashSet<Client>());
 	@NotPersistent
-	private List<SWGObject> awareObjects = Collections.synchronizedList(new ArrayList<SWGObject>());
+	private transient List<SWGObject> awareObjects = Collections.synchronizedList(new ArrayList<SWGObject>());
 	@NotPersistent
-	protected final Object objectMutex = new Object();
+	protected transient final Object objectMutex = new Object();
 	private AbstractSlot[] slots;
 	private volatile boolean fetchedChildren;
 	private ContainerPermissions permissions = AllPermissions.ALL_PERMISSIONS;
@@ -112,15 +114,15 @@ public abstract class SWGObject implements ISWGObject {
 	private int volume = 1;
 	private boolean isInQuadtree;
 	@NotPersistent
-	private int movementCounter;
+	private transient int movementCounter;
 	@NotPersistent
-	private MeshVisitor meshVisitor;
+	private transient MeshVisitor meshVisitor;
 	@NotPersistent
-	private PortalVisitor portalVisitor;
+	private transient PortalVisitor portalVisitor;
 	private Map<String, String> attributes = new LinkedHashMap<String, String>();
 	private Map<String, Object> attachments = new HashMap<String, Object>();
 	@NotPersistent
-	private SyncMessageBus<Event> eventBus = new SyncMessageBus<Event>(NGECore.getInstance().getEventBusConfig());
+	private transient SyncMessageBus<Event> eventBus = new SyncMessageBus<Event>(NGECore.getInstance().getEventBusConfig());
 
 
 	public SWGObject() { 
@@ -684,7 +686,7 @@ public abstract class SWGObject implements ISWGObject {
 	
 	public void sendCreate(Client destination) {
 		
-		if(this instanceof BuildingObject && getAttachment("cellsSorted") == null) {
+		if(this instanceof BuildingObject && getAttachment("cellsSorted") == null && slots[0] != null && slots[0] instanceof ContainerSlot) {
 			((ContainerSlot) slots[0]).sortCells();
 			((ContainerSlot) slots[0]).inverse();
 			setAttachment("cellsSorted", new Boolean(true));

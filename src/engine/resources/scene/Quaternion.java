@@ -1,10 +1,13 @@
 package engine.resources.scene;
 
+import java.io.Serializable;
+
 import com.sleepycat.persist.model.Persistent;
 
 @Persistent
-public class Quaternion {
+public class Quaternion implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	public float w, x, y, z;
 	
 	public Quaternion() { }

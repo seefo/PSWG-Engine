@@ -1,5 +1,6 @@
 package engine.resources.container;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,8 +14,9 @@ import engine.resources.objects.SWGObject;
 
 
 @Persistent
-public class ContainerSlot extends AbstractSlot {
-
+public class ContainerSlot extends AbstractSlot implements Serializable {
+	
+		private static final long serialVersionUID = 1L;
 		List<SWGObject> objects;
 		public ContainerSlot(String name) {
 			super(name);
