@@ -1,11 +1,12 @@
 package engine.resources.objects;
 
+import java.io.Serializable;
+
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.Transaction;
 
-public interface IPersistent {
+public interface IPersistent extends Serializable {
 	
-	public Transaction getTransaction();
-	public void createTransaction(Environment environment);
+	
 
 }

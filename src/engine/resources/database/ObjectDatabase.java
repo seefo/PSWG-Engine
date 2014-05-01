@@ -111,7 +111,12 @@ public class ObjectDatabase implements Runnable {
         DatabaseEntry theData = new DatabaseEntry();
         db.get(null, theKey, theData, LockMode.DEFAULT);
         // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
-        return dataBinding.entryToObject(theData);
+        Object obj = dataBinding.entryToObject(theData);
+        if(obj instanceof SWGObject) {
+        	((SWGObject) obj).initAfterDBLoad();
+        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> child.initAfterDBLoad());
+        }
+        return obj;
 	}
 	
 	public Object get(String key) {
@@ -122,7 +127,6 @@ public class ObjectDatabase implements Runnable {
         // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
         return dataBinding.entryToObject(theData);
 	}
-
 
 	public void remove(Long key) {
         DatabaseEntry theKey = new DatabaseEntry();    
