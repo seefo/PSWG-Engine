@@ -8,27 +8,38 @@ import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
+import engine.resources.objects.SWGObject;
+
 public class ODBCursor {
 	
-	public Cursor cursor;
-	public EntryBinding dataBinding;
+	private Cursor cursor;
+	private EntryBinding dataBinding;
+	private ObjectDatabase odb;
 	
-	public ODBCursor(Cursor cursor, EntryBinding dataBinding) {
+	public ODBCursor(Cursor cursor, EntryBinding dataBinding, ObjectDatabase odb) {
 		this.cursor = cursor;
 		this.dataBinding = dataBinding;
+		this.odb = odb;
 	}
 	
 	public Object next() {
         DatabaseEntry theKey = new DatabaseEntry();    
         DatabaseEntry theData = new DatabaseEntry();
-		if(cursor.getNext(theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS)
-			return dataBinding.entryToObject(theData);
+		if(cursor.getNext(theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+			Object obj = dataBinding.entryToObject(theData);
+	        if(obj instanceof SWGObject) {
+	        	((SWGObject) obj).initAfterDBLoad();
+	        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> child.initAfterDBLoad());
+	        }
+			return obj;
+		}
 		else 
 			return null;
 		
 	}
 	
 	public void close() {
+		odb.getCursors().remove(cursor);
 		cursor.close();
 	}
 	

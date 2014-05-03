@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import resources.objects.creature.CreatureObject;
 
@@ -45,6 +46,7 @@ public class ObjectDatabase implements Runnable {
 	private StoredClassCatalog classCatalog;
 	private Database db;
 	private Database classCatalogDb;
+	private Vector<Cursor> cursors = new Vector<Cursor>();
 	
 	public ObjectDatabase(String name, boolean allowCreate, boolean useCheckpointThread, boolean allowTransactional, Class targetClass) {
 		
@@ -106,6 +108,8 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public Object get(Long key) {
+		if(!contains(key))
+			return null;
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
         DatabaseEntry theData = new DatabaseEntry();
@@ -120,6 +124,8 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public Object get(String key) {
+		if(!contains(key))
+			return null;
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(key.getBytes());
         DatabaseEntry theData = new DatabaseEntry();
@@ -135,7 +141,9 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public ODBCursor getCursor() {
-		return new ODBCursor(db.openCursor(null, null), dataBinding);
+		Cursor cursor = db.openCursor(null, null);
+		cursors.add(cursor);
+		return new ODBCursor(cursor, dataBinding, this);
 	}
 	
 	public boolean contains(Long key) {
@@ -164,6 +172,7 @@ public class ObjectDatabase implements Runnable {
             try {
             	if(checkpointThread != null) 
             		checkpointThread.interrupt();
+            	cursors.forEach(Cursor::close);
 				environment.flushLog(true);          	
             	db.close();
             	classCatalogDb.close();
@@ -186,6 +195,11 @@ public class ObjectDatabase implements Runnable {
 			}
 		}
 	}
+	
+	public Vector<Cursor> getCursors() {
+		return cursors;
+	}
+	
 	
 	
 }

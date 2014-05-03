@@ -104,7 +104,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	@NotPersistent
 	private transient List<SWGObject> awareObjects = Collections.synchronizedList(new ArrayList<SWGObject>());
 	@NotPersistent
-	protected transient final Object objectMutex = new Object();
+	protected transient Object objectMutex = new Object();
 	private AbstractSlot[] slots;
 	private volatile boolean fetchedChildren;
 	private ContainerPermissions permissions = AllPermissions.ALL_PERMISSIONS;
@@ -149,6 +149,10 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	public abstract void initAfterDBLoad();
 	
 	public void init() {
+		observers = Collections.synchronizedSet(new HashSet<Client>());
+		awareObjects = Collections.synchronizedList(new ArrayList<SWGObject>());
+		objectMutex = new Object();
+		eventBus = new SyncMessageBus<Event>(NGECore.getInstance().getEventBusConfig());
 		loadAppearanceData();
 		if(meshVisitor != null)
 			meshVisitor.getTriangles();
