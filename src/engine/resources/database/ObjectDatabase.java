@@ -172,10 +172,8 @@ public class ObjectDatabase implements Runnable {
     public void close() {
         if (environment != null) {
             try {
-            	if(checkpointThread != null) 
-            		checkpointThread.interrupt();
             	cursors.forEach(Cursor::close);
-				environment.flushLog(true);          	
+				environment.sync();          	
             	db.close();
             	classCatalogDb.close();
             	environment.close();
@@ -191,7 +189,7 @@ public class ObjectDatabase implements Runnable {
 		while(environment != null && environment.isValid()) {
 			try {
 				Thread.sleep(300000);
-				environment.flushLog(true);
+				environment.sync();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

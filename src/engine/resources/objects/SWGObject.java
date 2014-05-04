@@ -153,6 +153,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		awareObjects = Collections.synchronizedList(new ArrayList<SWGObject>());
 		objectMutex = new Object();
 		eventBus = new SyncMessageBus<Event>(NGECore.getInstance().getEventBusConfig());
+		getContainerInfo(getTemplate());
 		loadAppearanceData();
 		if(meshVisitor != null)
 			meshVisitor.getTriangles();
@@ -1038,6 +1039,8 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		fetchChildren();
 		if((slotDescriptor == null || slotArrangement == null) && template != null)
 			getContainerInfo(getTemplate());
+		if(object.getArrangement() == null && object.getTemplate() != null)
+			object.getContainerInfo(object.getTemplate());
 
 		//Get the proper arrangement
 		int arrangementId = getCorrectArrangementId(object);
