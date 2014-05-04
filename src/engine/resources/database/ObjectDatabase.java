@@ -69,10 +69,6 @@ public class ObjectDatabase implements Runnable {
 	    
         environment = new Environment(new File(".", "odb/" + name), EnvConfig);
         //entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);
-        if (useCheckpointThread) {
-        	checkpointConfig = new CheckpointConfig();
-        	checkpointThread = new Thread(this);
-        }
         
         dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);
@@ -86,7 +82,13 @@ public class ObjectDatabase implements Runnable {
             // Create our class catalog
         classCatalog = new StoredClassCatalog(classCatalogDb);
         dataBinding = new SerialBinding(classCatalog, targetClass);
-		db = environment.openDatabase(null, name, dbConfig);
+		db = environment.openDatabase(null, name, dbConfig);       
+		if (useCheckpointThread) {
+        	checkpointConfig = new CheckpointConfig();
+        	checkpointThread = new Thread(this);       
+        	checkpointThread.start();
+        }
+
 
 	}
 		
