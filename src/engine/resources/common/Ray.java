@@ -2,11 +2,8 @@ package engine.resources.common;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import wblut.geom.WB_Distance;
-import wblut.geom.WB_ExplicitTriangle;
 import wblut.geom.WB_Intersection;
 import wblut.geom.WB_Point3d;
-import wblut.geom.WB_Ray;
 import engine.resources.scene.Point3D;
 
 public class Ray {

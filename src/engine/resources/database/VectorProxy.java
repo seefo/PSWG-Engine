@@ -37,6 +37,7 @@ public class VectorProxy<E> implements PersistentProxy<Vector<E>> {
 	private VectorProxy() { 
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void initializeProxy(Vector<E> object) {
 		List<E> elementList = new ArrayList<E>();
 		

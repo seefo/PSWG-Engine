@@ -2,11 +2,7 @@ package engine.resources.database;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Vector;
-
-import resources.objects.creature.CreatureObject;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
@@ -21,17 +17,7 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.Transaction;
-import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
-import com.sleepycat.persist.StoreConfig;
-import com.sleepycat.persist.evolve.Conversion;
-import com.sleepycat.persist.evolve.Converter;
-import com.sleepycat.persist.evolve.Deleter;
-import com.sleepycat.persist.evolve.Mutations;
-import com.sleepycat.persist.model.AnnotationModel;
-import com.sleepycat.persist.model.EntityModel;
-
 import engine.resources.objects.SWGObject;
 
 public class ObjectDatabase implements Runnable {
