@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
-import resources.common.StringUtilities;
+import engine.resources.common.StringUtilities;
 
 /*
  * Stf files don't appear to use the IFF format.
@@ -100,7 +100,6 @@ public class StfTable {
 	public int getColumnCount() {
 		return ((orderedTable == null) ? 0 : 3);
 	}
-	
 	
 	/*
 	 * @param id Iteration number

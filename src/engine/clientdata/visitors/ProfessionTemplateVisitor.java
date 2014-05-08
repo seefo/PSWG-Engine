@@ -19,7 +19,7 @@
  * Using NGEngine to work with NGECore2 is making a combined work based on NGEngine.
  * Therefore all terms and conditions of the GNU Lesser General Public License cover the combination.
  ******************************************************************************/
-package resources.visitors;
+package engine.clientdata.visitors;
 
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -31,8 +31,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 import engine.clientdata.VisitorInterface;
 
 public class ProfessionTemplateVisitor implements VisitorInterface {
-
-
+	
 	private class RaceTemplate {
 		private Vector<String> items;
 		private String template;
