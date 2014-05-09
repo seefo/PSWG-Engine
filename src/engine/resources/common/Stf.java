@@ -21,11 +21,13 @@
  ******************************************************************************/
 package engine.resources.common;
 
+import java.io.Serializable;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.resources.objects.Delta;
 
-public class Stf extends Delta {
+public class Stf extends Delta implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	

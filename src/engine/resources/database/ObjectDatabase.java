@@ -1,7 +1,11 @@
 package engine.resources.database;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import com.sleepycat.bind.EntryBinding;
@@ -18,6 +22,7 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.persist.EntityStore;
+
 import engine.resources.objects.SWGObject;
 
 public class ObjectDatabase implements Runnable {
@@ -33,6 +38,7 @@ public class ObjectDatabase implements Runnable {
 	private Database db;
 	private Database classCatalogDb;
 	private Vector<Cursor> cursors = new Vector<Cursor>();
+	private static boolean debugObjects = false;
 	
 	public ObjectDatabase(String name, boolean allowCreate, boolean useCheckpointThread, boolean allowTransactional, Class targetClass) {
 		
@@ -77,7 +83,6 @@ public class ObjectDatabase implements Runnable {
 
 
 	}
-		
 	
 	public void put(Long key, Object value) {
         DatabaseEntry theKey = new DatabaseEntry();    
@@ -85,6 +90,7 @@ public class ObjectDatabase implements Runnable {
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
 		db.put(null, theKey, theData);
+		debugObject(value);
 	}
 	
 	public void put(String key, Object value) {
@@ -93,6 +99,7 @@ public class ObjectDatabase implements Runnable {
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
 		db.put(null, theKey, theData);
+		debugObject(value);
 	}
 	
 	public Object get(Long key) {
@@ -105,8 +112,8 @@ public class ObjectDatabase implements Runnable {
         // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
         Object obj = dataBinding.entryToObject(theData);
         if(obj instanceof SWGObject) {
-        	((SWGObject) obj).initAfterDBLoad();
-        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> child.initAfterDBLoad());
+        	((SWGObject) obj).initializeBaselines(); ((SWGObject) obj).initAfterDBLoad();
+        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> {  child.initializeBaselines(); child.initAfterDBLoad(); });
         }
         return obj;
 	}
@@ -186,6 +193,55 @@ public class ObjectDatabase implements Runnable {
 		return cursors;
 	}
 	
+	/*
+	 * @description Prints any classes that don't implement Serializable.
+	 */
+	public static void debugObject(Object object) {
+		if (debugObjects) {
+			Set<String> classes = new HashSet<String>();
+			
+			debugMapUnserializableClasses(classes, object.getClass());
+			
+			for (String type : classes) {
+				System.err.println(type + " does not implement Serializable.");
+			}
+		}
+	}
 	
+	public static void debugMapUnserializableClasses(Set<String> classes, Class<?> object) {
+		boolean serializable = false;
+		
+		for (Type type : object.getGenericInterfaces()) {
+			if (type != null && type.getTypeName().equals("Serializable")) {
+				serializable = true;
+			}
+		}
+		
+		if (!serializable) {
+			classes.add(object.getSimpleName());
+			debugObjects = false;
+		}
+		
+		for (Field field : object.getDeclaredFields()) {
+			if (field.getGenericType().getTypeName().contains("<")) {
+				try {
+					String genericType = field.getGenericType().getTypeName().split("<", field.getGenericType().getTypeName().lastIndexOf("<"))[1].replace(">", "");
+					debugMapUnserializableClasses(classes, Class.forName(genericType));
+				} catch (Exception e) {
+					
+				}
+			}
+			
+			if (!field.getClass().getPackage().getName().startsWith("engine") &&
+			!field.getClass().getPackage().getName().startsWith("main") &&
+			!field.getClass().getPackage().getName().startsWith("protocol") &&
+			!field.getClass().getPackage().getName().startsWith("resources") &&
+			!field.getClass().getPackage().getName().startsWith("service")) {
+				continue;
+			}
+			
+			debugMapUnserializableClasses(classes, field.getClass());
+		}
+	}
 	
 }

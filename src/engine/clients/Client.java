@@ -38,7 +38,7 @@ public class Client {
 	protected boolean disconnected = false;
 	public boolean ready = false;
 	private boolean isGM;
-	private boolean debugPackets = false;
+	public static boolean debugPackets = false;
 	
 	public Connection connection;
 	public SWGObject parent;
@@ -100,6 +100,16 @@ public class Client {
 		this.parent = parent;	
 	}
 	
+	/*
+	 * Crash debugging tool.
+	 * 
+	 * Enable debugSession for this to work.
+	 * 
+	 * -Prints all packets sent to the client.
+	 * -Stops printing if client closes and warns that the client crashed.
+	 * -Fully timestamped.
+	 * -Last packet received is also printed and timestamped for comparison.
+	 */
 	public class DebugSession implements IoSession {
 		IoSession session;
 		
@@ -116,7 +126,7 @@ public class Client {
 			}
 			
 			if (!pidInfo.contains("SwgClient_r.exe")) {
-				Console.print("Warning: Client is no longer running.");
+				Console.print("OnSend: Client is no longer running.");
 			} else {
 				StringUtilities.printBytes(((IoBuffer) arg0).array());
 			}
@@ -126,10 +136,10 @@ public class Client {
 		
 		public DebugSession(IoSession session) { this.session = session; }
 		public DebugSession() {}
-		public CloseFuture close() { return session.close(); }
+		@SuppressWarnings("deprecation") public CloseFuture close() { return session.close(); }
 		public CloseFuture close(boolean arg0) { return session.close(arg0); }
 		public boolean containsAttribute(Object arg0) { return session.containsAttribute(arg0); }
-		public Object getAttachment() { return session.getAttachment(); }
+		@SuppressWarnings("deprecation") public Object getAttachment() { return session.getAttachment(); }
 		public Object getAttribute(Object arg0) { return session.getAttribute(arg0); }
 		public Object getAttribute(Object arg0, Object arg1) { return session.getAttribute(arg0, arg1); }
 		public Set<Object> getAttributeKeys() { return session.getAttributeKeys(); }
@@ -182,7 +192,7 @@ public class Client {
 		public boolean replaceAttribute(Object arg0, Object arg1, Object arg2) { return session.replaceAttribute(arg0, arg1, arg2); }
 		public void resumeRead() { session.resumeRead(); }
 		public void resumeWrite() { session.resumeWrite(); }
-		public Object setAttachment(Object arg0) { return session.getAttachment(); }
+		@SuppressWarnings("deprecation") public Object setAttachment(Object arg0) { return session.getAttachment(); }
 		public Object setAttribute(Object arg0) { return session.setAttribute(arg0); }
 		public Object setAttribute(Object arg0, Object arg1) { return session.setAttribute(arg0, arg1); }
 		public Object setAttributeIfAbsent(Object arg0) {return session.setAttributeIfAbsent(arg0); }

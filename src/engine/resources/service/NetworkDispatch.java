@@ -1,5 +1,7 @@
 package engine.resources.service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +23,13 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 
 
+
 import engine.clients.Client;
 import engine.protocol.AuthClient;
 import engine.protocol.packager.MessagePackager;
+import resources.common.Console;
 import resources.common.Opcodes;
+import engine.resources.common.StringUtilities;
 import engine.resources.common.Utilities;
 import engine.servers.MINAServer;
 
@@ -179,6 +184,24 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		    		}
 		    		if (session.isWriteSuspended()) {
 		    			session.resumeWrite();
+		    		}
+		    		if (Client.debugPackets) {
+		    			String line, pidInfo ="";
+		    			Process p;
+		    			
+		    			try {
+		    				p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
+		    				BufferedReader input =  new BufferedReader(new InputStreamReader(p.getInputStream()));
+		    				while ((line = input.readLine()) != null) pidInfo += line; input.close();
+		    			} catch (Exception e) {
+		    				e.printStackTrace();
+		    			}
+		    			
+		    			StringUtilities.printBytes(packet.array());
+		    			
+		    			if (!pidInfo.contains("SwgClient_r.exe")) {
+		    				Console.print("OnReceive: Client is no longer running.");
+		    			}
 		    		}
 		    		if(opcode == Opcodes.ObjControllerMessage) {
 		    			packet.getInt();
