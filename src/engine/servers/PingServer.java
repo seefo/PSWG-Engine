@@ -8,6 +8,9 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.DatagramSessionConfig;
 import org.apache.mina.transport.socket.nio.NioDatagramAcceptor;
 
+import engine.resources.common.DebugSession;
+import resources.common.Console;
+
 public class PingServer {
 	
 	private int port;
@@ -22,6 +25,10 @@ public class PingServer {
 			
 			@Override
 			public void messageReceived(IoSession session, Object message) throws Exception {
+				if (DebugSession.debugPackets) {
+					Console.println("<Ping");
+				}
+				
 				session.write(message);
 			}
 			

@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import resources.common.Console;
+
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
 import com.sleepycat.bind.serial.StoredClassCatalog;
@@ -90,7 +92,13 @@ public class ObjectDatabase implements Runnable {
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
 		db.put(null, theKey, theData);
-		debugObject(value);
+		if (debugObjects) {
+			debugObject(value);
+			
+			if (get(key) == null) {
+				Console.print("Failed to save " + value.getClass().getSimpleName() + " to database (Key: " + key + ").");
+			}
+		}
 	}
 	
 	public void put(String key, Object value) {
@@ -99,7 +107,13 @@ public class ObjectDatabase implements Runnable {
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
 		db.put(null, theKey, theData);
-		debugObject(value);
+		if (debugObjects) {
+			debugObject(value);
+			
+			if (get(key) == null) {
+				Console.print("Failed to save " + value.getClass().getSimpleName() + " to database (Key: " + key + ").");
+			}
+		}
 	}
 	
 	public Object get(Long key) {

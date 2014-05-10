@@ -2,16 +2,12 @@ package engine.clients.connection;
 
 import java.net.SocketAddress;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import engine.protocol.soe.ISequenced;
-import engine.protocol.soe.SOEMessage;
-
-
 
 public class Connection {
 		
