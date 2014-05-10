@@ -46,7 +46,7 @@ public class ObjectVisitor implements VisitorInterface {
 					attributes.put(attributeName, data.getString(Charset.forName("US-ASCII").newDecoder()));
 				}
 			} else if(attributeName.equals("collisionActionBlockFlags") || attributeName.equals("collisionMaterialFlags") || attributeName.equals("collisionMaterialBlockFlags") || attributeName.equals("collisionMaterialPassFlags")
-					|| attributeName.equals("collisionActionPassFlags") || attributeName.equals("collisionActionFlags") || attributeName.equals("gameObjectType")) || attributeName.equals("containerVolumeLimit")) {
+					|| attributeName.equals("collisionActionPassFlags") || attributeName.equals("collisionActionFlags") || attributeName.equals("gameObjectType") || attributeName.equals("containerVolumeLimit")) {
 				byte byteVal = data.get();
 				if(byteVal != 0) {
 					int value = data.getInt();
