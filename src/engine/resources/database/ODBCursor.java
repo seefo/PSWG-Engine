@@ -1,7 +1,5 @@
 package engine.resources.database;
 
-import java.nio.ByteBuffer;
-
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.DatabaseEntry;
@@ -28,8 +26,8 @@ public class ODBCursor {
 		if(cursor.getNext(theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 			Object obj = dataBinding.entryToObject(theData);
 	        if(obj instanceof SWGObject) {
-	        	((SWGObject) obj).initAfterDBLoad();
-	        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> child.initAfterDBLoad());
+	        	((SWGObject) obj).initializeBaselines(); ((SWGObject) obj).initAfterDBLoad();
+	        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> { child.initializeBaselines(); child.initAfterDBLoad(); });
 	        }
 			return obj;
 		}

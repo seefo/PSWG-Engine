@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.Descriptor;
@@ -31,6 +32,7 @@ import protocol.swg.SceneCreateObjectByCrc;
 import protocol.swg.SceneDestroyObject;
 import protocol.swg.SceneEndBaselines;
 import protocol.swg.UpdateContainmentMessage;
+import resources.objects.ObjectMessageBuilder;
 import resources.objects.building.BuildingObject;
 import resources.objects.cell.CellObject;
 import resources.objects.player.PlayerObject;
@@ -54,6 +56,8 @@ import engine.clientdata.visitors.SlotDefinitionVisitor.SlotDefinition;
 import engine.clients.Client;
 import engine.resources.common.CRC;
 import engine.resources.common.Event;
+import engine.resources.common.Stf;
+import engine.resources.common.UString;
 import engine.resources.container.AbstractSlot;
 import engine.resources.container.AllPermissions;
 import engine.resources.container.ContainerPermissions;
@@ -84,10 +88,6 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	private String template;
 	private boolean isInSnapshot = false;
 	private boolean isPersistent;
-	private String stfName;
-	private String stfFilename;
-	private String detailName;
-	private String detailFilename;
 	private float collisionLength;
 	private float collisionHeight;
 	private boolean collidable;
@@ -109,9 +109,6 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	private volatile boolean fetchedChildren;
 	private ContainerPermissions permissions = AllPermissions.ALL_PERMISSIONS;
 	private int arrangementId;
-	private float complexity = 1;
-	private String customName;
-	private int volume = 1;
 	private boolean isInQuadtree;
 	@NotPersistent
 	private transient int movementCounter;
@@ -428,54 +425,6 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		}
 	}
 	
-	public String getStfName() {
-		synchronized(objectMutex) {
-			return stfName; 
-		}
-	}
-	
-	public void setStfName(String stfName) {
-		synchronized(objectMutex) {
-			this.stfName = stfName; 
-		}
-	}
-	
-	public String getStfFilename() {
-		synchronized(objectMutex) {
-			return stfFilename; 
-		}
-	}
-	
-	public void setStfFilename(String stfFilename) {
-		synchronized(objectMutex) {
-			this.stfFilename = stfFilename; 
-		}
-	}
-	
-	public String getDetailName() {
-		synchronized(objectMutex) {
-			return detailName; 
-		}
-	}
-	
-	public void setDetailName(String detailName) {
-		synchronized(objectMutex) {
-			this.detailName = detailName; 
-		}
-	}
-	
-	public String getDetailFilename() {
-		synchronized(objectMutex) {
-			return detailFilename; 
-		}
-	}
-	
-	public void setDetailFilename(String detailFilename) {
-		synchronized(objectMutex) {
-			this.detailFilename = detailFilename; 
-		}
-	}
-	
 	public long getParentId() {
 		synchronized(objectMutex) {
 			return parentId; 
@@ -488,42 +437,6 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		}
 	}
 	
-	public float getComplexity() {
-		synchronized(objectMutex) {
-			return complexity; 
-		}
-	}
-	
-	public void setParentId(float complexity) {
-		synchronized(objectMutex) {
-			this.complexity = complexity; 
-		}
-	}
-	
-	public String getCustomName() {
-		synchronized(objectMutex) {
-			return customName;
-		}
-	}
-
-	public void setCustomName(String customName) {
-		synchronized(objectMutex) {
-			this.customName = customName;
-		}
-	}
-
-	public int getVolume() {
-		synchronized(objectMutex) {
-			return volume;
-		}
-	}
-	
-	public void setVolume(int volume) {
-		synchronized(objectMutex) {
-			this.volume = volume;
-		}
-	}
-
 	public int getMovementCounter() {
 		synchronized(objectMutex) {
 			return movementCounter; 
@@ -1150,9 +1063,6 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	 * @return
 	 */
 	public Object getMutex() { return objectMutex; }
-
-	
-	public abstract void sendBaselines(Client client);
 	
 	/**
 	 * Gets a child object of this object based on the slot name, for example "inventory" for the inventory object.
@@ -1288,5 +1198,393 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	public SyncMessageBus<Event> getEventBus() {
 		return eventBus;
 	}
-
+	
+	/* Baseline refactor stuff */
+	
+	private transient ObjectMessageBuilder messageBuilder;
+	
+	protected Baseline otherVariables;
+	
+	protected Baseline baseline1;
+	protected Baseline baseline3;
+	protected Baseline baseline4;
+	protected Baseline baseline6;
+	protected Baseline baseline7;
+	protected Baseline baseline8;
+	protected Baseline baseline9;
+	
+	public void initializeBaselines() {
+		if (otherVariables != null) {
+			otherVariables.transformStructure(this, getOtherVariables());
+		}
+		
+		if (baseline1 != null) {
+			baseline1.transformStructure(this, getBaseline1());
+		}
+		
+		if (baseline3 != null) {
+			baseline3.transformStructure(this, getBaseline3());
+		}
+		
+		if (baseline4 != null) {
+			baseline4.transformStructure(this, getBaseline4());
+		}
+		
+		if (baseline6 != null) {
+			baseline6.transformStructure(this, getBaseline6());
+		}
+		
+		if (baseline7 != null) {
+			baseline7.transformStructure(this, getBaseline7());
+		}
+		
+		if (baseline8 != null) {
+			baseline8.transformStructure(this, getBaseline8());
+		}
+		
+		if (baseline9 != null) {
+			baseline9.transformStructure(this, getBaseline9());
+		}
+	}
+	
+	public Baseline getOtherVariables() {
+		Baseline baseline = new Baseline(this, 0);
+		return baseline;
+	}
+	
+	public Baseline getBaseline1() {
+		Baseline baseline = new Baseline(this, 1);
+		return baseline;
+	}
+	
+	public Baseline getBaseline3() {
+		Baseline baseline = new Baseline(this, 3);
+		baseline.put("complexity", (float) 1);
+		baseline.put("objectName", new Stf());
+		baseline.put("lookAtText", new UString(""));
+		baseline.put("volume", 1);
+		return baseline;
+	}
+	
+	public Baseline getBaseline4() {
+		Baseline baseline = new Baseline(this, 4);
+		return baseline;
+	}
+	
+	public Baseline getBaseline6() {
+		Baseline baseline = new Baseline(this, 6);
+		baseline.put("serverId", 0);
+		baseline.put("detailedDescription", new Stf());
+		return baseline;
+	}
+	
+	public Baseline getBaseline7() {
+		Baseline baseline = new Baseline(this, 7);
+		return baseline;
+	}
+	
+	public Baseline getBaseline8() {
+		Baseline baseline = new Baseline(this, 8);
+		return baseline;
+	}
+	
+	public Baseline getBaseline9() {
+		Baseline baseline = new Baseline(this, 9);
+		return baseline;
+	}
+	
+	public Baseline getBaseline(int viewType) {
+		switch (viewType) {
+			case 1:
+				if (baseline1 == null) {
+					baseline1 = getBaseline1();
+				}
+				
+				return baseline1;
+			case 3:
+				if (baseline3 == null) {
+					baseline3 = getBaseline3();
+				}
+				
+				return baseline3;
+			case 4:
+				if (baseline4 == null) {
+					baseline4 = getBaseline4();
+				}
+				
+				return baseline4;
+			case 6:
+				if (baseline6 == null) {
+					baseline6 = getBaseline6();
+				}
+				
+				return baseline6;
+			case 7:
+				if (baseline7 == null) {
+					baseline7 = getBaseline7();
+				}
+				
+				return baseline7;
+			case 8:
+				if (baseline8 == null) {
+					baseline8 = getBaseline8();
+				}
+				
+				return baseline8;
+			case 9:
+				if (baseline9 == null) {
+					baseline9 = getBaseline9();
+				}
+			default:
+				return null;
+		}
+	}
+	
+	public float getComplexity() {
+		synchronized(objectMutex) {
+			return (float) getBaseline(3).get("complexity");
+		}
+	}
+	
+	public void setComplexity(float complexity) {
+		IoBuffer buffer;
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(3).set("complexity", complexity);
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public Stf getObjectName() {
+		synchronized(objectMutex) {
+			return (Stf) getBaseline(3).get("objectName");
+		}
+	}
+	
+	public void setObjectName(String stf) {
+		IoBuffer buffer;
+		
+		getObjectName().setString(stf);;
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName")));
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public String getStfFilename() {
+		synchronized(objectMutex) {
+			return ((Stf) getBaseline(3).get("objectName")).getStfFilename();
+		}
+	}
+	
+	public void setStfFilename(String stfFilename) {
+		IoBuffer buffer;
+		
+		getObjectName().setStfFilename(stfFilename);
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName")));
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public String getStfName() {
+		synchronized(objectMutex) {
+			return ((Stf) getBaseline(3).get("objectName")).getStfName();
+		}
+	}
+	
+	public void setStfName(String stfName) {
+		IoBuffer buffer;
+		
+		getObjectName().setStfName(stfName);
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName")));
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public String getCustomName() {
+		String customName = (String) getBaseline(3).get("lookAtText");
+		
+		if (customName == null || customName.length() == 0) {
+			//customName = getObjectName().getStfValue();
+		}
+		
+		return customName;
+	}
+	
+	public void setCustomName(String customName) {
+		IoBuffer buffer;
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(3).set("lookAtText", customName);
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public int getVolume() {
+		synchronized(objectMutex) {
+			return (int) getBaseline(3).get("volume");
+		}
+	}
+	
+	public void setVolume(int volume) {
+		IoBuffer buffer;
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(3).set("volume", volume);
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public void incrementVolume(int increase) {
+		setVolume((getVolume() + increase));
+	}
+	
+	public void decrementVolume(int decrease) {
+		setVolume((((getVolume() - decrease) < 1) ? 0 : (getVolume() - decrease)));
+	}
+	
+	public int getServerId() {
+		synchronized(objectMutex) {
+			return (int) getBaseline(6).get("serverId");
+		}
+	}
+	
+	public void setServerId(int serverId) {
+		IoBuffer buffer;
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(6).set("serverId", serverId);
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public Stf getDetailedDescription() {
+		synchronized(objectMutex) {
+			return (Stf) getBaseline(6).get("detailedDescription");
+		}
+	}
+	
+	public void setDetailDescription(String detailedDescription) {
+		IoBuffer buffer;
+		
+		getDetailedDescription().setString(detailedDescription);
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription"));
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public String getDetailFilename() {
+		synchronized(objectMutex) {
+			return ((Stf) getBaseline(6).get("detailedDescription")).getStfFilename();
+		}
+	}
+	
+	public void setDetailFilename(String detailFilename) {
+		IoBuffer buffer;
+		
+		getDetailedDescription().setStfFilename(detailFilename);
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription"));
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	public String getDetailName() {
+		synchronized(objectMutex) {
+			return ((Stf) getBaseline(6).get("detailedDescription")).getStfName();
+		}
+	}
+	
+	public void setDetailName(String detailName) {
+		IoBuffer buffer;
+		
+		getDetailedDescription().setStfName(detailName);
+		
+		synchronized(objectMutex) {
+			buffer = getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription"));
+		}
+		
+		notifyClients(buffer, true);
+	}
+	
+	/*
+	 This should contain the method of notifying observers, as
+	 it tends to vary depending on the type of object, which is
+	 a problem for inheritance when the master object uses a
+	 different method (ie. ITNO and PLAY).
+	 */
+	public void notifyClients(IoBuffer buffer, boolean notifySelf) {
+		notifyObservers(buffer, notifySelf);
+	}
+	
+	public ObjectMessageBuilder getMessageBuilder() {
+		synchronized(objectMutex) {
+			if (messageBuilder == null) {
+				messageBuilder = new ObjectMessageBuilder(this);
+			}
+			
+			return messageBuilder;
+		}
+	}
+	
+	public abstract void sendBaselines(Client destination);
+	
+	public abstract void sendListDelta(byte viewType, short updateType, IoBuffer buffer);
+	
+	/* Safer to comment this out for now.  These defaults should work for most baselines though.
+	public void sendListDelta(byte viewType, short updateType, IoBuffer buffer) {
+		switch (viewType) {
+			case 1:
+			case 4:
+			case 7:
+				if (getClient() != null) {
+					buffer = getBaseline(viewType).createDelta(updateType, buffer.array());
+					getClient().getSession().write(buffer);
+				}
+				
+				return;
+			case 3:
+			case 6:
+			case 8:
+			case 9:
+				notifyClients(getBaseline(viewType).createDelta(updateType, buffer.array()), true);
+			default:
+				return;
+		}
+	}
+	*/
+	
+	/* Baseline send permissions based on packet observations:
+	 * 
+	 * Baseline1 sent if you have full permissions to the object.
+	 * Baseline4 sent if you have full permissions to the object.
+	 * 
+	 * Baseline8 sent if you have some permissions to the object.
+	 * Baseline9 sent if you have some permissions to the object.
+	 * 
+	 * Baseline3 always sent.
+	 * Baseline6 always sent.
+	 * 
+	 * Baseline7 sent on using the object.
+	 * 
+	 * Only sent if they are defined (can still be empty if defined).
+	 */
+	
 }
