@@ -1344,109 +1344,54 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public float getComplexity() {
-		synchronized(objectMutex) {
-			return (float) getBaseline(3).get("complexity");
-		}
+		return (float) getBaseline(3).get("complexity");
 	}
 	
 	public void setComplexity(float complexity) {
-		IoBuffer buffer;
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(3).set("complexity", complexity);
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(3).set("complexity", complexity), true);
 	}
 	
 	public Stf getObjectName() {
-		synchronized(objectMutex) {
-			return (Stf) getBaseline(3).get("objectName");
-		}
+		return (Stf) getBaseline(3).get("objectName");
 	}
 	
 	public void setObjectName(String stf) {
-		IoBuffer buffer;
-		
 		getObjectName().setString(stf);;
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName")));
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
 	}
 	
 	public String getStfFilename() {
-		synchronized(objectMutex) {
-			return ((Stf) getBaseline(3).get("objectName")).getStfFilename();
-		}
+		return ((Stf) getBaseline(3).get("objectName")).getStfFilename();
 	}
 	
 	public void setStfFilename(String stfFilename) {
-		IoBuffer buffer;
-		
 		getObjectName().setStfFilename(stfFilename);
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName")));
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
 	}
 	
 	public String getStfName() {
-		synchronized(objectMutex) {
-			return ((Stf) getBaseline(3).get("objectName")).getStfName();
-		}
+		return ((Stf) getBaseline(3).get("objectName")).getStfName();
 	}
 	
 	public void setStfName(String stfName) {
-		IoBuffer buffer;
-		
 		getObjectName().setStfName(stfName);
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName")));
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
 	}
 	
 	public String getCustomName() {
-		String customName = (String) getBaseline(3).get("lookAtText");
-		
-		if (customName == null || customName.length() == 0) {
-			//customName = getObjectName().getStfValue();
-		}
-		
-		return customName;
+		return ((UString) getBaseline(3).get("lookAtText")).get();
 	}
 	
 	public void setCustomName(String customName) {
-		IoBuffer buffer;
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(3).set("lookAtText", new UString(customName));
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(3).set("lookAtText", new UString(customName)), true);
 	}
 	
 	public int getVolume() {
-		synchronized(objectMutex) {
-			return (int) getBaseline(3).get("volume");
-		}
+		return (int) getBaseline(3).get("volume");
 	}
 	
 	public void setVolume(int volume) {
-		IoBuffer buffer;
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(3).set("volume", volume);
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(3).set("volume", volume), true);
 	}
 	
 	public void incrementVolume(int increase) {
@@ -1458,73 +1403,38 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public int getServerId() {
-		synchronized(objectMutex) {
-			return (int) getBaseline(6).get("serverId");
-		}
+		return (int) getBaseline(6).get("serverId");
 	}
 	
 	public void setServerId(int serverId) {
-		IoBuffer buffer;
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(6).set("serverId", serverId);
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(6).set("serverId", serverId), true);
 	}
 	
 	public Stf getDetailedDescription() {
-		synchronized(objectMutex) {
-			return (Stf) getBaseline(6).get("detailedDescription");
-		}
+		return (Stf) getBaseline(6).get("detailedDescription");
 	}
 	
 	public void setDetailDescription(String detailedDescription) {
-		IoBuffer buffer;
-		
-		getDetailedDescription().setString(detailedDescription);
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription"));
-		}
-		
-		notifyClients(buffer, true);
+		getDetailedDescription().setString(detailedDescription);		
+		notifyClients(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
 	}
 	
 	public String getDetailFilename() {
-		synchronized(objectMutex) {
-			return ((Stf) getBaseline(6).get("detailedDescription")).getStfFilename();
-		}
+		return ((Stf) getBaseline(6).get("detailedDescription")).getStfFilename();
 	}
 	
 	public void setDetailFilename(String detailFilename) {
-		IoBuffer buffer;
-		
 		getDetailedDescription().setStfFilename(detailFilename);
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription"));
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
 	}
 	
 	public String getDetailName() {
-		synchronized(objectMutex) {
-			return ((Stf) getBaseline(6).get("detailedDescription")).getStfName();
-		}
+		return ((Stf) getBaseline(6).get("detailedDescription")).getStfName();
 	}
 	
 	public void setDetailName(String detailName) {
-		IoBuffer buffer;
-		
 		getDetailedDescription().setStfName(detailName);
-		
-		synchronized(objectMutex) {
-			buffer = getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription"));
-		}
-		
-		notifyClients(buffer, true);
+		notifyClients(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
 	}
 	
 	/*

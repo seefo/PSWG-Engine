@@ -143,10 +143,6 @@ public class Baseline implements List<Object>, Serializable {
 	}
 	
 	private Object checkGet(Object o) {
-		if (o instanceof UString) {
-			o = ((UString) o).get();
-		}
-		
 		return checkArray(o);
 	}
 	
