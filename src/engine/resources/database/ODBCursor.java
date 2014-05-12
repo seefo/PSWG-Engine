@@ -27,7 +27,12 @@ public class ODBCursor {
 			Object obj = dataBinding.entryToObject(theData);
 	        if(obj instanceof SWGObject) {
 	        	((SWGObject) obj).initializeBaselines(); ((SWGObject) obj).initAfterDBLoad();
-	        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> { child.initializeBaselines(); child.initAfterDBLoad(); });
+	        	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> { 
+	        		if(child != null) {
+		        		child.initializeBaselines(); 
+		        		child.initAfterDBLoad(); 
+	        		}
+	        	});
 	        }
 			return obj;
 		}
