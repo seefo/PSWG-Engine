@@ -847,6 +847,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	 * @param otherContainer The container which recieves the object.
 	 * @param object The object being transfered.
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean transferTo(SWGObject requester, SWGObject otherContainer, SWGObject object) {
 		
 		/*System.out.println("Transfer: " + object.getTemplate() + " Arrangement ID: " + object.getArrangementId() + " Correct Arrangement ID: " + otherContainer.getCorrectArrangementId(object)
@@ -1335,6 +1336,8 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 				if (baseline9 == null) {
 					baseline9 = getBaseline9();
 				}
+				
+				return baseline9;
 			default:
 				return null;
 		}
@@ -1424,7 +1427,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		IoBuffer buffer;
 		
 		synchronized(objectMutex) {
-			buffer = getBaseline(3).set("lookAtText", customName);
+			buffer = getBaseline(3).set("lookAtText", new UString(customName));
 		}
 		
 		notifyClients(buffer, true);

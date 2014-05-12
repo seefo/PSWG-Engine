@@ -25,6 +25,7 @@ import java.io.Serializable;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
+import engine.clientdata.StfTable;
 import engine.resources.objects.Delta;
 
 public class Stf extends Delta implements Serializable {
@@ -82,6 +83,26 @@ public class Stf extends Delta implements Serializable {
 	public void setStfName(String stfName) {
 		synchronized(objectMutex) {
 			this.stfName = new AString(stfName);
+		}
+	}
+	
+	public String getStfValue() {
+		synchronized(objectMutex) {
+			try {
+				StfTable stf = new StfTable("clientdata/string/en/" + getStfFilename() + ".stf");
+				
+				for (int s = 1; s < stf.getRowCount(); s++) {
+					if (stf.getStringById(s).getKey() != null && stf.getStringById(s).getKey().equals(getStfName())) {
+						if (stf.getStringById(s).getValue() != null) {
+							return stf.getStringById(s).getValue();
+						}
+					}
+				}
+				
+				return "";
+	        } catch (Exception e) {
+	        	return "";
+	        }
 		}
 	}
 	
