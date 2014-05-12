@@ -68,7 +68,7 @@ public class StringUtilities {
 		String result;
 		int length;
 		
-		if (charFormat == "UTF-16LE") {
+		if (charFormat.equals("UTF-16LE")) {
 			length = buffer.order(ByteOrder.LITTLE_ENDIAN).getInt();
 		} else {
 			length = buffer.order(ByteOrder.LITTLE_ENDIAN).getShort();
@@ -92,7 +92,7 @@ public class StringUtilities {
 		String result;
 		int length;
 		
-		if (charFormat == "UTF-16LE") {
+		if (charFormat.equals("UTF-16LE")) {
 			length = buffer.order(ByteOrder.LITTLE_ENDIAN).getInt();
 		} else {
 			length = buffer.order(ByteOrder.LITTLE_ENDIAN).getShort();
@@ -116,7 +116,7 @@ public class StringUtilities {
 		String result;
 		int length;
 		
-		if (charFormat == "UTF-16LE") {
+		if (charFormat.equals("UTF-16LE")) {
 			if (integer) {
 				length = buffer.order(ByteOrder.LITTLE_ENDIAN).getInt() * 2;
 			} else {
@@ -148,7 +148,7 @@ public class StringUtilities {
 		ByteBuffer result;
 		int length = 2 + string.length();
 		
-		if (charFormat == "UTF-16LE") {
+		if (charFormat.equals("UTF-16LE")) {
 			result = ByteBuffer.allocate(length * 2).order(ByteOrder.LITTLE_ENDIAN);
 			result.putInt(string.length());
 		} else {
