@@ -89,10 +89,10 @@ public class Stf extends Delta implements Serializable {
 	public String getStfValue() {
 		synchronized(objectMutex) {
 			try {
-				StfTable stf = new StfTable("clientdata/string/en/" + getStfFilename() + ".stf");
+				StfTable stf = new StfTable("clientdata/string/en/" + stfFilename.get() + ".stf");
 				
 				for (int s = 1; s < stf.getRowCount(); s++) {
-					if (stf.getStringById(s).getKey() != null && stf.getStringById(s).getKey().equals(getStfName())) {
+					if (stf.getStringById(s).getKey() != null && stf.getStringById(s).getKey().equals(stfName.get())) {
 						if (stf.getStringById(s).getValue() != null) {
 							return stf.getStringById(s).getValue();
 						}
