@@ -855,10 +855,8 @@ public class Baseline implements List<Object>, Serializable {
 		synchronized(objectMutex) {
 			for (Object delta : list) {				
 				try {
-					if (delta instanceof SWGList || delta instanceof SWGMap || delta instanceof SWGMultiMap || delta instanceof SWGSet) {
-						delta.getClass().getMethod("init", new Class[] { SWGObject.class }).invoke(delta, new Object[] { this });
-					} else if (delta instanceof IDelta) {
-						delta.getClass().getMethod("init", new Class[] {}).invoke(delta, new Object[] { });
+					if (delta instanceof SWGList || delta instanceof SWGMap || delta instanceof SWGMultiMap || delta instanceof SWGSet || delta instanceof IDelta) {
+						delta.getClass().getMethod("init", new Class[] { SWGObject.class }).invoke(delta, new Object[] { object });
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
