@@ -39,7 +39,7 @@ public abstract class Delta implements IDelta, Serializable {
 		
 	}
 	
-	public void init() {
+	public void init(SWGObject object) {
 		objectMutex = new Object();
 	}
 	

@@ -21,11 +21,9 @@
  ******************************************************************************/
 package engine.resources.objects;
 
-import com.sleepycat.persist.model.Persistent;
-
-@Persistent
 public interface IDelta {
 	
+	public void init(SWGObject object);
 	public byte[] getBytes();
 	
 }
