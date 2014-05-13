@@ -39,6 +39,11 @@ public class ContainerSlot extends AbstractSlot implements Serializable {
 		public void traverse(SWGObject viewer, boolean topDown, boolean recursive, Traverser traverser) {
 			for(SWGObject obj : objects) {
 				
+				if(obj == null) {
+					//System.err.println("Traversing through null object in container");
+					continue;
+				}
+				
 				if(recursive && !topDown) {
 					obj.viewChildren(viewer, topDown, recursive, traverser);
 				}
