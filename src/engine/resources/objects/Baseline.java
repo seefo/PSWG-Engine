@@ -315,24 +315,22 @@ public class Baseline implements List<Object>, Serializable {
 	}
 	
 	public Map<Integer, Builder> getBaselineBuilders() {
+		Map<Integer, Builder> baselineBuilders = new HashMap<Integer, Builder>();
+		Map<Integer, Builder> deltaBuilders = new HashMap<Integer, Builder>();
+		
 		try {
-			Map<Integer, Builder> baselineBuilders = new HashMap<Integer, Builder>();
-			Map<Integer, Builder> deltaBuilders = new HashMap<Integer, Builder>();
-			
 			if (object.getMessageBuilder() != null) {
-				object.getMessageBuilder().getClass().getMethod("buildBaseline" + viewType, new Class[] { }).invoke(object.getMessageBuilder(), new Object[] { baselineBuilders, deltaBuilders });
-				
-				if (baselineBuilders.size() == 0 && deltaBuilders.size() == 0) {
-					hasBuilders = false;
-				}
+				object.getMessageBuilder().getClass().getMethod("buildBaseline" + viewType, new Class[] { Map.class, Map.class }).invoke(object.getMessageBuilder(), new Object[] { baselineBuilders, deltaBuilders });
 			}
-			
-			return baselineBuilders;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		if (baselineBuilders.size() == 0 && deltaBuilders.size() == 0) {
+			hasBuilders = false;
+		}
+		
+		return baselineBuilders;
 	}
 	
 	public static byte getBoolean(boolean condition) {
@@ -400,24 +398,22 @@ public class Baseline implements List<Object>, Serializable {
 	}
 	
 	public Map<Integer, Builder> getDeltaBuilders() {
+		Map<Integer, Builder> baselineBuilders = new HashMap<Integer, Builder>();
+		Map<Integer, Builder> deltaBuilders = new HashMap<Integer, Builder>();
+		
 		try {
-			Map<Integer, Builder> baselineBuilders = new HashMap<Integer, Builder>();
-			Map<Integer, Builder> deltaBuilders = new HashMap<Integer, Builder>();
-			
 			if (object.getMessageBuilder() != null) {
 				object.getMessageBuilder().getClass().getMethod("buildBaseline" + viewType, new Class[] { Map.class, Map.class }).invoke(object.getMessageBuilder(), new Object[] { baselineBuilders, deltaBuilders });
-				
-				if (baselineBuilders.size() == 0 && deltaBuilders.size() == 0) {
-					hasBuilders = false;
-				}
 			}
-			
-			return deltaBuilders;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		if (baselineBuilders.size() == 0 && deltaBuilders.size() == 0) {
+			hasBuilders = false;
+		}
+		
+		return deltaBuilders;
 	}
 	
 	public List<Object> getList() {
@@ -453,8 +449,6 @@ public class Baseline implements List<Object>, Serializable {
 			return "GRUP";
 		} else if(Template.startsWith("object/guild")) {
 			return "GILD";
-		} else if (Template.startsWith("object/installation")) {
-			return "INSO";
 		} else if (Template.startsWith("object/installation/battlefield")) {
 			throw new Exception();
 		} else if (Template.startsWith("object/installation/faction_perk/covert_detector")) {
@@ -467,18 +461,8 @@ public class Baseline implements List<Object>, Serializable {
 			return "HINO";
 		} else if (Template.startsWith("object/installation/manufacture")) {
 			return "MINO";
-		} else if (Template.startsWith("object/installation/mining_gas")) {
-			throw new Exception();
-		} else if (Template.startsWith("object/installation/mining_liquid")) {
-			throw new Exception();
-		} else if (Template.startsWith("object/installation/mining_gas")) {
-			throw new Exception();
-		} else if (Template.startsWith("object/installation/mining_ore")) {
-			throw new Exception();
-		} else if (Template.startsWith("object/installation/mining_organic")) {
-			throw new Exception();
-		} else if (Template.startsWith("object/installation/turret")) {
-			throw new Exception();
+		} else if (Template.startsWith("object/installation")) {
+			return "INSO";
 		} else if (Template.startsWith("object/intangible")) {
 			return "ITNO";
 		} else if (Template.startsWith("object/jedi_manager")) {
