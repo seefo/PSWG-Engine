@@ -1261,10 +1261,10 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public Baseline getBaseline3() {
 		Baseline baseline = new Baseline(this, 3);
-		baseline.put("complexity", (float) 1);
+		baseline.put("complexity", (float) 0);
 		baseline.put("objectName", new Stf());
 		baseline.put("lookAtText", new UString(""));
-		baseline.put("volume", 1);
+		baseline.put("volume", 0);
 		return baseline;
 	}
 	
