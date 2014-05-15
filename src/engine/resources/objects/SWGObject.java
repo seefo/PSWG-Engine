@@ -141,6 +141,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		loadAppearanceData();
 		if(meshVisitor != null)
 			meshVisitor.getTriangles();
+		otherVariables = getOtherVariables();
 	}
 	
 	public abstract void initAfterDBLoad();
