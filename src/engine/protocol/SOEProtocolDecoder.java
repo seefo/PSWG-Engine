@@ -1,21 +1,13 @@
 package engine.protocol;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
-
 
 import main.NGECore;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.mina.core.buffer.CachedBufferAllocator;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.buffer.SimpleBufferAllocator;
 import org.apache.mina.core.session.IoSession;
@@ -30,19 +22,14 @@ import engine.protocol.packager.MessageCRC;
 import engine.protocol.packager.MessageCompression;
 import engine.protocol.packager.MessageEncryption;
 import engine.protocol.soe.DataChannelA;
-import engine.protocol.soe.FragmentedChannelA;
 import engine.protocol.soe.MultiProtocol;
 import engine.protocol.soe.NetStatsClient;
 import engine.protocol.soe.NetStatsServer;
-import engine.protocol.soe.SessionResponse;
-import engine.resources.common.CRC;
 import engine.resources.common.Utilities;
 import engine.resources.config.Config;
 import engine.resources.config.DefaultConfig;
 import engine.resources.service.NetworkDispatch;
 import engine.servers.MINAServer;
-
-
 
 public class SOEProtocolDecoder implements ProtocolDecoder {
 	
@@ -52,8 +39,7 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 	private SimpleBufferAllocator bufferPool;
 	private String maxSessions = "5";
 	private static final boolean enable = false;
-
-
+	
 	SOEProtocolDecoder() {
 		this.messageCompression = new MessageCompression();
 		this.messageEncryption = new MessageEncryption();
@@ -65,8 +51,6 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 
 	}
 	
-	
-    
 	private void sendAck(IoSession session, short sequence) {
 		SOEPacket packet = new SOEPacket((short)21, 7);
 		packet.putNetShort(sequence);

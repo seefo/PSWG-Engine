@@ -1,6 +1,5 @@
 package engine.clientdata.visitors.terrainDetail;
 
-import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 
 import org.apache.mina.core.buffer.IoBuffer;

@@ -29,6 +29,7 @@ import engine.resources.common.DebugSession;
 import engine.resources.common.Utilities;
 import engine.servers.MINAServer;
 
+@SuppressWarnings("all")
 public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	
 	protected ArrayList<INetworkDispatch> services;

@@ -4,20 +4,16 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.apache.mina.filter.codec.SynchronizedProtocolDecoder;
-import org.apache.mina.filter.codec.SynchronizedProtocolEncoder;
 
 import engine.protocol.packager.MessageCRC;
 import engine.protocol.packager.MessageCompression;
 import engine.protocol.packager.MessageEncryption;
 
-
 public class SOEProtocolCodecFactoryOld implements ProtocolCodecFactory {
-
+	
 	private MessageCompression messageCompression;
 	private MessageCRC messageCRC;
 	private MessageEncryption messageEncryption;
-
 	
 	public SOEProtocolCodecFactoryOld() {
 		

@@ -4,7 +4,6 @@ import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.clientdata.visitors.TerrainVisitor;
 import engine.clientdata.visitors.terrainDetail.FractalFamily;
-import engine.resources.common.Utilities;
 
 public class AffectorHeightFractal extends HeightLayer {
 

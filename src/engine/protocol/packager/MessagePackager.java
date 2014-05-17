@@ -1,27 +1,19 @@
 package engine.protocol.packager;
 
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.mina.core.buffer.CachedBufferAllocator;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 
-import engine.clients.connection.Connection;
-import protocol.Message;
 import engine.protocol.soe.DataChannelA;
 import engine.protocol.soe.FragmentedChannelA;
-import engine.protocol.soe.ICombinable;
-import engine.protocol.soe.ISequenced;
 import engine.protocol.soe.MultiProtocol;
-import engine.protocol.soe.SOEMessage;
-import engine.protocol.soe.SessionResponse;
-import engine.protocol.swg.SWGMessage;
 import engine.resources.common.Utilities;
 
-public class MessagePackager
-{
+@SuppressWarnings("unused")
+public class MessagePackager {
 	
 	private MessageCRC messageCRC;
 	private MessageEncryption messageEncryption;
@@ -30,16 +22,14 @@ public class MessagePackager
 	private Vector<IoBuffer> soeMessages = new Vector<IoBuffer>();
 	private Vector<IoBuffer> swgMessages = new Vector<IoBuffer>();
 	private Vector<byte[]> outgoingMessages = new Vector<byte[]>();
-
-
+	
 	public MessagePackager(CachedBufferAllocator bufferPool) {
-		bufferPool = bufferPool;
+		this.bufferPool = bufferPool;
 	}
-
+	
 	public Vector<byte[]> assemble(IoBuffer[] messages, IoSession connection, int crcSeed)
 	{
 		{
-			
 			createDependencies();
 			
 			

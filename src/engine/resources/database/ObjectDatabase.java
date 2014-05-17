@@ -27,6 +27,7 @@ import com.sleepycat.persist.EntityStore;
 
 import engine.resources.objects.SWGObject;
 
+@SuppressWarnings("all")
 public class ObjectDatabase implements Runnable {
 	
 	private Environment environment;

@@ -8,7 +8,6 @@ import java.util.Vector;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.mina.core.buffer.IoBuffer;
 
-import toxi.geom.Triangle3D;
 import toxi.geom.Vec3D;
 import toxi.geom.mesh.TriangleMesh;
 import wblut.geom.WB_AABBTree;
@@ -17,12 +16,12 @@ import wblut.geom.WB_Point3d;
 import wblut.geom.WB_Triangle;
 import wblut.hemesh.HEC_FromTriangles;
 import wblut.hemesh.HE_Mesh;
-
 import engine.clientdata.VisitorInterface;
 import engine.resources.common.Mesh3DTriangle;
 import engine.resources.common.Triangle;
 import engine.resources.scene.Point3D;
 
+@SuppressWarnings("unused")
 public class MeshVisitor implements VisitorInterface {
 
 	public Box box = new Box();

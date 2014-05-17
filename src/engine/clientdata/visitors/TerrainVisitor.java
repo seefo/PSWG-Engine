@@ -410,7 +410,6 @@ public class TerrainVisitor implements VisitorInterface {
 		return height_result;
 	}
 	
-	@SuppressWarnings("unused")
 	private Pair<Float, Float> processLayerHeight(ListLayer layer, float x, float z, float base_value, float affector_transform)
 	{
 		List<BoundaryLayer> boundaries = layer.getBoundaries();

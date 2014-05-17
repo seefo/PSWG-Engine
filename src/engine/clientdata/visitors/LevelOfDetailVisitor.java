@@ -1,6 +1,5 @@
 package engine.clientdata.visitors;
 
-import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;

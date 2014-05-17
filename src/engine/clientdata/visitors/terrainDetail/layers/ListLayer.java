@@ -1,6 +1,5 @@
 package engine.clientdata.visitors.terrainDetail.layers;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 

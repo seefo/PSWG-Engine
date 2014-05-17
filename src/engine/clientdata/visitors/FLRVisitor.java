@@ -6,9 +6,11 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.mina.core.buffer.IoBuffer;
 
 
+
 import engine.clientdata.VisitorInterface;
 import engine.resources.common.Triangle;
 
+@SuppressWarnings("unused")
 public class FLRVisitor implements VisitorInterface {
 	
 	public Vector<Vector3D> vertices = new Vector<Vector3D>();

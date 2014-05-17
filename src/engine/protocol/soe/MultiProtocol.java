@@ -6,9 +6,6 @@ import java.util.Vector;
 import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.protocol.swg.SWGMessage;
-import engine.resources.common.Utilities;
-
-
 
 public class MultiProtocol extends SOEMessage {
 	

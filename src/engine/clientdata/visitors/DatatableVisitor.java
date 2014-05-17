@@ -2,7 +2,6 @@ package engine.clientdata.visitors;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
 
 import org.apache.mina.core.buffer.IoBuffer;

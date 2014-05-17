@@ -1,7 +1,5 @@
 package engine.protocol.soe;
 
-import java.nio.ByteOrder;
-
 import org.apache.mina.core.buffer.IoBuffer;
 
 public class Ping extends SOEMessage {

@@ -1,35 +1,23 @@
 package engine.protocol;
 
-import java.net.DatagramPacket;
-import java.net.SocketAddress;
-import java.net.SocketException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.zip.Deflater;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.mina.core.buffer.CachedBufferAllocator;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 
-import engine.clients.Client;
 import engine.protocol.packager.MessageCRC;
 import engine.protocol.packager.MessageCompression;
 import engine.protocol.packager.MessageEncryption;
-import engine.protocol.packager.MessagePackager;
-import engine.protocol.soe.DataChannelA;
 import engine.protocol.soe.FragmentedChannelA;
-import engine.resources.common.CRC;
 import engine.resources.common.Utilities;
 import engine.resources.service.*;
 
-
-
+@SuppressWarnings("unused")
 public class SOEProtocolEncoder implements ProtocolEncoder {
 
 	private MessageCompression messageCompression;

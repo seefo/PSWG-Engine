@@ -6,21 +6,18 @@ import java.util.Vector;
 import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.protocol.swg.SWGMessage;
-import engine.resources.common.Utilities;
-
-
 
 public class DataChannelA extends SOEMessage implements ISequenced, ICombinable {
+	
 	private Vector<IoBuffer> messages;
 	private short sequence;
 	
 	public DataChannelA() { }
+	
 	public DataChannelA(byte[] data) { 
 		super(data); 
 		ByteBuffer buffer = ByteBuffer.wrap(data);
 		sequence = buffer.getShort(2);
-
-	
 	}
 	
 	public boolean addMessage(SWGMessage message) {
@@ -149,4 +146,5 @@ public class DataChannelA extends SOEMessage implements ISequenced, ICombinable 
 
 	private int getRemainingSize() { return 493 - getSize(); }
 	public boolean hasMessages() { return messages != null && messages.size() > 0; }
+	
 }

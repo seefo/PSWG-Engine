@@ -6,8 +6,9 @@ import java.nio.ByteOrder;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
+@SuppressWarnings("unused")
 public class TargaBitmap {
-
+	
 	private byte idlength, colourmaptype, datatypecode, colourmapdepth, bitsperpixel, imagedescriptor;
 	private short colourmaporigin, colourmaplength, x_origin, y_origin, width, height;
 	private TargaPixel[] pixelData;

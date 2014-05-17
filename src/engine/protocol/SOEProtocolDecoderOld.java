@@ -17,12 +17,9 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import engine.protocol.packager.MessageCRC;
 import engine.protocol.packager.MessageCompression;
 import engine.protocol.packager.MessageEncryption;
-import engine.protocol.soe.AcknowledgementA;
 import engine.protocol.soe.DataChannelA;
 import engine.protocol.soe.FragmentedChannelA;
 import engine.protocol.soe.MultiProtocol;
-import engine.protocol.soe.NetStatsClient;
-import engine.protocol.soe.NetStatsServer;
 import engine.protocol.soe.Ping;
 import engine.protocol.soe.SessionRequest;
 import engine.protocol.soe.SessionResponse;
@@ -31,9 +28,6 @@ import engine.resources.config.Config;
 import engine.resources.config.DefaultConfig;
 import engine.servers.MINAServer;
 
-
-
-
 public class SOEProtocolDecoderOld implements ProtocolDecoder {
 	
 	private MessageCompression messageCompression;
@@ -41,7 +35,6 @@ public class SOEProtocolDecoderOld implements ProtocolDecoder {
 	private MessageCRC messageCRC;
 	private Random crcGenerator = new Random();
 	private Map<IoSession, FragmentedChannelA> fragmentedMessages;
-	
 	
 	SOEProtocolDecoderOld(MessageCompression messageCompression, MessageEncryption messageEncryption, MessageCRC messageCRC) {
 		
@@ -317,9 +310,10 @@ public class SOEProtocolDecoderOld implements ProtocolDecoder {
 				config = DefaultConfig.getConfig();
 			}
 			
+			/*
 			int galaxyId = config.getInt("GALAXY_ID");
 			
-			/*LoginServerId loginServerId = new LoginServerId(galaxyId);
+			LoginServerId loginServerId = new LoginServerId(galaxyId);
 			LoginServerString loginServerString = new LoginServerString("LoginServer:" + galaxyId);
 			
 			session.write(loginServerString);

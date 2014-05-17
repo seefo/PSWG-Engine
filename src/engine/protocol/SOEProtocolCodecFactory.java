@@ -1,14 +1,11 @@
 package engine.protocol;
 
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
-
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
+@SuppressWarnings("unused")
 public class SOEProtocolCodecFactory implements ProtocolCodecFactory {
 
 	private boolean isZone;

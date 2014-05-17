@@ -159,8 +159,6 @@ public class PortalVisitor implements VisitorInterface {
 
 	}
 	
-	
-	@SuppressWarnings("unused")
 	public class Cell {
 		
 		public byte unkFlag2;

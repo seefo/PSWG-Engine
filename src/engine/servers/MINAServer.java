@@ -1,16 +1,10 @@
 package engine.servers;
 
 import java.net.InetSocketAddress;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
-
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.DatagramSessionConfig;
 import org.apache.mina.transport.socket.nio.NioDatagramAcceptor;
 
