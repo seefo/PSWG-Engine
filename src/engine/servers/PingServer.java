@@ -27,6 +27,7 @@ public class PingServer {
 			public void messageReceived(IoSession session, Object message) throws Exception {
 				if (DebugSession.debugPackets) {
 					Console.println("<Ping");
+					DebugSession.lastPing = System.currentTimeMillis();
 				}
 				
 				session.write(message);

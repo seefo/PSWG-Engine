@@ -33,6 +33,7 @@ import org.apache.mina.core.write.WriteRequestQueue;
 public class DebugSession implements IoSession {
 	
 	public static boolean debugPackets = false;
+	public static long lastPing = 0;
 	
 	private IoSession session;
 	
@@ -80,6 +81,8 @@ public class DebugSession implements IoSession {
 			return null;
 		}
 		*/
+		
+		//while ((System.currentTimeMillis() - lastPing) > 1L);
 		
 		// Display all packets before they get sent out
 		System.out.println(Calendar.getInstance().getTime() + ": >" + Utilities.getHexString((((IoBuffer) arg0).array())));
