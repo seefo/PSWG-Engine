@@ -770,7 +770,7 @@ public class Baseline implements List<Object>, Serializable {
 			for (int i = 0; i < newStruct.size(); i++) {
 				if (definition.containsKey(newStruct.getDefinition(i))) {
 					int oldIndex = definition.get(newStruct.getDefinition(i));
-					Object newObject = newStruct.get(i);
+					Object newObject = checkArray(newStruct.get(i));
 					Object oldObject = oldStruct.get(oldIndex);
 					
 					if (compareTypes(newObject, oldObject)) {
