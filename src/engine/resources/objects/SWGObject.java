@@ -1,28 +1,21 @@
 package engine.resources.objects;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.Vector;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.management.Descriptor;
-
 import main.NGECore;
-import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.SyncMessageBus;
-import net.engio.mbassy.bus.config.BusConfiguration;
-import net.engio.mbassy.listener.Listener;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.mina.core.buffer.IoBuffer;
@@ -34,10 +27,7 @@ import protocol.swg.SceneEndBaselines;
 import protocol.swg.UpdateContainmentMessage;
 import resources.objects.ObjectMessageBuilder;
 import resources.objects.building.BuildingObject;
-import resources.objects.cell.CellObject;
-import resources.objects.player.PlayerObject;
 
-import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.NotPersistent;
 import com.sleepycat.persist.model.Persistent;
 import com.sleepycat.persist.model.PrimaryKey;
@@ -1296,52 +1286,78 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public Baseline getBaseline(int viewType) {
+		Baseline baseline;
+		
 		switch (viewType) {
 			case 1:
 				if (baseline1 == null) {
 					baseline1 = getBaseline1();
+					return baseline1;
 				}
 				
-				return baseline1;
+				baseline = baseline1;
+				break;
 			case 3:
 				if (baseline3 == null) {
 					baseline3 = getBaseline3();
+					return baseline3;
 				}
 				
-				return baseline3;
+				baseline = baseline3;
+				break;
 			case 4:
 				if (baseline4 == null) {
 					baseline4 = getBaseline4();
+					return baseline4;
 				}
 				
-				return baseline4;
+				baseline = baseline4;
+				break;
 			case 6:
 				if (baseline6 == null) {
 					baseline6 = getBaseline6();
+					return baseline6;
 				}
 				
-				return baseline6;
+				baseline = baseline6;
+				break;
 			case 7:
 				if (baseline7 == null) {
 					baseline7 = getBaseline7();
+					return baseline7;
 				}
 				
-				return baseline7;
+				baseline = baseline7;
+				break;
 			case 8:
 				if (baseline8 == null) {
 					baseline8 = getBaseline8();
+					return baseline8;
 				}
 				
-				return baseline8;
+				baseline = baseline8;
+				break;
 			case 9:
 				if (baseline9 == null) {
 					baseline9 = getBaseline9();
+					return baseline9;
 				}
 				
-				return baseline9;
+				baseline = baseline9;
+				break;
 			default:
 				return null;
 		}
+		
+		try {
+			if (baseline.getMutex() == null) {
+				baseline.transformStructure(this, (Baseline) getClass().getMethod("getBaseline" + viewType, new Class[] { }).invoke(this, new Object[] { }));
+			}
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		return baseline;
 	}
 	
 	public float getComplexity() {
