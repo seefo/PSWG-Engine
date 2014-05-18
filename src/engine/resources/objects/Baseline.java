@@ -35,6 +35,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -654,8 +655,8 @@ public class Baseline implements List<Object>, Serializable {
 					return ((SWGMap<?, ?>) o).getBytes();
 				} else if (o instanceof SWGMultiMap) {
 					return ((SWGMultiMap<?, ?>) o).getBytes();
-				} else if (o instanceof ArrayList) {
-					ArrayList<?> list = ((ArrayList<?>) o);
+				} else if (o instanceof List) {
+					List<?> list = ((List<?>) o);
 					int size = 0;
 					byte[] objects = { };
 					
@@ -672,6 +673,44 @@ public class Baseline implements List<Object>, Serializable {
 					}
 					
 					return createBuffer(size + 4).putInt(list.size()).array();
+				} else if (o instanceof Vector) {
+					Vector<?> list = ((Vector<?>) o);
+					int size = 0;
+					byte[] objects = { };
+					
+					for (int i = 0; i < list.size(); i++) {
+						byte[] object = toBytes(list.get(i));
+						size += object.length;
+						
+						IoBuffer buffer = createBuffer(size);
+						buffer.put(objects);
+						buffer.put(object);
+						buffer.flip();
+						
+						objects = buffer.array();
+					}
+					
+					return createBuffer(size + 4).putInt(list.size()).array();
+				} else if (o instanceof Map) {
+					Map<?, ?> map = ((Map<?, ?>) o);
+					int size = 0;
+					byte[] objects = { };
+					
+					for (Entry<?, ?> entry : map.entrySet()) {
+						byte[] keyBytes = toBytes(entry.getKey());
+						byte[] valueBytes = toBytes(entry.getValue());
+						byte[] object = createBuffer(keyBytes.length + valueBytes.length).put(keyBytes).put(valueBytes).flip().array();
+						size += object.length;
+						
+						IoBuffer buffer = createBuffer(size);
+						buffer.put(objects);
+						buffer.put(object);
+						buffer.flip();
+						
+						objects = buffer.array();
+					}
+					
+					return createBuffer(size + 4).putInt(map.size()).array();
 				} else if (o instanceof Point2D) {
 					Point2D p = (Point2D) o;
 					return createBuffer(8).putFloat(p.x).putFloat(p.z).array();
@@ -727,7 +766,11 @@ public class Baseline implements List<Object>, Serializable {
 					return new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 				} else if (o instanceof SWGMultiMap) {
 					return new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-				} else if (o instanceof ArrayList) {
+				} else if (o instanceof List) {
+					return new byte[] { 0x00, 0x00, 0x00, 0x00 };
+				} else if (o instanceof Vector) {
+					return new byte[] { 0x00, 0x00, 0x00, 0x00 };
+				} else if (o instanceof Map) {
 					return new byte[] { 0x00, 0x00, 0x00, 0x00 };
 				} else if (o instanceof Point2D) {
 					return new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
