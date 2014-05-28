@@ -1171,6 +1171,12 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		}
 	}
 	
+	public void removeAttribute(String attributeName) {
+		synchronized(objectMutex) {
+			attributes.remove(attributeName);
+		}
+	}
+	
 	public Map<String, String> getAttributes() {
 		return attributes;
 	}
