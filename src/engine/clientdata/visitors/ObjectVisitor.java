@@ -49,6 +49,7 @@ public class ObjectVisitor implements VisitorInterface {
 					|| attributeName.equals("collisionActionPassFlags") || attributeName.equals("collisionActionFlags") || attributeName.equals("gameObjectType") || attributeName.equals("containerVolumeLimit")) {
 				byte byteVal = data.get();
 				if(byteVal != 0) {
+					data.skip(1); // unk byte mostly 0x20
 					int value = data.getInt();
 					attributes.put(attributeName, new Integer(value));
 				}
