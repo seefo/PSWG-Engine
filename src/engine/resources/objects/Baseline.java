@@ -795,14 +795,15 @@ public class Baseline implements List<Object>, Serializable {
 		this.object = object;
 		hasBuilders = true;
 		
-		for (Object delta : list) {
-			Method method;
-			
-			try {
-				method = delta.getClass().getMethod("init", new Class[] { });
-				method.invoke(delta, new Object[] { });
-			} catch (Exception e) {
-				
+		synchronized(objectMutex) {
+			for (Object delta : list) {				
+				try {
+					if (delta instanceof SWGList || delta instanceof SWGMap || delta instanceof SWGMultiMap || delta instanceof SWGSet || delta instanceof IDelta) {
+						delta.getClass().getMethod("init", new Class[] { SWGObject.class }).invoke(delta, new Object[] { object });
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -879,17 +880,6 @@ public class Baseline implements List<Object>, Serializable {
 			list = newStruct.list;
 		}
 		
-		synchronized(objectMutex) {
-			for (Object delta : list) {				
-				try {
-					if (delta instanceof SWGList || delta instanceof SWGMap || delta instanceof SWGMultiMap || delta instanceof SWGSet || delta instanceof IDelta) {
-						delta.getClass().getMethod("init", new Class[] { SWGObject.class }).invoke(delta, new Object[] { object });
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 	
 }
