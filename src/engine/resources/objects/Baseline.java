@@ -324,7 +324,7 @@ public class Baseline implements List<Object>, Serializable {
 				object.getMessageBuilder().getClass().getMethod("buildBaseline" + viewType, new Class[] { Map.class, Map.class }).invoke(object.getMessageBuilder(), new Object[] { baselineBuilders, deltaBuilders });
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 		}
 		
 		if (baselineBuilders.size() == 0 && deltaBuilders.size() == 0) {
