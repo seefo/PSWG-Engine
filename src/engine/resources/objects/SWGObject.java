@@ -1418,15 +1418,15 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		notifyClients(getBaseline(3).set("lookAtText", new UString(customName)), true);
 	}
 	
-	public void getTrueName() {
+	public String getTrueName() {
 		return getLookAtText();
 	}
 	
-	public void getFirstName() {
+	public String getFirstName() {
 		return getLookAtText().split(" ")[0];
 	}
 	
-	public void getLastName() {
+	public String getLastName() {
 		return ((getLookAtText().split(" ").length < 1) ? "" : getLookAtText().split(" ")[1]);
 	}
 	
