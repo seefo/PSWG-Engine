@@ -1401,12 +1401,33 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		notifyClients(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
 	}
 	
+	public String getLookAtText() {
+		String lookAtText = ((UString) getBaseline(3).get("lookAtText")).get();
+		return ((lookAtText.length() == 0) ? getObjectName().getStfValue() : lookAtText);
+	}
+	
+	public void setLookAtText(String lookAtText) {
+		notifyClients(getBaseline(3).set("lookAtText", new UString(lookAtText)), true);
+	}
+	
 	public String getCustomName() {
 		return ((UString) getBaseline(3).get("lookAtText")).get();
 	}
 	
 	public void setCustomName(String customName) {
 		notifyClients(getBaseline(3).set("lookAtText", new UString(customName)), true);
+	}
+	
+	public void getTrueName() {
+		return getLookAtText();
+	}
+	
+	public void getFirstName() {
+		return getLookAtText().split(" ")[0];
+	}
+	
+	public void getLastName() {
+		return ((getLookAtText().split(" ").length < 1) ? "" : getLookAtText().split(" ")[1]);
 	}
 	
 	public int getVolume() {
