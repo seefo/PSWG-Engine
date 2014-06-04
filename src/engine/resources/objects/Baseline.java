@@ -443,7 +443,7 @@ public class Baseline implements List<Object>, Serializable {
 		} else if (Template.startsWith("object/creature")) {
 			return "CREO";
 		} else if (Template.startsWith("object/draft_schematic")) {
-			throw new Exception();
+			return "DSCO";
 		} else if (Template.startsWith("object/factory")) {
 			return "FCYT";
 		} else if(Template.startsWith("object/group")) {
