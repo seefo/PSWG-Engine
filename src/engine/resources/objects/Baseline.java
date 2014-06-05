@@ -672,7 +672,7 @@ public class Baseline implements List<Object>, Serializable {
 						objects = buffer.array();
 					}
 					
-					return createBuffer(size + 4).putInt(list.size()).array();
+					return createBuffer(4 + size).putInt(list.size()).put(objects).array();
 				} else if (o instanceof Vector) {
 					Vector<?> list = ((Vector<?>) o);
 					int size = 0;
