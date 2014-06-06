@@ -8,6 +8,7 @@ import engine.resources.objects.SWGObject;
 
 import main.NGECore;
 
+import resources.datatables.Posture;
 import resources.objects.CreatureObject;
 import resources.objects.GroupObject;
 
@@ -23,7 +24,8 @@ public class CreatureContainerPermissions implements ContainerPermissions, Seria
 	
 	@Override
 	public boolean canInsert(SWGObject requester, SWGObject container) {
-		
+		if(requester instanceof CreatureObject && ((CreatureObject) requester).getPosture() == Posture.Dead)
+			return false;
 		if(container.getContainer() == requester || container.getGrandparent() == requester || requester == container) 
 			return true;
 		if(container.getGrandparent() != null && container.getGrandparent().getContainer() == requester)
@@ -51,6 +53,8 @@ public class CreatureContainerPermissions implements ContainerPermissions, Seria
 
 	@Override
 	public boolean canRemove(SWGObject requester, SWGObject container) {
+		if(requester instanceof CreatureObject && ((CreatureObject) requester).getPosture() == Posture.Dead)
+			return false;
 		if(container.getContainer() == requester || container.getGrandparent() == requester || requester == container) 
 			return true;
 		if(container.getGrandparent() != null && container.getGrandparent().getContainer() == requester)
@@ -78,6 +82,8 @@ public class CreatureContainerPermissions implements ContainerPermissions, Seria
 
 	@Override
 	public boolean canView(SWGObject requester, SWGObject container) {
+		if(requester instanceof CreatureObject && ((CreatureObject) requester).getPosture() == Posture.Dead)
+			return false;
 		if(container.getContainer() == requester || container.getGrandparent() == requester || requester == container) 
 			return true;
 		if(container.getGrandparent() != null && container.getGrandparent().getContainer() == requester)
