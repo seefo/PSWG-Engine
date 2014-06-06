@@ -364,8 +364,10 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			this.planet = planet;
 		}
 	}
-		
+	
 	public Set<Client> getObservers() {
+		Set<Client> observers = Collections.synchronizedSet(new HashSet<Client>());
+		observers.addAll(this.observers);
 		return observers;
 	}
 	
@@ -655,7 +657,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		if(updateSelf && client != null && client.getSession() != null)
 			client.getSession().write(data);
 		
-		synchronized(objectMutex) {
+		synchronized(observers) {
 			for(Client client : observers) {
 				if(client != null && client.getSession() != null)
 					client.getSession().write(data);
@@ -677,7 +679,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		if(updateSelf && client != null && client.getSession() != null)
 			client.getSession().write(message);
 		
-		synchronized(objectMutex) {
+		synchronized(observers) {
 			for(Client client : observers) {
 				if(client != null && client.getSession() != null)
 					client.getSession().write(message);
@@ -702,7 +704,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		if(observers.isEmpty() && !updateSelf)
 			return;
 		
-		HashSet<Client> observers = new HashSet<Client>(this.observers);
+		HashSet<Client> observers = getObservers();
 		
 		for(Client client : observers) {
 			float distance = client.getParent().getPosition().getDistance2D(position);
