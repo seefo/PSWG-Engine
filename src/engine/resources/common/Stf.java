@@ -27,6 +27,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.clientdata.StfTable;
 import engine.resources.objects.Delta;
+import engine.resources.objects.SWGObject;
 
 public class Stf extends Delta implements Serializable {
 	
@@ -48,6 +49,12 @@ public class Stf extends Delta implements Serializable {
 	
 	public Stf() {
 		
+	}
+	
+	public void init(SWGObject object) {
+		super.init(object);
+		stfFilename.init(object);
+		stfName.init(object);
 	}
 	
 	public String getStfFilename() {
