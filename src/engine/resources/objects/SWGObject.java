@@ -704,7 +704,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		if(observers.isEmpty() && !updateSelf)
 			return;
 		
-		HashSet<Client> observers = getObservers();
+		Set<Client> observers = getObservers();
 		
 		for(Client client : observers) {
 			float distance = client.getParent().getPosition().getDistance2D(position);
