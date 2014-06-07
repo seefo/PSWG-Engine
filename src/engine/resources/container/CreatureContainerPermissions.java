@@ -5,13 +5,10 @@ import java.io.Serializable;
 import com.sleepycat.persist.model.Persistent;
 
 import engine.resources.objects.SWGObject;
-
 import main.NGECore;
-
 import resources.datatables.Posture;
-import resources.objects.CreatureObject;
-import resources.objects.GroupObject;
-
+import resources.objects.creature.CreatureObject;
+import resources.objects.group.GroupObject;
 import services.ai.AIActor;
 
 @Persistent
@@ -36,7 +33,7 @@ public class CreatureContainerPermissions implements ContainerPermissions, Seria
 					return true;
 				
 				if (requester instanceof CreatureObject && ((CreatureObject) requester).getGroupId() != 0) {
-					CreatureObject highestDamageDealer = (((AIActor) container.getAttachment("AI")).getHighestDamageDealer();
+					CreatureObject highestDamageDealer = (((AIActor) container.getAttachment("AI")).getHighestDamageDealer());
 					
 					for (SWGObject member : ((GroupObject) NGECore.getInstance().objectService.getObject(((CreatureObject) requester).getGroupId())).getMemberList()) {
 						if (member == highestDamageDealer) {
@@ -65,7 +62,7 @@ public class CreatureContainerPermissions implements ContainerPermissions, Seria
 					return true;
 				
 				if (requester instanceof CreatureObject && ((CreatureObject) requester).getGroupId() != 0) {
-					CreatureObject highestDamageDealer = (((AIActor) container.getAttachment("AI")).getHighestDamageDealer();
+					CreatureObject highestDamageDealer = (((AIActor) container.getAttachment("AI")).getHighestDamageDealer());
 					
 					for (SWGObject member : ((GroupObject) NGECore.getInstance().objectService.getObject(((CreatureObject) requester).getGroupId())).getMemberList()) {
 						if (member == highestDamageDealer) {
@@ -94,7 +91,7 @@ public class CreatureContainerPermissions implements ContainerPermissions, Seria
 					return true;
 				
 				if (requester instanceof CreatureObject && ((CreatureObject) requester).getGroupId() != 0) {
-					CreatureObject highestDamageDealer = (((AIActor) container.getAttachment("AI")).getHighestDamageDealer();
+					CreatureObject highestDamageDealer = (((AIActor) container.getAttachment("AI")).getHighestDamageDealer());
 					
 					for (SWGObject member : ((GroupObject) NGECore.getInstance().objectService.getObject(((CreatureObject) requester).getGroupId())).getMemberList()) {
 						if (member == highestDamageDealer) {
