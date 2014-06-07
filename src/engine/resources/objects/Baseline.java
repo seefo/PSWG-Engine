@@ -23,7 +23,6 @@ package engine.resources.objects;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -631,7 +630,7 @@ public class Baseline implements List<Object>, Serializable {
 					for (Byte b : (Byte[]) o) buffer.put(b);
 					return buffer.array();
 				} else if (o instanceof byte[]) {
-					return (byte[]) o;
+					return createBuffer(2 + ((byte[]) o).length).putShort((short) ((byte[]) o).length).put((byte[]) o).array();
 				} else if (o instanceof Byte) {
 					return createBuffer(1).put((Byte) o).array();
 				} else if (o instanceof Boolean) {
