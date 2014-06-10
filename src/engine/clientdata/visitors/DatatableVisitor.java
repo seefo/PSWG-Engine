@@ -30,7 +30,7 @@ public class DatatableVisitor implements VisitorInterface {
 		return table[row][column];
 	}
 	
-	public Object[] getRowsByColumnName(String columnName, int columnIndex) {
+	public Object[] getRowsByColumnName(String columnName) {
 		
 		for(int i = 0; i < table.length; i++) {
 			for(int j=0; j < columnTypes.length; ++j) {
@@ -41,6 +41,15 @@ public class DatatableVisitor implements VisitorInterface {
 		}
 		return null;
 		
+	}
+	
+	public Object getObjectByColumnNameAndIndex(String columnName, int rowIndex) {
+		for(int j=0; j < columnTypes.length; ++j) {
+			String currentName = columnNames[j];
+			if(currentName.equals(columnName))
+				return table[rowIndex][j];
+		}
+		return null;
 	}
 	
 	@Override
