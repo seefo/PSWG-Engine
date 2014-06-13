@@ -46,7 +46,6 @@ import resources.objects.SWGMap;
 import resources.objects.SWGMultiMap;
 import resources.objects.SWGSet;
 import engine.resources.common.AString;
-import engine.resources.common.Stf;
 import engine.resources.common.StringUtilities;
 import engine.resources.common.UString;
 import engine.resources.objects.SWGObject;
@@ -721,8 +720,6 @@ public class Baseline implements List<Object>, Serializable {
 					BitSet b = ((BitSet) o);
 					byte[] bA = b.toByteArray();
 					return createBuffer(8 + bA.length).putInt(bA.length).putInt(b.length()).put(bA).array();
-				} else if (o instanceof Stf) { 
-					return ((Stf)o).getBytes();
 				} else {
 					System.err.println("ERROR: Unsupported type used in Baseline: " + (o.getClass()).getSimpleName());
 					throw new Exception();
