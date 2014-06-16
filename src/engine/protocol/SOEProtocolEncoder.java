@@ -1,5 +1,6 @@
 package engine.protocol;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -8,13 +9,17 @@ import org.apache.mina.core.buffer.CachedBufferAllocator;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
+import org.apache.mina.filter.codec.ProtocolEncoderException;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 
+import resources.common.Opcodes;
 import engine.protocol.packager.MessageCRC;
 import engine.protocol.packager.MessageCompression;
 import engine.protocol.packager.MessageEncryption;
 import engine.protocol.soe.FragmentedChannelA;
+import engine.protocol.unitTests.AbstractUnitTest;
 import engine.resources.common.Utilities;
+import engine.resources.objects.Delta;
 import engine.resources.service.*;
 
 @SuppressWarnings("unused")
@@ -25,7 +30,8 @@ public class SOEProtocolEncoder implements ProtocolEncoder {
 	private MessageCRC messageCRC;
 	private Map<IoSession, Vector<IoBuffer>> queue;
 	private CachedBufferAllocator bufferPool;
-
+	private static Map<Integer, AbstractUnitTest> unitTests = null;
+	private static boolean enableUnitTesting = false;
 
 	SOEProtocolEncoder() {
 		this.messageCompression = new MessageCompression();
@@ -40,6 +46,43 @@ public class SOEProtocolEncoder implements ProtocolEncoder {
 	@Override
 	public void encode(IoSession session, Object input, ProtocolEncoderOutput output) throws Exception {
 		if(input instanceof IoBuffer) {
+			if (((IoBuffer) input).position() > 0) {
+				System.err.println("Buffer isn't flipped with buffer.flip().");
+				throw new ProtocolEncoderException();
+			}
+			
+			IoBuffer buffer = Delta.createBuffer(((IoBuffer) input).array().length).put(((IoBuffer) input).array());
+			
+			int opcode = buffer.skip(2).getInt();
+			
+			if (enableUnitTesting && getUnitTests() != null && getUnitTests().containsKey(opcode) && getUnitTests().get(opcode) != null) {
+				if (!getUnitTests().get(opcode).validate(buffer)) {
+					String additional = Integer.toHexString(opcode);
+					buffer.flip();
+					
+					try {
+						switch (opcode) {
+							case Opcodes.BaselinesMessage:
+								additional = "Baseline " + new String(buffer.array(), 14, 4, "US-ASCII") + buffer.skip(18).get();
+								break;
+							case Opcodes.DeltasMessage:
+								additional = "Delta " + new String(buffer.array(), 14, 4, "US-ASCII") + buffer.skip(18).get();
+								break;
+							case Opcodes.ObjControllerMessage:
+								additional = "ObjController " + Integer.toHexString(buffer.skip(10).getInt());
+								break;
+						}
+					} catch (Exception e) {
+						System.err.println("Packet size invalid (couldn't reach sub-opcode for baseline or objcontroller).");
+					}
+					
+					System.err.println("Failed packet validation: " + additional);
+					System.err.println("Stack Trace:");
+					try { throw new Exception(); } catch (Exception e) { e.printStackTrace(); }
+					throw new ProtocolEncoderException();
+				}
+			}
+			
 			((NetworkDispatch) session.getHandler()).queueMessage(session, (IoBuffer) input);
 		}
 		if(input instanceof SOEPacket) {
@@ -139,6 +182,12 @@ public class SOEProtocolEncoder implements ProtocolEncoder {
 		}
 	}
 	
-	
+	public static Map<Integer, AbstractUnitTest> getUnitTests() {
+		if (unitTests == null) {
+			unitTests = new HashMap<Integer, AbstractUnitTest>();
+		}
+		
+		return unitTests;
+	}
 	
 }
