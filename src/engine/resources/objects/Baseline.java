@@ -643,9 +643,11 @@ public class Baseline implements List<Object>, Serializable {
 					return createBuffer(4).putFloat((Float) o).array();
 				} else if (o instanceof Long) {
 					return createBuffer(8).putLong((Long) o).array();
+				/*
 				} else if (o instanceof SWGObject) {
 					long objectId = ((((SWGObject) o) == null) ? (long) 0 : ((SWGObject) o).getObjectID());
 					return createBuffer(8).putLong(objectId).array();
+				*/
 				} else if (o instanceof SWGList) {
 					return ((SWGList<?>) o).getBytes();
 				} else if (o instanceof SWGSet) {

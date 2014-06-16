@@ -1365,8 +1365,8 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			if (baseline.getMutex() == null) {
 				baseline.transformStructure(this, (Baseline) getClass().getMethod("getBaseline" + viewType, new Class[] { }).invoke(this, new Object[] { }));
 			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.err.print(e.getCause());
 		}
 		
 		return baseline;
