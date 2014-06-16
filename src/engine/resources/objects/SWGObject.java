@@ -366,8 +366,10 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public Set<Client> getObservers() {
-		Set<Client> observers = Collections.synchronizedSet(new HashSet<Client>());
-		observers.addAll(this.observers);
+		Set<Client> observers = new HashSet<Client>();
+		synchronized(this.observers) {
+			this.observers.stream().forEach((Client client) -> observers.add(client));
+		}
 		return observers;
 	}
 	
@@ -799,8 +801,10 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		_remove(object);
 			
 		//Notify observers
-		for(Client c : observers) {
-			c.makeUnaware(object);
+		synchronized(observers) {
+			for(Client c : observers) {
+				c.makeUnaware(object);
+			}
 		}
 		makeUnaware(object);
 		
