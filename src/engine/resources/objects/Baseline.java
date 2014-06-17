@@ -23,6 +23,8 @@ package engine.resources.objects;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -799,9 +801,7 @@ public class Baseline implements List<Object>, Serializable {
 		synchronized(objectMutex) {
 			for (Object delta : list) {				
 				try {
-					if (delta instanceof SWGList || delta instanceof SWGMap || delta instanceof SWGMultiMap || delta instanceof SWGSet || delta instanceof IDelta) {
-						delta.getClass().getMethod("init", new Class[] { SWGObject.class }).invoke(delta, new Object[] { object });
-					}
+					initializeChildren(delta);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -881,6 +881,24 @@ public class Baseline implements List<Object>, Serializable {
 			list = newStruct.list;
 		}
 		
+	}
+	
+	/*
+	 * This will initialize all children of an IDelta that inherit IDelta.
+	 * This way we don't get issues with AString's objectMutex being null etc.
+	 */
+	public void initializeChildren(Object delta) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		if (delta instanceof IDelta || delta instanceof SWGList || delta instanceof SWGMap || delta instanceof SWGMultiMap || delta instanceof SWGSet) {
+			delta.getClass().getMethod("init", new Class[] { SWGObject.class }).invoke(delta, new Object[] { object });
+			
+			for (Field field : delta.getClass().getFields()) {
+				for (Class<?> classObject : field.getClass().getInterfaces()) {
+					if (classObject.getSimpleName().equals("IDelta")) {
+						initializeChildren(field.get(delta));
+					}
+				}
+			}
+		}
 	}
 	
 }
