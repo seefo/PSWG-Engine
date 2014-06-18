@@ -31,7 +31,7 @@ public class SOEProtocolEncoder implements ProtocolEncoder {
 	private Map<IoSession, Vector<IoBuffer>> queue;
 	private CachedBufferAllocator bufferPool;
 	private static Map<Integer, AbstractUnitTest> unitTests = null;
-	private static boolean enableUnitTesting = false;
+	private static boolean enableUnitTesting = true;
 
 	SOEProtocolEncoder() {
 		this.messageCompression = new MessageCompression();
@@ -51,35 +51,37 @@ public class SOEProtocolEncoder implements ProtocolEncoder {
 				throw new ProtocolEncoderException();
 			}
 			
-			IoBuffer buffer = Delta.createBuffer(((IoBuffer) input).array().length).put(((IoBuffer) input).array());
+			IoBuffer buffer = Delta.createBuffer(((IoBuffer) input).array().length).put(((IoBuffer) input).array()).flip();
 			
-			int opcode = buffer.skip(2).getInt();
-			
-			if (enableUnitTesting && getUnitTests() != null && getUnitTests().containsKey(opcode) && getUnitTests().get(opcode) != null) {
-				if (!getUnitTests().get(opcode).validate(buffer)) {
-					String additional = Integer.toHexString(opcode);
-					buffer.flip();
-					
-					try {
-						switch (opcode) {
-							case Opcodes.BaselinesMessage:
-								additional = "Baseline " + new String(buffer.array(), 14, 4, "US-ASCII") + buffer.skip(18).get();
-								break;
-							case Opcodes.DeltasMessage:
-								additional = "Delta " + new String(buffer.array(), 14, 4, "US-ASCII") + buffer.skip(18).get();
-								break;
-							case Opcodes.ObjControllerMessage:
-								additional = "ObjController " + Integer.toHexString(buffer.skip(10).getInt());
-								break;
+			if (enableUnitTesting && buffer != null && buffer.array().length >= 6) {
+				int opcode = buffer.skip(2).getInt();
+				
+				if (getUnitTests() != null && getUnitTests().containsKey(opcode) && getUnitTests().get(opcode) != null) {
+					if (!getUnitTests().get(opcode).validate(buffer)) {
+						String additional = Integer.toHexString(opcode);
+						buffer.flip();
+						
+						try {
+							switch (opcode) {
+								case Opcodes.BaselinesMessage:
+									additional = "Baseline " + new String(buffer.array(), 14, 4, "US-ASCII") + buffer.skip(18).get();
+									break;
+								case Opcodes.DeltasMessage:
+									additional = "Delta " + new String(buffer.array(), 14, 4, "US-ASCII") + buffer.skip(18).get();
+									break;
+								case Opcodes.ObjControllerMessage:
+									additional = "ObjController " + Integer.toHexString(buffer.skip(10).getInt());
+									break;
+							}
+						} catch (Exception e) {
+							System.err.println("Packet size invalid (couldn't reach sub-opcode for baseline or objcontroller).");
 						}
-					} catch (Exception e) {
-						System.err.println("Packet size invalid (couldn't reach sub-opcode for baseline or objcontroller).");
+						
+						System.err.println("Failed packet validation: " + additional);
+						System.err.println("Stack Trace:");
+						try { throw new Exception(); } catch (Exception e) { e.printStackTrace(); }
+						throw new ProtocolEncoderException();
 					}
-					
-					System.err.println("Failed packet validation: " + additional);
-					System.err.println("Stack Trace:");
-					try { throw new Exception(); } catch (Exception e) { e.printStackTrace(); }
-					throw new ProtocolEncoderException();
 				}
 			}
 			
