@@ -1124,7 +1124,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	public boolean isSubChildOf(SWGObject object) {
 		
 		final AtomicBoolean found = new AtomicBoolean(false);
-		object.viewChildren(this, true, true, new Traverser() {
+		object.viewChildren(object, true, true, new Traverser() {
 
 			@Override
 			public void process(SWGObject obj) {

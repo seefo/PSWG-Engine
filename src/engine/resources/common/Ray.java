@@ -38,7 +38,7 @@ public class Ray {
     	Vector3D edge1 = triangle.getEdge1();
     	Vector3D edge2 = triangle.getEdge2();
     	
-    	if(triangle.getN().getNorm() == 0)
+    	if(triangle.getNorm() == 0)
     		return null;
 
         // Begin calculating determinant -- also used to calculate U parameter
@@ -87,15 +87,18 @@ public class Ray {
     public Point3D intersectsTriangle(Mesh3DTriangle triangle, float distance) {
     	
     	WB_Point3d closestPoint = WB_Intersection.closestPointToTriangle(new WB_Point3d(getOrigin().x, getOrigin().y, getOrigin().z), new WB_Point3d(triangle.getPointOne().x, triangle.getPointOne().y, triangle.getPointOne().z), new WB_Point3d(triangle.getPointTwo().x, triangle.getPointTwo().y, triangle.getPointTwo().z), new WB_Point3d(triangle.getPointThree().x, triangle.getPointThree().y, triangle.getPointThree().z));
-    	if(new Point3D(getOrigin().x, getOrigin().y, getOrigin().z).getDistance(new Point3D((float) closestPoint.x, (float) closestPoint.y, (float) closestPoint.z)) > distance)
+    	if((origin.x - closestPoint.x) * (origin.x - closestPoint.x) + (origin.y - closestPoint.y) * (origin.y- closestPoint.y) + (origin.z - closestPoint.z) * (origin.z - closestPoint.z) > distance * distance)
     		return null;
+    	
+    	//if(new Point3D(getOrigin().x, getOrigin().y, getOrigin().z).getDistance(new Point3D((float) closestPoint.x, (float) closestPoint.y, (float) closestPoint.z)) > distance)
+    	//	return null;
     	
     	Vector3D vert0 = new Vector3D(triangle.getPointOne().x, triangle.getPointOne().y, triangle.getPointOne().z);
        	
     	Vector3D edge1 = triangle.getEdge1();
     	Vector3D edge2 = triangle.getEdge2();
     	
-    	if(triangle.getN().getNorm() == 0)
+    	if(triangle.getNorm() == 0)
     		return null;
 
         // Begin calculating determinant -- also used to calculate U parameter

@@ -10,6 +10,7 @@ public class Mesh3DTriangle {
     private Vector3D edge1;
     private Vector3D edge2;
     private Vector3D n;
+    private double norm;
    
     public Mesh3DTriangle(Point3D point1, Point3D point2, Point3D point3) {
         points[0] = point1;
@@ -21,6 +22,7 @@ public class Mesh3DTriangle {
     	edge1 = vert1.subtract(vert0);
     	edge2 = vert2.subtract(vert0);
     	n = Vector3D.crossProduct(edge1, edge2);
+    	setNorm(n.getNorm());
     }
     
     public Point3D getPointOne() {
@@ -57,6 +59,14 @@ public class Mesh3DTriangle {
 
 	public void setN(Vector3D n) {
 		this.n = n;
+	}
+
+	public double getNorm() {
+		return norm;
+	}
+
+	public void setNorm(double norm) {
+		this.norm = norm;
 	}
     
 }
