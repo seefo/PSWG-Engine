@@ -350,18 +350,32 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	public void setPlanetId(int planetId) {
 		synchronized(objectMutex) {
 			this.planetId = planetId;
+			
+			if (planet == null || planet != NGECore.getInstance().terrainService.getPlanetByID(planetId)) {
+				planet = NGECore.getInstance().terrainService.getPlanetByID(planetId);
+			}
 		}
 	}
 	
 	public Planet getPlanet() {
 		synchronized(objectMutex) {
-			return planet;
+			if (planet != null) {
+				return planet;
+			} else {
+				return planet = NGECore.getInstance().terrainService.getPlanetByID(planetId);
+			}
 		}
 	}
 	
 	public void setPlanet(Planet planet) {
 		synchronized(objectMutex) {
 			this.planet = planet;
+			
+			if (planet != null) {
+				planetId = planet.getID();
+			} else {
+				planetId = 0;
+			}
 		}
 	}
 	
