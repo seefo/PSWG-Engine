@@ -891,11 +891,18 @@ public class Baseline implements List<Object>, Serializable {
 		if (delta instanceof IDelta || delta instanceof SWGList || delta instanceof SWGMap || delta instanceof SWGMultiMap || delta instanceof SWGSet) {
 			delta.getClass().getMethod("init", new Class[] { SWGObject.class }).invoke(delta, new Object[] { object });
 			
+			Class<?> iDelta = null;
+			
+			try {
+				iDelta = Class.forName("engine.resources.objects.IDelta");
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				return;
+			}
+			
 			for (Field field : delta.getClass().getFields()) {
-				for (Class<?> classObject : field.getClass().getInterfaces()) {
-					if (classObject.getSimpleName().equals("IDelta")) {
-						initializeChildren(field.get(delta));
-					}
+				if (iDelta.isInstance(field.get(delta))) {
+					initializeChildren(field.get(delta));
 				}
 			}
 		}
