@@ -1380,7 +1380,9 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 				baseline.transformStructure(this, (Baseline) getClass().getMethod("getBaseline" + viewType, new Class[] { }).invoke(this, new Object[] { }));
 			}
 		} catch (Exception e) {
-			System.err.print(e.getCause());
+			if (e.getCause() != null) {
+				System.err.println(e.getCause().getStackTrace());
+			}
 		}
 		
 		return baseline;
