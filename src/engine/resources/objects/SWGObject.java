@@ -92,7 +92,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	@NotPersistent
 	private transient Set<Client> observers = Collections.synchronizedSet(new HashSet<Client>());
 	@NotPersistent
-	private transient List<SWGObject> awareObjects = Collections.synchronizedList(new ArrayList<SWGObject>());
+	private transient Set<SWGObject> awareObjects = Collections.synchronizedSet(new HashSet<SWGObject>());
 	@NotPersistent
 	protected transient Object objectMutex = new Object();
 	private AbstractSlot[] slots;
@@ -138,7 +138,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void init() {
 		observers = Collections.synchronizedSet(new HashSet<Client>());
-		awareObjects = Collections.synchronizedList(new ArrayList<SWGObject>());
+		awareObjects = Collections.synchronizedSet(new HashSet<SWGObject>());
 		objectMutex = new Object();
 		eventBus = new SyncMessageBus<Event>(NGECore.getInstance().getEventBusConfig());
 		getContainerInfo(getTemplate());
@@ -474,7 +474,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 
 	public void setisInSnapshot(boolean isInSnapshot) { this.isInSnapshot = isInSnapshot; }
 	
-	public List<SWGObject> getAwareObjects() { return awareObjects; }
+	public Set<SWGObject> getAwareObjects() { return awareObjects; }
 
 	public float getRadians() {
 		
