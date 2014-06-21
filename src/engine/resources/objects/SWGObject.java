@@ -27,6 +27,7 @@ import protocol.swg.SceneEndBaselines;
 import protocol.swg.UpdateContainmentMessage;
 import resources.objects.ObjectMessageBuilder;
 import resources.objects.building.BuildingObject;
+import resources.objects.creature.CreatureObject;
 
 import com.sleepycat.persist.model.NotPersistent;
 import com.sleepycat.persist.model.Persistent;
@@ -867,6 +868,10 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		
 		if(!permissions.canRemove(requester, this) || !otherContainer.getPermissions().canInsert(requester, otherContainer))
 			return false;
+		
+		// Fix for all the many different ways that a wearable will be transferred
+		if(this instanceof resources.objects.creature.CreatureObject) NGECore.getInstance().equipmentService.unequip((CreatureObject) requester, object);
+		else if(otherContainer instanceof resources.objects.creature.CreatureObject) NGECore.getInstance().equipmentService.equip((CreatureObject) requester, object);
 		
 		fetchChildren();
 		

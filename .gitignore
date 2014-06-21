@@ -200,3 +200,4 @@ pip-log.txt
 ## PyCharm
 #############
 .idea
+.project
