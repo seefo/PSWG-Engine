@@ -38,7 +38,7 @@ public class SOEProtocolDecoder implements ProtocolDecoder {
 	private MessageCRC messageCRC;
 	private SimpleBufferAllocator bufferPool;
 	private String maxSessions = "5";
-	private static final boolean enable = false;
+	private static final boolean enable = true;
 	
 	SOEProtocolDecoder() {
 		this.messageCompression = new MessageCompression();
