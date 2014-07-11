@@ -45,7 +45,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	private long startTime;
 	private String maxTime = "1800000";
 	private MessagePackager messagePackager;
-	private static final boolean enable = false;
+	private static final boolean enable = true;
 	
 	public NetworkDispatch(NGECore core, boolean isZone) {
 		
@@ -60,7 +60,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		this.isZone = isZone;
 		
 		if(isZone) {
-			AuthClient client = new AuthClient(core);
+			//AuthClient client = new AuthClient(core);
 		}
 		
 		if(enable) {
