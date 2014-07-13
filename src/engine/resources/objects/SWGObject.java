@@ -375,7 +375,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			if (planet != null) {
 				planetId = planet.getID();
 			} else {
-				planetId = 0;
+				planetId = 1;
 			}
 		}
 	}
@@ -954,7 +954,17 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		} else {
 			synchronized(objectMutex) {
 				for(Integer i : object.slotArrangement.getArrangement().get(object.arrangementId - 4)) {
-					slots[slotDescriptor.getIndexOf(i)].remove(object);
+					if (slots[slotDescriptor.getIndexOf(i)] != null) {
+						slots[slotDescriptor.getIndexOf(i)].remove(object);
+					} else {
+						System.err.println("Error: attempting to _remove an item from non-existant slot.  Debug info:");
+						if (slots == null) System.err.println("slots is null");
+						if (slotDescriptor == null) System.err.println("slotDescriptor is null");
+						else System.err.println("slotId: " + slotDescriptor.getIndexOf(i));
+						if (object != null) System.err.println("Object being removed: " + object.getTemplate());
+						else System.err.println("Object being removed: NULL!");
+						System.err.println("Object being removed from: " + getTemplate());
+					}
 				}
 			}
 		}
