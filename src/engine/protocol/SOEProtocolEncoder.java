@@ -31,7 +31,7 @@ public class SOEProtocolEncoder implements ProtocolEncoder {
 	private Map<IoSession, Vector<IoBuffer>> queue;
 	private CachedBufferAllocator bufferPool;
 	private static Map<Integer, AbstractUnitTest> unitTests = null;
-	private static boolean enableUnitTesting = true;
+	private static boolean enableUnitTesting = false;
 
 	SOEProtocolEncoder() {
 		this.messageCompression = new MessageCompression();
