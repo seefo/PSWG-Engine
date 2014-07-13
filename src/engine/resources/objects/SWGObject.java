@@ -1073,7 +1073,15 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		}
 	}
 	
-	public ContainerPermissions getPermissions() { 
+	public ContainerPermissions getPermissions() {
+		if (objectMutex == null) {
+			System.err.println("objectMutex null for: " + getTemplate());
+			
+			if (getContainer() != null) {
+				System.err.println("container of uninitialized object: " + getTemplate());
+			}
+		}
+		
 		synchronized(objectMutex) {
 			return permissions;
 		}

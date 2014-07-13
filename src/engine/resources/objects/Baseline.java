@@ -307,6 +307,10 @@ public class Baseline implements List<Object>, Serializable {
 	}
 	
 	public Object get(String name) {
+		if (objectMutex == null) {
+			System.err.println("Baseline::get(): objectMutex is null for " + object.getTemplate());
+		}
+		
 		synchronized(objectMutex) {
 			return checkGet(list.get(definition.get(name)));
 		}
