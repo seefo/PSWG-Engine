@@ -528,6 +528,16 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void makeAware(final SWGObject obj) {
 		
+		if (obj.getContainer() != null && !awareObjects.contains(obj.getContainer())) {
+			System.out.println("Error: Sending a child object for container that client isn't aware of: " + obj.getTemplate() + " with parent " + obj.getContainer().getTemplate());
+			try {
+				throw new Exception();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
 		if(awareObjects.contains(obj) || !obj.getPermissions().canView(this, obj)) {
 			//System.out.println("Already aware of: " + obj.getTemplate());
 			return;
@@ -914,7 +924,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 
 	public void sendUpdateContainment(Client client) {
 
-		if(getParentId() == 0)
+		if(getContainer() != null /*getParentId() == 0*/)
 			return;
 		
 		if(client == null || client.getSession() == null)
@@ -924,7 +934,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		if(arrangementId == 0)
 			arrangementId = 4;
 	
-		UpdateContainmentMessage ucm = new UpdateContainmentMessage(getObjectID(), getParentId(), arrangementId);
+		UpdateContainmentMessage ucm = new UpdateContainmentMessage(getObjectID(), getContainer().getObjectID() /*getParentId()*/, arrangementId);
 		
 		client.getSession().write(ucm.serialize());
 		//System.out.println("UCM sent for: " + getTemplate() + "Arrangement Id: " + arrangementId);
