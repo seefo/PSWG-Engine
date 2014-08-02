@@ -924,7 +924,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 
 	public void sendUpdateContainment(Client client) {
 
-		if(getContainer() != null /*getParentId() == 0*/)
+		if(getContainer() == null /*getParentId() == 0*/)
 			return;
 		
 		if(client == null || client.getSession() == null)
