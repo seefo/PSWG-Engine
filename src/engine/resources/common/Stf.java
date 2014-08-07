@@ -50,93 +50,73 @@ public class Stf extends Delta implements Serializable {
 		
 	}
 	
-	public String getStfFilename() {
-		synchronized(objectMutex) {
-			return stfFilename.get();
-		}
+	public synchronized String getStfFilename() {
+		return stfFilename.get();
 	}
 	
-	public void setStfFilename(String stfFilename) {
-		synchronized(objectMutex) {
-			this.stfFilename = new AString(stfFilename);
-		}
+	public synchronized void setStfFilename(String stfFilename) {
+		this.stfFilename = new AString(stfFilename);
 	}
 	
-	public int getSpacer() {
-		synchronized(objectMutex) {
-			return spacer;
-		}
+	public synchronized int getSpacer() {
+		return spacer;
 	}
 	
-	public void setSpacer(int spacer) {
-		synchronized(objectMutex) {
-			this.spacer = spacer;
-		}
+	public synchronized void setSpacer(int spacer) {
+		this.spacer = spacer;
 	}
 	
-	public String getStfName() {
-		synchronized(objectMutex) {
-			return stfName.get();
-		}
+	public synchronized String getStfName() {
+		return stfName.get();
 	}
 	
-	public void setStfName(String stfName) {
-		synchronized(objectMutex) {
-			this.stfName = new AString(stfName);
-		}
+	public synchronized void setStfName(String stfName) {
+		this.stfName = new AString(stfName);
 	}
 	
-	public String getStfValue() {
-		synchronized(objectMutex) {
-			try {
-				StfTable stf = new StfTable("clientdata/string/en/" + stfFilename.get() + ".stf");
-				
-				for (int s = 1; s < stf.getRowCount(); s++) {
-					if (stf.getStringById(s).getKey() != null && stf.getStringById(s).getKey().equals(stfName.get())) {
-						if (stf.getStringById(s).getValue() != null) {
-							return stf.getStringById(s).getValue();
-						}
+	public synchronized String getStfValue() {
+		try {
+			StfTable stf = new StfTable("clientdata/string/en/" + stfFilename.get() + ".stf");
+			
+			for (int s = 1; s < stf.getRowCount(); s++) {
+				if (stf.getStringById(s).getKey() != null && stf.getStringById(s).getKey().equals(stfName.get())) {
+					if (stf.getStringById(s).getValue() != null) {
+						return stf.getStringById(s).getValue();
 					}
 				}
-				
-				return "";
-	        } catch (Exception e) {
-	        	return "";
-	        }
-		}
-	}
-	
-	public String getString() {
-		synchronized(objectMutex) {
-			return ("@" + stfFilename.get() + ":" + stfName.get());
-		}
-	}
-	
-	public void setString(String stf) {
-		synchronized(objectMutex) {
-			if (stf == null || stf.equals("")) {
-				stfFilename.set("");
-				stfName.set("");
-			} else if (stf.contains(":")) {
-				stf = stf.replace("@", "");
-				stfFilename.set(stf.split(":")[0]);
-				stfName.set(stf.split(":")[1]);
 			}
+			
+			return "";
+        } catch (Exception e) {
+        	return "";
+        }
+	}
+	
+	public synchronized String getString() {
+		return ("@" + stfFilename.get() + ":" + stfName.get());
+	}
+	
+	public synchronized void setString(String stf) {
+		if (stf == null || stf.equals("")) {
+			stfFilename.set("");
+			stfName.set("");
+		} else if (stf.contains(":")) {
+			stf = stf.replace("@", "");
+			stfFilename.set(stf.split(":")[0]);
+			stfName.set(stf.split(":")[1]);
 		}
 	}
 	
-	public byte[] getBytes() {
-		synchronized(objectMutex) {
-			int size = stfFilename.getBytes().length + 4 + stfName.getBytes().length;
-			
-			IoBuffer buffer = createBuffer(size);
-			buffer.put(stfFilename.getBytes());
-			buffer.putInt(spacer);
-			buffer.put(stfName.getBytes());
-			buffer.flip();
-			
-			return buffer.array();
-		}
+	public synchronized byte [] getBytes() {
+		int size = stfFilename.getBytes().length + 4 + stfName.getBytes().length;
+		
+		IoBuffer buffer = createBuffer(size);
+		buffer.put(stfFilename.getBytes());
+		buffer.putInt(spacer);
+		buffer.put(stfName.getBytes());
+		buffer.flip();
+		
+		return buffer.array();
 	}
 	
 }
