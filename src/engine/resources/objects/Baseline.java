@@ -312,7 +312,9 @@ public class Baseline implements List<Object>, Serializable {
 		}
 		
 		synchronized(objectMutex) {
-			return checkGet(list.get(definition.get(name)));
+			if (!definition.containsKey(name))
+				return null;
+			return list.get(definition.get(name));
 		}
 	}
 	
@@ -550,7 +552,9 @@ public class Baseline implements List<Object>, Serializable {
 		synchronized(objectMutex) {
 			if (!definition.containsKey(name)) {
 				definition.put(name, list.size());
-				list.add(checkSet(o, o));
+				list.add(o);
+			} else {
+				list.set(definition.get(name), o);
 			}
 		}
 	}
@@ -585,7 +589,11 @@ public class Baseline implements List<Object>, Serializable {
 	
 	public IoBuffer set(String name, Object o) {
 		synchronized(objectMutex) {
-			int index = definition.get(name);
+			Integer index = definition.get(name);
+			if (index == null) {
+				index = definition.size();
+				put(name, o);
+			}
 			
 			if (compareTypes(checkSet(o, list.get(index)), list.get(index)) && list.set(index, checkSet(o, list.get(index))) != null) {
 				return createDelta(index);
@@ -823,59 +831,59 @@ public class Baseline implements List<Object>, Serializable {
 					Object oldObject = oldStruct.get(oldIndex);
 					
 					if (compareTypes(newObject, oldObject)) {
-						newStruct.set(i, oldObject);
+						newStruct.list.set(i, oldObject);
 					} else {
 						if (newObject instanceof String) {
 							if (oldObject instanceof AString) {
-								newStruct.set(i, ((AString) oldObject).get());
+								newStruct.list.set(i, ((AString) oldObject).get());
 							} else if (oldObject instanceof UString) {
-								newStruct.set(i, ((UString) oldObject).get());
+								newStruct.list.set(i, ((UString) oldObject).get());
 							}
 						} else if (newObject instanceof AString) {
 							if (oldObject instanceof String) {
-								newStruct.set(i, new AString((String) oldObject));
+								newStruct.list.set(i, new AString((String) oldObject));
 							} else if (oldObject instanceof UString) {
-								newStruct.set(i, new AString(((UString) oldObject).get()));
+								newStruct.list.set(i, new AString(((UString) oldObject).get()));
 							}
 						} else if (newObject instanceof UString) {
 							if (oldObject instanceof String) {
-								newStruct.set(i, new UString((String) oldObject));
+								newStruct.list.set(i, new UString((String) oldObject));
 							} else if (oldObject instanceof AString) {
-								newStruct.set(i, new UString(((AString) oldObject).get()));
+								newStruct.list.set(i, new UString(((AString) oldObject).get()));
 							}
 						} else if (newObject instanceof Byte) {
 							if (oldObject instanceof Short && (Short) oldObject < 0xFF) {
-								newStruct.set(i, ((Short) oldObject).byteValue());
+								newStruct.list.set(i, ((Short) oldObject).byteValue());
 							} else if (oldObject instanceof Integer && (Integer) oldObject < 0xFF) {
-								newStruct.set(i, ((Integer) oldObject).byteValue());
+								newStruct.list.set(i, ((Integer) oldObject).byteValue());
 							} else if (oldObject instanceof Long && (Long) oldObject < 0xFF) {
-								newStruct.set(i, ((Long) oldObject).byteValue());
+								newStruct.list.set(i, ((Long) oldObject).byteValue());
 							}
 						} else if (newObject instanceof Short) {
 							if (oldObject instanceof Byte) {
-								newStruct.set(i, ((Byte) oldObject).shortValue());
+								newStruct.list.set(i, ((Byte) oldObject).shortValue());
 							} else if (oldObject instanceof Integer && (Integer) oldObject < 0xFFFF) {
-								newStruct.set(i, ((Integer) oldObject).shortValue());
+								newStruct.list.set(i, ((Integer) oldObject).shortValue());
 							} else if (oldObject instanceof Long && (Long) oldObject < 0xFFFF) {
-								newStruct.set(i, ((Long) oldObject).shortValue());
+								newStruct.list.set(i, ((Long) oldObject).shortValue());
 							}
 						} else if (newObject instanceof Integer) {
 							if (oldObject instanceof Byte) {
-								newStruct.set(i, ((Byte) oldObject).intValue());
+								newStruct.list.set(i, ((Byte) oldObject).intValue());
 							} else if (oldObject instanceof Short) {
-								newStruct.set(i, ((Short) oldObject).intValue());
+								newStruct.list.set(i, ((Short) oldObject).intValue());
 							} else if (oldObject instanceof Long && (Long) oldObject < 0xFFFFFFFF) {
-								newStruct.set(i, ((Long) oldObject).intValue());
+								newStruct.list.set(i, ((Long) oldObject).intValue());
 							}
 						} else if (newObject instanceof Long) {
 							if (oldObject instanceof Byte) {
-								newStruct.set(i, ((Byte) oldObject).longValue());
+								newStruct.list.set(i, ((Byte) oldObject).longValue());
 							} else if (oldObject instanceof Short) {
-								newStruct.set(i, ((Short) oldObject).longValue());
+								newStruct.list.set(i, ((Short) oldObject).longValue());
 							} else if (oldObject instanceof Integer) {
-								newStruct.set(i, ((Integer) oldObject).longValue());
+								newStruct.list.set(i, ((Integer) oldObject).longValue());
 							} else if (oldObject instanceof SWGObject) {
-								newStruct.set(i, ((SWGObject) oldObject).getObjectID());
+								newStruct.list.set(i, ((SWGObject) oldObject).getObjectID());
 							}
 						}
 					}
