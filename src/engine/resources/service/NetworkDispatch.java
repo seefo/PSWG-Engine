@@ -1,6 +1,13 @@
 package engine.resources.service;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -43,6 +50,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 	private String maxSessions = "5";
 	private MINAServer server;
 	private long startTime;
+	private String logDirectory = "./logs";
 	private String maxTime = "1800000";
 	private MessagePackager messagePackager;
 	private static final boolean enable = true;
@@ -194,6 +202,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 			    				packet.free();
 			    			} catch(Exception e) {
 			    				e.printStackTrace();
+			    				logException(e);
 			    			}
 			    		} else {
 			    			System.out.println("Unknown ObjController Opcode Found : 0x"+ Integer.toHexString(objControllerOpcode));
@@ -207,6 +216,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		    				packet.free();
 		    			} catch(Exception e) {
 		    				e.printStackTrace();
+		    				logException(e);
 		    			}
 		    		} else {
 		    			System.out.println("Unknown Opcode Found : 0x"+ Integer.toHexString(opcode) + "Data: " + Utilities.getHexString(packet.array()));
@@ -217,7 +227,8 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
     }
 	@Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        cause.printStackTrace();
+		logException(cause);
+		cause.printStackTrace();
         session.close(true);
     }
 
@@ -300,8 +311,19 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		}
 		
 	}
-
-
+	
+	private void logException(Throwable exception) {
+		BufferedWriter writer;
+		try {
+			writer = Files.newBufferedWriter(Paths.get(logDirectory + "\\" + "NetworkDispatch_EXCEPTIONS" + ".txt"), StandardOpenOption.WRITE, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+			PrintWriter out = new PrintWriter(writer);
+			out.println("====== Exception : Time - " + System.currentTimeMillis() + " ======");
+			exception.printStackTrace(out);
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	private Vector<byte[]> getClientQueue(IoSession session, Vector<IoBuffer> messages) {
 
 		IoBuffer[] messageArray = messages.toArray(new IoBuffer[messages.size()]);
