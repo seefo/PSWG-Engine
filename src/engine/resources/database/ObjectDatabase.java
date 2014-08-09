@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import resources.common.Console;
 
@@ -30,6 +31,7 @@ import engine.resources.objects.SWGObject;
 @SuppressWarnings("all")
 public class ObjectDatabase implements Runnable {
 	
+	private String name;
 	private Environment environment;
 	private EnvironmentConfig EnvConfig;
 	private DatabaseConfig dbConfig;
@@ -62,6 +64,7 @@ public class ObjectDatabase implements Runnable {
 	    storeConfig.setTransactional(allowTransactional);
 	    storeConfig.setMutations(mutation);*/
 	    
+		this.name = name;
         environment = new Environment(new File(".", "odb/" + name), EnvConfig);
         //entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);
         
@@ -198,6 +201,7 @@ public class ObjectDatabase implements Runnable {
 			try {
 				Thread.sleep(300000);
 				environment.sync();
+				System.out.println("Saving ODB " + name + " for a periodic save.");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
