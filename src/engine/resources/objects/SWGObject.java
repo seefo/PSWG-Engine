@@ -519,7 +519,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			awareObjects.add(obj);
 			obj.addObserver(this);
 		}
-		if(!obj.isInSnapshot()) {
+		if(!obj.isInSnapshot() && getClient() != null && getClient().getSession() != null) {
 			obj.sendCreate(getClient());
 			obj.sendBaselines(getClient());
 			//obj.sendSceneEndBaselines(getClient());
