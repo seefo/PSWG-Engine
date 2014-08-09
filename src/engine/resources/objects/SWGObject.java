@@ -1093,8 +1093,8 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 				continue;
 			ExclusiveSlot _slot = (ExclusiveSlot) slot;
 			if(slot.getName().equals(slotName)) {
-				if (_slot.getName().contains("inventory"))
-					System.out.println("Slot is inventory! " + _slot.getName() + "  " + _slot.getObject().getTemplate());
+				if (_slot.getName().contains("inventory") && _slot.getObject() != null)
+					System.out.println("Slot is inventory! Name: " + _slot.getName() + "   Template: " + _slot.getObject().getTemplate());
 				return _slot.getObject();
 			}
 		}
