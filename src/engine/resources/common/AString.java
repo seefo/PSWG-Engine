@@ -21,13 +21,14 @@
  ******************************************************************************/
 package engine.resources.common;
 
+import java.io.Serializable;
 import java.nio.ByteOrder;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
 import engine.resources.objects.Delta;
 
-public final class AString extends Delta {
+public final class AString extends Delta implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private String string;
@@ -40,28 +41,20 @@ public final class AString extends Delta {
 		this.string = ((string == null) ? "" : string);
 	}
 	
-	public String get() {
-		synchronized(objectMutex) {
-			return string;
-		}
+	public synchronized String get() {
+		return string;
 	}
 	
-	public void set(String string) {
-		synchronized(objectMutex) {
-			this.string = string;
-		}
+	public synchronized void set(String string) {
+		this.string = string;
 	}
 	
-	public short length() {
-		synchronized(objectMutex) {
-			return (short) string.length();
-		}
+	public synchronized short length() {
+		return (short) string.length();
 	}
 	
-	public byte[] getBytes() {
-		synchronized(objectMutex) {
-			return IoBuffer.allocate(2 + string.length(), false).order(ByteOrder.LITTLE_ENDIAN).putShort((short) string.length()).put(string.getBytes()).flip().array();
-		}
+	public synchronized byte [] getBytes() {
+		return IoBuffer.allocate(2 + string.length(), false).order(ByteOrder.LITTLE_ENDIAN).putShort((short) string.length()).put(string.getBytes()).flip().array();
 	}
 	
 }

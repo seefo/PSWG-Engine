@@ -286,7 +286,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		
 	}
 
-	public void getContainerInfo(String template) {
+	public synchronized void getContainerInfo(String template) {
 
 		try {
 			
@@ -332,51 +332,43 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		
 	}
 	
-	public SlotArrangementVisitor getArrangement() { return slotArrangement; }
+	public synchronized SlotArrangementVisitor getArrangement() { return slotArrangement; }
 
-	public long getObjectID() {
+	public synchronized long getObjectID() {
 		if(objectID == 0)
 			return objectId;
 		return objectID;
 	}
 	
-	public long getObjectId() { return objectId; }
+	public synchronized long getObjectId() { return objectId; }
 	
-	public int getPlanetId() {
-		synchronized(objectMutex) {
-			return planetId;
+	public synchronized int getPlanetId() {
+		return planetId;
+	}
+	
+	public synchronized void setPlanetId(int planetId) {
+		this.planetId = planetId;
+		
+		if (planet == null || planet != NGECore.getInstance().terrainService.getPlanetByID(planetId)) {
+			planet = NGECore.getInstance().terrainService.getPlanetByID(planetId);
 		}
 	}
 	
-	public void setPlanetId(int planetId) {
-		synchronized(objectMutex) {
-			this.planetId = planetId;
-			
-			if (planet == null || planet != NGECore.getInstance().terrainService.getPlanetByID(planetId)) {
-				planet = NGECore.getInstance().terrainService.getPlanetByID(planetId);
-			}
+	public synchronized Planet getPlanet() {
+		if (planet != null) {
+			return planet;
+		} else {
+			return planet = NGECore.getInstance().terrainService.getPlanetByID(planetId);
 		}
 	}
 	
-	public Planet getPlanet() {
-		synchronized(objectMutex) {
-			if (planet != null) {
-				return planet;
-			} else {
-				return planet = NGECore.getInstance().terrainService.getPlanetByID(planetId);
-			}
-		}
-	}
-	
-	public void setPlanet(Planet planet) {
-		synchronized(objectMutex) {
-			this.planet = planet;
-			
-			if (planet != null) {
-				planetId = planet.getID();
-			} else {
-				planetId = 1;
-			}
+	public synchronized void setPlanet(Planet planet) {
+		this.planet = planet;
+		
+		if (planet != null) {
+			planetId = planet.getID();
+		} else {
+			planetId = 1;
 		}
 	}
 	
@@ -388,75 +380,55 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		return observers;
 	}
 	
-	public SWGObject getContainer() {
-		synchronized(objectMutex) {
-			return parent;
-		}
+	public synchronized SWGObject getContainer() {
+		return parent;
 	}
 	
-	public void setParent(SWGObject parent) {
-		synchronized(objectMutex) {
-			this.parent = parent;
-		}
+	public synchronized void setParent(SWGObject parent) {
+		this.parent = parent;
 	}	
 	
-	public void setPosition(Point3D newPosition) {
-		synchronized(objectMutex) {
-			position = newPosition;
-		}
+	public synchronized void setPosition(Point3D newPosition) {
+		position = newPosition;
 	}
 
 	public void setOrientation(Quaternion newOrientation) {
-		synchronized(objectMutex) {
-			orientation = newOrientation;
-		}
+		orientation = newOrientation;
 	}
 	
-	public boolean hasObservers() { return !observers.isEmpty(); }
+	public synchronized boolean hasObservers() { return !observers.isEmpty(); }
 	
-	public boolean isInQuadtree() { 
+	public synchronized boolean isInQuadtree() { 
 		return isInQuadtree; 
 	}
 	
-	public void setIsInQuadtree(boolean isInQuadtree) {
+	public synchronized void setIsInQuadtree(boolean isInQuadtree) {
 		this.isInQuadtree = isInQuadtree;
 	}
 
 	
-	public Point3D getPosition() { 
-		synchronized(objectMutex) {
-			return position; 
-		}
+	public synchronized Point3D getPosition() { 
+		return position; 
 	}
 	
-	public Quaternion getOrientation() { 
-		synchronized(objectMutex) {
-			return orientation; 
-		}
+	public synchronized Quaternion getOrientation() { 
+		return orientation; 
 	}
 	
-	public long getParentId() {
-		synchronized(objectMutex) {
-			return parentId; 
-		}
+	public synchronized long getParentId() {
+		return parentId; 
 	}
 	
-	public void setParentId(long parentId) {
-		synchronized(objectMutex) {
-			this.parentId = parentId; 
-		}
+	public synchronized void setParentId(long parentId) {
+		this.parentId = parentId; 
 	}
 	
-	public int getMovementCounter() {
-		synchronized(objectMutex) {
-			return movementCounter; 
-		}
+	public synchronized int getMovementCounter() {
+		return movementCounter; 
 	}
 	
-	public void setMovementCounter(int movementCounter) {
-		synchronized(objectMutex) {
-			this.movementCounter = movementCounter; 
-		}
+	public synchronized void setMovementCounter(int movementCounter) {
+		this.movementCounter = movementCounter; 
 	}
 	
 	public String getTemplate() { return template; }
@@ -1120,8 +1092,11 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			if(!(slot instanceof ExclusiveSlot))
 				continue;
 			ExclusiveSlot _slot = (ExclusiveSlot) slot;
-			if(slot.getName().equals(slotName))
+			if(slot.getName().equals(slotName)) {
+				if (_slot.getName().contains("inventory") && _slot.getObject() != null)
+					System.out.println("Slot is inventory! Name: " + _slot.getName() + "   Template: " + _slot.getObject().getTemplate());
 				return _slot.getObject();
+			}
 		}
 		
 		return null;
