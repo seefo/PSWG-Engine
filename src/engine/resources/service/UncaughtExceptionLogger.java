@@ -33,7 +33,7 @@ public class UncaughtExceptionLogger implements UncaughtExceptionHandler {
 
 		if (!f.exists()) {
 			try {
-				Files.createDirectory(f.toPath());
+				Files.createDirectory(Paths.get(logDirectory));
 				System.out.println("Created logs directory.");
 			} catch (IOException e) {
 				e.printStackTrace();
