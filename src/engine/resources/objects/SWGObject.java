@@ -82,6 +82,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	private float collisionLength;
 	private float collisionHeight;
 	private boolean collidable;
+	private transient boolean currentlySpawned;
 	@NotPersistent
 	private transient ObjectVisitor templateData;
 	@NotPersistent
@@ -114,6 +115,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 
 
 	public SWGObject() { 
+		currentlySpawned = false;
 		loadAppearanceData();
 		if(meshVisitor != null)
 			meshVisitor.getTriangles();
@@ -124,6 +126,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		this.objectId = objectID;
 		this.planet = planet;
 		this.template = Template;
+		this.currentlySpawned = false;
 		setPosition(position);
 		setOrientation(orientation);
 		getContainerInfo(Template);
@@ -618,6 +621,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			SceneCreateObjectByCrc create = new SceneCreateObjectByCrc(getObjectID(), quat.x, quat.y, quat.z, quat.w, pos.x, pos.y, pos.z, CRC.StringtoCRC(template), (byte) 0);
 			destination.getSession().write(create.serialize());
 		//}
+		currentlySpawned = true;
 		sendUpdateContainment(destination);
 		
 	}
@@ -637,7 +641,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			return;
 		SceneDestroyObject sceneDestroy = new SceneDestroyObject(getObjectID());
 		destination.getSession().write(sceneDestroy.serialize());
-
+		currentlySpawned = false;
 	}
 	
 	
@@ -649,6 +653,9 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	public void notifyObservers(Message message, boolean updateSelf) {
 		
 		if(observers.isEmpty() && !updateSelf)
+			return;
+		
+		if (!currentlySpawned)
 			return;
 		
 		IoBuffer data = message.serialize();
@@ -675,6 +682,9 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		if(observers.isEmpty() && !updateSelf)
 			return;
 				
+		if (!currentlySpawned)
+			return;
+		
 		if(updateSelf && client != null && client.getSession() != null)
 			client.getSession().write(message);
 		
