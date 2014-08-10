@@ -554,7 +554,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void makeUnaware(final SWGObject obj) {
 		
-		if(!awareObjects.contains(obj) || obj == this || !obj.getObservers().contains(getClient()))
+		if(!awareObjects.contains(obj) || obj == this || !obj.getObservers().contains(getClient()) || !obj.getPermissions().canView(this, obj))
 			return;
 		
 		/*if(getObjectID() == obj.getObjectID()) {
