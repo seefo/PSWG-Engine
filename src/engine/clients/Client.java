@@ -14,13 +14,11 @@ public class Client {
 	protected long accountId;
 	protected String accountName;
 	protected String password;
-	protected String email;
 	protected String accessLevel;
 	protected byte[] sessionKey;
 	protected long lastPacket;
 	protected boolean disconnected = false;
 	public boolean ready = false;
-	private boolean isGM;
 	
 	public Connection connection;
 	public SWGObject parent;
@@ -28,8 +26,6 @@ public class Client {
 	public Client(SocketAddress endPoint) {
 		this.connection = new Connection(endPoint);
 	}
-	public boolean isGM() { return isGM; }
-	public void setGM(boolean isGM) { this.isGM = isGM; }
 	
 	public IoSession getSession() { return session; }
 	public void setSession(IoSession s) { this.session = ((!DebugSession.debugPackets) ? s : new DebugSession(s)); }
@@ -40,9 +36,6 @@ public class Client {
 	public String getAccountName() { return accountName; }
 	public void setAccountName(String accountName) { this.accountName = accountName; }
 
-	public String getAccountEmail() { return email; }
-	public void setAccountEmail(String email) { this.email = email; }
-	
 	public String getAccessLevel() { return accessLevel; }
 	public void setAccessLevel(String accessLevel) { this.accessLevel = accessLevel; }
 	
