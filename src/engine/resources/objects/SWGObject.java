@@ -1,7 +1,12 @@
 package engine.resources.objects;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -613,7 +618,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			setAttachment("cellsSorted", new Boolean(true));
 		}
 		
-		if(destination == null || destination.getSession() == null)
+		if(destination == null || destination.getSession() == null || currentlySpawned)
 			return;
 		Quaternion quat = getOrientation();
 		Point3D pos = getPosition();
@@ -637,11 +642,11 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void sendDestroy(Client destination) {
 				
-		if(destination == null || destination.getSession() == null || destination == getClient())
+		if(destination == null || destination.getSession() == null || destination == getClient() || !currentlySpawned)
 			return;
+		currentlySpawned = false;
 		SceneDestroyObject sceneDestroy = new SceneDestroyObject(getObjectID());
 		destination.getSession().write(sceneDestroy.serialize());
-		currentlySpawned = false;
 	}
 	
 	
@@ -660,13 +665,19 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		
 		IoBuffer data = message.serialize();
 		
-		if(updateSelf && client != null && client.getSession() != null)
-			client.getSession().write(data);
+		if(updateSelf && client != null && client.getSession() != null) {
+			Object startScene = client.getSession().getAttribute("CmdSceneReady");
+			if (startScene != null && startScene.equals(true))
+				client.getSession().write(data);
+		}
 		
 		synchronized(observers) {
 			for(Client client : observers) {
-				if(client != null && client.getSession() != null)
-					client.getSession().write(data);
+				if(client != null && client.getSession() != null) {
+					Object startScene = client.getSession().getAttribute("CmdSceneReady");
+					if (startScene != null && startScene.equals(true))
+						client.getSession().write(data);
+				}
 			}
 		}
 		
@@ -685,13 +696,19 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		if (!currentlySpawned)
 			return;
 		
-		if(updateSelf && client != null && client.getSession() != null)
-			client.getSession().write(message);
+		if(updateSelf && client != null && client.getSession() != null) {
+			Object startScene = client.getSession().getAttribute("CmdSceneReady");
+			if (startScene != null && startScene.equals(true))
+				client.getSession().write(message);
+		}
 		
 		synchronized(observers) {
 			for(Client client : observers) {
-				if(client != null && client.getSession() != null)
-					client.getSession().write(message);
+				if(client != null && client.getSession() != null) {
+					Object startScene = client.getSession().getAttribute("CmdSceneReady");
+					if (startScene != null && startScene.equals(true))
+						client.getSession().write(message);
+				}
 			}
 		}
 		
@@ -707,8 +724,11 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		
 		IoBuffer data = message.serialize();
 		
-		if(updateSelf && client != null && client.getSession() != null)
-			client.getSession().write(data);
+		if(updateSelf && client != null && client.getSession() != null) {
+			Object startScene = client.getSession().getAttribute("CmdSceneReady");
+			if (startScene != null && startScene.equals(true))
+				client.getSession().write(data);
+		}
 		
 		if(observers.isEmpty() && !updateSelf)
 			return;
@@ -718,7 +738,9 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		for(Client client : observers) {
 			float distance = client.getParent().getPosition().getDistance2D(position);
 			if(client != null && client.getSession() != null && distance <= range) {
-				client.getSession().write(data);
+				Object startScene = client.getSession().getAttribute("CmdSceneReady");
+				if (startScene != null && startScene.equals(true))
+					client.getSession().write(data);
 			}
 		}
 		
