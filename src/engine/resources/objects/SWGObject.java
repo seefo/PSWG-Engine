@@ -618,7 +618,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			setAttachment("cellsSorted", new Boolean(true));
 		}
 		
-		if(destination == null || destination.getSession() == null || currentlySpawned)
+		if(destination == null || destination.getSession() == null)
 			return;
 		Quaternion quat = getOrientation();
 		Point3D pos = getPosition();
