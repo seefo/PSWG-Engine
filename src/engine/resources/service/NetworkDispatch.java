@@ -318,7 +318,7 @@ public class NetworkDispatch extends IoHandlerAdapter implements Runnable {
 		try {
 			writer = Files.newBufferedWriter(Paths.get(logDirectory + "\\" + "NetworkDispatch_EXCEPTIONS" + ".txt"), StandardOpenOption.WRITE, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 			PrintWriter out = new PrintWriter(writer);
-			out.println("====== Exception : Time - " + System.currentTimeMillis() + " ======");
+			out.println("====== Exception : Time - " + Calendar.getInstance().getTime() + " ======");
 			exception.printStackTrace(out);
 			out.close();
 		} catch (IOException e) {
