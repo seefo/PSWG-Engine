@@ -1563,6 +1563,17 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		}
 	}
 	
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		if (o instanceof SWGObject) {
+			return o == this || ((SWGObject)o).objectID == objectID;
+		} else if (o instanceof Long) {
+			return ((Long)o).longValue() == objectID;
+		}
+		return false;
+	}
+	
 	public abstract void sendBaselines(Client destination);
 	
 	public abstract void sendListDelta(byte viewType, short updateType, IoBuffer buffer);
