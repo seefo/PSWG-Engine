@@ -666,16 +666,16 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		IoBuffer data = message.serialize();
 		
 		if(updateSelf && client != null && client.getSession() != null) {
-			Object startScene = client.getSession().getAttribute("CmdSceneReady");
-			if (startScene != null && startScene.equals(true))
+	//		Object startScene = client.getSession().getAttribute("CmdSceneReady");
+	//		if (startScene != null && startScene.equals(true))
 				client.getSession().write(data);
 		}
 		
 		synchronized(observers) {
 			for(Client client : observers) {
 				if(client != null && client.getSession() != null) {
-					Object startScene = client.getSession().getAttribute("CmdSceneReady");
-					if (startScene != null && startScene.equals(true))
+		//			Object startScene = client.getSession().getAttribute("CmdSceneReady");
+		//			if (startScene != null && startScene.equals(true))
 						client.getSession().write(data);
 				}
 			}
@@ -697,16 +697,16 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			return;
 		
 		if(updateSelf && client != null && client.getSession() != null) {
-			Object startScene = client.getSession().getAttribute("CmdSceneReady");
-			if (startScene != null && startScene.equals(true))
+	//		Object startScene = client.getSession().getAttribute("CmdSceneReady");
+	//		if (startScene != null && startScene.equals(true))
 				client.getSession().write(message);
 		}
 		
 		synchronized(observers) {
 			for(Client client : observers) {
 				if(client != null && client.getSession() != null) {
-					Object startScene = client.getSession().getAttribute("CmdSceneReady");
-					if (startScene != null && startScene.equals(true))
+		//			Object startScene = client.getSession().getAttribute("CmdSceneReady");
+		//			if (startScene != null && startScene.equals(true))
 						client.getSession().write(message);
 				}
 			}
@@ -738,8 +738,8 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 		for(Client client : observers) {
 			float distance = client.getParent().getPosition().getDistance2D(position);
 			if(client != null && client.getSession() != null && distance <= range) {
-				Object startScene = client.getSession().getAttribute("CmdSceneReady");
-				if (startScene != null && startScene.equals(true))
+			//	Object startScene = client.getSession().getAttribute("CmdSceneReady");
+			//	if (startScene != null && startScene.equals(true))
 					client.getSession().write(data);
 			}
 		}
