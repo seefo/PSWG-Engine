@@ -1433,7 +1433,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public void setComplexity(float complexity) {
-		notifyClients(getBaseline(3).set("complexity", complexity), true);
+		notifyObservers(getBaseline(3).set("complexity", complexity), true);
 	}
 	
 	public Stf getObjectName() {
@@ -1442,7 +1442,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void setObjectName(String stf) {
 		getObjectName().setString(stf);;
-		notifyClients(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
+		notifyObservers(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
 	}
 	
 	public String getStfFilename() {
@@ -1451,7 +1451,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void setStfFilename(String stfFilename) {
 		getObjectName().setStfFilename(stfFilename);
-		notifyClients(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
+		notifyObservers(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
 	}
 	
 	public String getStfName() {
@@ -1460,7 +1460,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void setStfName(String stfName) {
 		getObjectName().setStfName(stfName);
-		notifyClients(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
+		notifyObservers(getBaseline(3).set("objectName", ((Stf) getBaseline(3).get("objectName"))), true);
 	}
 	
 	public String getLookAtText() {
@@ -1469,7 +1469,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public void setLookAtText(String lookAtText) {
-		notifyClients(getBaseline(3).set("lookAtText", new UString(lookAtText)), true);
+		notifyObservers(getBaseline(3).set("lookAtText", new UString(lookAtText)), true);
 	}
 	
 	public String getCustomName() {
@@ -1477,7 +1477,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public void setCustomName(String customName) {
-		notifyClients(getBaseline(3).set("lookAtText", new UString(customName)), true);
+		notifyObservers(getBaseline(3).set("lookAtText", new UString(customName)), true);
 	}
 	
 	public String getTrueName() {
@@ -1497,7 +1497,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public void setVolume(int volume) {
-		notifyClients(getBaseline(3).set("volume", volume), true);
+		notifyObservers(getBaseline(3).set("volume", volume), true);
 	}
 	
 	public void incrementVolume(int increase) {
@@ -1513,7 +1513,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public void setServerId(int serverId) {
-		notifyClients(getBaseline(6).set("serverId", serverId), true);
+		notifyObservers(getBaseline(6).set("serverId", serverId), true);
 	}
 	
 	public Stf getDetailedDescription() {
@@ -1522,7 +1522,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void setDetailDescription(String detailedDescription) {
 		getDetailedDescription().setString(detailedDescription);		
-		notifyClients(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
+		notifyObservers(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
 	}
 	
 	public String getDetailFilename() {
@@ -1531,7 +1531,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void setDetailFilename(String detailFilename) {
 		getDetailedDescription().setStfFilename(detailFilename);
-		notifyClients(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
+		notifyObservers(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
 	}
 	
 	public String getDetailName() {
@@ -1540,7 +1540,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	
 	public void setDetailName(String detailName) {
 		getDetailedDescription().setStfName(detailName);
-		notifyClients(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
+		notifyObservers(getBaseline(6).set("detailedDescription", (Stf) getBaseline(6).get("detailedDescription")), true);
 	}
 	
 	/*
@@ -1549,7 +1549,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	 a problem for inheritance when the master object uses a
 	 different method (ie. ITNO and PLAY).
 	 */
-	public void notifyClients(IoBuffer buffer, boolean notifySelf) {
+	public void notifyObservers(IoBuffer buffer, boolean notifySelf) {
 		notifyObservers(buffer, notifySelf);
 	}
 	
@@ -1594,7 +1594,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			case 6:
 			case 8:
 			case 9:
-				notifyClients(getBaseline(viewType).createDelta(updateType, buffer.array()), true);
+				notifyObservers(getBaseline(viewType).createDelta(updateType, buffer.array()), true);
 			default:
 				return;
 		}
