@@ -14,8 +14,11 @@ public class DefaultConfig {
 	static final String ZONE_URL = "";
 	static final int ZONE_PORT = 44463;
 	static final int GALAXY_ID = 2;
+	static final String GALAXY_NAME = "Local Connection";
 	static final int PING_PORT = 44462;
-
+	static final float XPMULTIPLIER =  (float) 1.0;
+	static final int MAXNUMBEROFCHARACTERS = 2;
+	
 	static final String FILE_PATH = "nge.cfg";
 	
 	public static final Config getConfig()
@@ -31,8 +34,11 @@ public class DefaultConfig {
 		cfg.setProperty("LOGIN.PORT",getLoginPort());
 		cfg.setProperty("LOGIN.SESSION_KEY_SIZE",getLoginSessionKeySize());
 		cfg.setProperty("ZONE.PORT",getZonePort());
-		cfg.setProperty("GALAXY_ID",getGalaxyID());
 		cfg.setProperty("PING.PORT",getPingPort());
+		cfg.setProperty("GALAXY_ID",getGalaxyID());
+		cfg.setProperty("GALAXY_NAME", getGalaxyName());
+		cfg.setProperty("XPMULTIPLIER", getXpMultiplier());
+		cfg.setProperty("MAXNUMBEROFCHARACTERS", getMaxCharacters());
 		cfg.saveConfig();
 		return cfg;
 	}
@@ -46,7 +52,6 @@ public class DefaultConfig {
 	public static final String getDbPass() {
 		return DB_PASS;
 	}
-	
 	
 	public static final String getDbUrl() {
 		return DB_URL;
@@ -78,4 +83,15 @@ public class DefaultConfig {
 		return GALAXY_ID;
 	}
 
+	public static final float getXpMultiplier() {
+		return XPMULTIPLIER;
+	}
+	
+	public static final String getGalaxyName() {
+		return GALAXY_NAME;
+	}
+	
+	public static final int getMaxCharacters() {
+		return MAXNUMBEROFCHARACTERS;
+	}
 }

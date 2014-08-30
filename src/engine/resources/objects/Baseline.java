@@ -218,11 +218,11 @@ public class Baseline implements List<Object>, Serializable {
 		buffer.putShort((short) list.size());
 		buffer.put(objects);
 		buffer.flip();
-		try {
+		/*try {
 			if (getShortTemplate().equals("CREO")) StringUtilities.printBytes(buffer.array());
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		return buffer;
 	}
 	

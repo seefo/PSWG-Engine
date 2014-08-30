@@ -884,8 +884,8 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			return false;
 		
 		// Fix for all the many different ways that a wearable will be transferred
-		if(this instanceof resources.objects.creature.CreatureObject) NGECore.getInstance().equipmentService.unequip((CreatureObject) requester, object);
-		else if(otherContainer instanceof resources.objects.creature.CreatureObject) NGECore.getInstance().equipmentService.equip((CreatureObject) requester, object);
+		if(this instanceof resources.objects.creature.CreatureObject) NGECore.getInstance().equipmentService.unequip((CreatureObject) this, object);
+		else if(otherContainer instanceof resources.objects.creature.CreatureObject) NGECore.getInstance().equipmentService.equip((CreatureObject) otherContainer, object);
 		
 		fetchChildren();
 		
