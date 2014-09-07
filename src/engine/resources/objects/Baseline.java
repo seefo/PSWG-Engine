@@ -26,7 +26,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -257,7 +256,7 @@ public class Baseline implements List<Object>, Serializable {
 	
 	public IoBuffer createDelta(List<Integer> objectQueue, byte[] data) {
 		byte[] objects = { };
-		int size = 0;
+		int size = 2;
 		
 		for (Integer o : objectQueue) {
 			byte[] object;
@@ -281,13 +280,14 @@ public class Baseline implements List<Object>, Serializable {
 			objects = buffer.array();
 		}
 		
-		IoBuffer buffer = createBuffer(25 + size);
+		IoBuffer buffer = createBuffer(27 + size);
 		buffer.putShort((short) 5);
 		buffer.putInt(Opcodes.DeltasMessage);
 		buffer.putLong(object.getObjectID());
-		
 		try {
-			buffer.put(reverse(getShortTemplate()).getBytes(StandardCharsets.US_ASCII));
+			buffer.put(reverse(getShortTemplate()).getBytes("US-ASCII"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
  		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -296,7 +296,7 @@ public class Baseline implements List<Object>, Serializable {
 		buffer.putShort((short) objectQueue.size());
 		buffer.put(objects);
 		buffer.flip();
-
+		//StringUtilities.printBytes(buffer.array());
 		return buffer;
 	}
 	
