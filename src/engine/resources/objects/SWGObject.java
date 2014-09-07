@@ -775,7 +775,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 			}
 			++arrangementId;
 		}
-		return (filledArrangementId != -1) ? filledArrangementId : 0;
+		return (filledArrangementId != -1) ? filledArrangementId : 4;
 		
 	}
 	
