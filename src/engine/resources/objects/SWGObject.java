@@ -509,7 +509,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	public void makeAware(final SWGObject obj) {
 		
 		if (obj.getTemplate().startsWith("object/weapon") && obj.getContainer() != null
-				&& !obj.getContainer().getTemplate().startsWith("object/creature/player")) {
+				&& obj.getContainer().getTemplate().startsWith("object/creature/player")) {
 			
 			System.out.println("Error: Sending a child object for container that client isn't aware of: " + obj.getTemplate() + " with parent " + obj.getContainer().getTemplate());
 			try {
