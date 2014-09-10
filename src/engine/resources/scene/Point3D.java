@@ -2,6 +2,7 @@ package engine.resources.scene;
 
 import java.io.Serializable;
 
+import resources.common.MathUtilities;
 import resources.objects.cell.CellObject;
 
 import com.sleepycat.persist.model.NotPersistent;
@@ -20,11 +21,9 @@ public class Point3D implements Serializable {
 	public Point3D() { }
 
 	public Point3D(float x, float y, float z) {
-		
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		
 	}
 	
 	public Point3D clone() {
@@ -34,20 +33,17 @@ public class Point3D implements Serializable {
 	}
 	
 	public float getDistance(Point3D target) {
-		
-		return (float)Math.sqrt(
-			Math.pow(x - target.x, 2) + 
-			Math.pow(y - target.y, 2) +
-			Math.pow(z - target.z, 2));
-		
+		return MathUtilities.manhattenDistance(this, target);
 	}
 
 	public float getDistance2D(Point3D target) {
+		Point3D tempCurrent = this;
+		Point3D tempTarget = target;
 		
-		return (float)Math.sqrt(
-				Math.pow(x - target.x, 2) + 
-				Math.pow(z - target.z, 2));
+		tempCurrent.y = 0;
+		tempTarget.y = 0;
 		
+		return MathUtilities.manhattenDistance(tempCurrent, tempTarget);		
 	}
 
 	public CellObject getCell() {
