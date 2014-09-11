@@ -18,7 +18,7 @@ public class Point2D {
 	}
 	
 	public float getDistance2D(Point2D target) {
-		return Math.abs(target.x - x) + Math.abs(target.z - z);
+		return (float) Math.sqrt(Math.pow(x - target.x, 2) + Math.pow(z - target.z, 2));
 	}
 
 }
