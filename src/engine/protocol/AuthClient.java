@@ -33,7 +33,7 @@ public class AuthClient implements Runnable {
 
 	    for (;;) {
 	        try {
-	            ConnectFuture future = connector.connect(new InetSocketAddress("23.29.118.50", Integer.parseInt(port)));
+	            ConnectFuture future = connector.connect(new InetSocketAddress("198.204.244.98", Integer.parseInt(port)));
 	            future.awaitUninterruptibly();
 	            session = future.getSession();
 	            break;
