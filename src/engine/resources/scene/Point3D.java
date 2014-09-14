@@ -8,32 +8,46 @@ import com.sleepycat.persist.model.NotPersistent;
 import com.sleepycat.persist.model.Persistent;
 
 @Persistent
-public class Point3D extends Point2D implements Serializable {
+public class Point3D implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	public float z;
+	public float x;
 	public float y;
 	@NotPersistent
 	private transient CellObject cell;
 	
-	public Point3D() {
-		
-	}
+	public Point3D() { }
 
 	public Point3D(float x, float y, float z) {
+		
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		
 	}
 	
 	public Point3D clone() {
+		
 		return new Point3D(x, y, z);
+		
 	}
 	
 	public float getDistance(Point3D target) {
+		
 		return (float)Math.sqrt(
 			Math.pow(x - target.x, 2) + 
 			Math.pow(y - target.y, 2) +
 			Math.pow(z - target.z, 2));
+		
+	}
+
+	public float getDistance2D(Point3D target) {
+		
+		return (float)Math.sqrt(
+				Math.pow(x - target.x, 2) + 
+				Math.pow(z - target.z, 2));
+		
 	}
 
 	public CellObject getCell() {
