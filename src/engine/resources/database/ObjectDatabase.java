@@ -96,7 +96,7 @@ public class ObjectDatabase implements Runnable {
         
 		db.put(txn, theKey, theData);
 		
-		txn.commit();
+		txn.commitSync();
 		if (debugObjects) {
 			debugObject(value);
 			
@@ -116,7 +116,7 @@ public class ObjectDatabase implements Runnable {
         
 		db.put(txn, theKey, theData);
 		
-		txn.commit();
+		txn.commitSync();
 		if (debugObjects) {
 			debugObject(value);
 			
@@ -161,7 +161,7 @@ public class ObjectDatabase implements Runnable {
         
 		db.removeSequence(txn, theKey);
 		
-		txn.commit();
+		txn.commitSync();
 	}
 	
 	public ODBCursor getCursor() {
