@@ -111,12 +111,12 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public void put(String key, Object value) {
-		txn.
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(key.getBytes());
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
-		db.put(null, theKey, theData);
+		db.put(txn, theKey, theData);
+		txn.commitSync();
 		if (debugObjects) {
 			debugObject(value);
 			
@@ -156,7 +156,8 @@ public class ObjectDatabase implements Runnable {
 	public void remove(Long key) {
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
-		db.removeSequence(null, theKey);
+		db.removeSequence(txn, theKey);
+		txn.commitSync();
 	}
 	
 	public ODBCursor getCursor() {
