@@ -26,6 +26,7 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.persist.EntityStore;
+import com.sleepycat.persist.StoreConfig;
 
 import engine.resources.objects.SWGObject;
 
@@ -34,7 +35,7 @@ public class ObjectDatabase implements Runnable {
 	
 	private String name;
 	private Environment environment;
-	private EnvironmentConfig EnvConfig;
+	private EnvironmentConfig myEnvConfig;
 	private DatabaseConfig dbConfig;
 	private EntityStore entityStore;
 	private Thread checkpointThread;
@@ -45,61 +46,57 @@ public class ObjectDatabase implements Runnable {
 	private Database classCatalogDb;
 	private Vector<Cursor> cursors = new Vector<Cursor>();
 	private static boolean debugObjects = false;
-	private Transaction txn = null;
 	
 	public ObjectDatabase(String name, boolean allowCreate, boolean useCheckpointThread, boolean allowTransactional, Class targetClass) {
-		
-		EnvConfig = new EnvironmentConfig();
-		EnvConfig.setAllowCreate(allowCreate);
-		EnvConfig.setTransactional(allowTransactional);
-		
-		/*EntityModel model = new AnnotationModel();
-		model.registerClass(CopyOnWriteArrayListProxy.class);
-		model.registerClass(MultimapProxy.class);
-		model.registerClass(VectorProxy.class);
-
-		Mutations mutation = new Mutations();
-		mutation.addDeleter(new Deleter(CreatureObject.class.getName(), 0, "performanceAudience"));		
-	    StoreConfig storeConfig = new StoreConfig();
-	    storeConfig.setModel(model);
-	    storeConfig.setAllowCreate(allowCreate);
-	    storeConfig.setTransactional(allowTransactional);
-	    storeConfig.setMutations(mutation);*/
-	    
-		this.name = name;
-        environment = new Environment(new File(".", "odb/" + name), EnvConfig);
-        //entityStore = new EntityStore(environment, "EntityStore." + name, storeConfig);
-        
-        dbConfig = new DatabaseConfig();
-        dbConfig.setAllowCreate(true);
-		dbConfig.setTransactional(true);
-        
-		
-		classCatalogDb =
-        		environment.openDatabase(txn,
-                                   "ClassCatalogDB",
-                                   dbConfig);
-
-            // Create our class catalog
-        classCatalog = new StoredClassCatalog(classCatalogDb);
-        dataBinding = new SerialBinding(classCatalog, targetClass);
-		db = environment.openDatabase(null, name, dbConfig);       
-		if (useCheckpointThread) {
-        	checkpointConfig = new CheckpointConfig();
-        	checkpointThread = new Thread(this);       
-        	checkpointThread.start();
-        }
+		try {
+			myEnvConfig = new EnvironmentConfig();
+			myEnvConfig.setAllowCreate(true);
+			myEnvConfig.setTransactional(true);
+				
+		    StoreConfig storeConfig = new StoreConfig();
+		    storeConfig.setTransactional(true);
+		    
+			this.name = name;
+	        environment = new Environment(new File(".", "odb/" + name), myEnvConfig);
+	        
+	        dbConfig = new DatabaseConfig();
+	        dbConfig.setAllowCreate(true);
+			dbConfig.setTransactional(true);
+	        
+			classCatalogDb =
+	        		environment.openDatabase(null,
+	                                   "ClassCatalogDB",
+	                                   dbConfig);
+			
+	            // Create our class catalog
+	        classCatalog = new StoredClassCatalog(classCatalogDb);
+	        dataBinding = new SerialBinding(classCatalog, targetClass);
+			db = environment.openDatabase(null, name, dbConfig);       
+			if (useCheckpointThread) {
+	        	checkpointConfig = new CheckpointConfig();
+	        	checkpointThread = new Thread(this);       
+	        	checkpointThread.start();
+	        }
+			
+			
+		} catch (DatabaseException e){
+			Console.print("Error setting up ODB");
+		}
 
 
 	}
 	
 	public void put(Long key, Object value) {
+		Transaction txn = environment.beginTransaction(null,null);
+		
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
+        
 		db.put(txn, theKey, theData);
-		txn.commitSync();
+		
+		txn.commit();
 		if (debugObjects) {
 			debugObject(value);
 			
@@ -110,12 +107,16 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public void put(String key, Object value) {
+		Transaction txn = environment.beginTransaction(null,null);
+		
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(key.getBytes());
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
+        
 		db.put(txn, theKey, theData);
-		txn.commitSync();
+		
+		txn.commit();
 		if (debugObjects) {
 			debugObject(value);
 			
@@ -153,10 +154,14 @@ public class ObjectDatabase implements Runnable {
 	}
 
 	public void remove(Long key) {
+		Transaction txn = environment.beginTransaction(null,null);
+		
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
+        
 		db.removeSequence(txn, theKey);
-		txn.commitSync();
+		
+		txn.commit();
 	}
 	
 	public ODBCursor getCursor() {
