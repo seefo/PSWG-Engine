@@ -24,6 +24,7 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.Transaction;
 import com.sleepycat.persist.EntityStore;
 
 import engine.resources.objects.SWGObject;
@@ -44,12 +45,13 @@ public class ObjectDatabase implements Runnable {
 	private Database classCatalogDb;
 	private Vector<Cursor> cursors = new Vector<Cursor>();
 	private static boolean debugObjects = false;
+	private Transaction txn = null;
 	
 	public ObjectDatabase(String name, boolean allowCreate, boolean useCheckpointThread, boolean allowTransactional, Class targetClass) {
 		
 		EnvConfig = new EnvironmentConfig();
 		EnvConfig.setAllowCreate(allowCreate);
-		//EnvConfig.setTransactional(allowTransactional);
+		EnvConfig.setTransactional(allowTransactional);
 		
 		/*EntityModel model = new AnnotationModel();
 		model.registerClass(CopyOnWriteArrayListProxy.class);
@@ -71,10 +73,11 @@ public class ObjectDatabase implements Runnable {
         dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);
         dbConfig.setDeferredWrite(true);
-       // dbConfig.setTransactional(false);
+		dbConfig.setTransactional(true);
         
+		
 		classCatalogDb =
-        		environment.openDatabase(null,
+        		environment.openDatabase(txn,
                                    "ClassCatalogDB",
                                    dbConfig);
 
@@ -96,7 +99,8 @@ public class ObjectDatabase implements Runnable {
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
         DatabaseEntry theData = new DatabaseEntry();
         dataBinding.objectToEntry(value, theData);
-		db.put(null, theKey, theData);
+		db.put(txn, theKey, theData);
+		txn.commitSync();
 		if (debugObjects) {
 			debugObject(value);
 			
@@ -107,6 +111,7 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public void put(String key, Object value) {
+		txn.
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(key.getBytes());
         DatabaseEntry theData = new DatabaseEntry();
