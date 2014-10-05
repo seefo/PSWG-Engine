@@ -72,7 +72,6 @@ public class ObjectDatabase implements Runnable {
         
         dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);
-        dbConfig.setDeferredWrite(true);
 		dbConfig.setTransactional(true);
         
 		
