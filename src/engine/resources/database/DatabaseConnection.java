@@ -111,7 +111,7 @@ public class DatabaseConnection {
 		return null;
 	}
 	public PreparedStatement preparedStatement(String statement) throws SQLException {
-		PreparedStatement preparedStatement = connection.prepareStatement(statement);
+		PreparedStatement preparedStatement = connection.prepareStatement(statement, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 		try {
 			//preparedStatement.setQueryTimeout(30);
 		} catch (Exception e) {

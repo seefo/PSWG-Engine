@@ -87,6 +87,7 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public void put(Long key, Object value) {
+		/*
 		Transaction txn = environment.beginTransaction(null,null);
 		
         DatabaseEntry theKey = new DatabaseEntry();    
@@ -103,10 +104,11 @@ public class ObjectDatabase implements Runnable {
 			if (get(key) == null) {
 				Console.print("Failed to save " + value.getClass().getSimpleName() + " to database (Key: " + key + ").");
 			}
-		}
+		}*/
 	}
 	
 	public void put(String key, Object value) {
+		/*
 		Transaction txn = environment.beginTransaction(null,null);
 		
         DatabaseEntry theKey = new DatabaseEntry();    
@@ -123,11 +125,11 @@ public class ObjectDatabase implements Runnable {
 			if (get(key) == null) {
 				Console.print("Failed to save " + value.getClass().getSimpleName() + " to database (Key: " + key + ").");
 			}
-		}
+		}*/
 	}
 	
 	public Object get(Long key) {
-		if(!contains(key))
+		/*if(!contains(key))
 			return null;
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
@@ -138,11 +140,12 @@ public class ObjectDatabase implements Runnable {
         if(obj instanceof SWGObject) {
         	((SWGObject) obj).initializeBaselines(); ((SWGObject) obj).initAfterDBLoad();
         	((SWGObject) obj).viewChildren((SWGObject) obj, true, true, child -> {  child.initializeBaselines(); child.initAfterDBLoad(); });
-        }
-        return obj;
+        }*/
+        return null;
 	}
 	
 	public Object get(String key) {
+		/*
 		if(!contains(key))
 			return null;
         DatabaseEntry theKey = new DatabaseEntry();    
@@ -150,10 +153,12 @@ public class ObjectDatabase implements Runnable {
         DatabaseEntry theData = new DatabaseEntry();
         db.get(null, theKey, theData, LockMode.DEFAULT);
         // Recreate the object from the retrieved DatabaseEntry using the EntryBinding 
-        return dataBinding.entryToObject(theData);
+        return dataBinding.entryToObject(theData);*/
+		return null;
 	}
 
 	public void remove(Long key) {
+		/*
 		Transaction txn = environment.beginTransaction(null,null);
 		
         DatabaseEntry theKey = new DatabaseEntry();    
@@ -161,7 +166,7 @@ public class ObjectDatabase implements Runnable {
         
 		db.removeSequence(txn, theKey);
 		
-		txn.commitSync();
+		txn.commitSync();*/
 	}
 	
 	public ODBCursor getCursor() {
@@ -171,17 +176,22 @@ public class ObjectDatabase implements Runnable {
 	}
 	
 	public boolean contains(Long key) {
+		/*
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(ByteBuffer.allocate(8).putLong(key).array());
         DatabaseEntry theData = new DatabaseEntry();
-        return db.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS;
+        return db.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS;*/
+		return false;
 	}
 	
 	public boolean contains(String key) {
+		/*
         DatabaseEntry theKey = new DatabaseEntry();    
         theKey.setData(key.getBytes());
         DatabaseEntry theData = new DatabaseEntry();
         return db.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS;
+        */
+        return false;
 	}
 
 	
@@ -208,11 +218,12 @@ public class ObjectDatabase implements Runnable {
     
 	@Override
 	public void run() {
+		System.out.println("NOTE: Syncing and saving disabled for " + name);
 		while(environment != null && environment.isValid()) {
 			try {
 				Thread.sleep(300000);
-				environment.sync();
-				System.out.println("Saving ODB " + name + " for a periodic save.");
+				//environment.sync();
+				//System.out.println("Saving ODB " + name + " for a periodic save.");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
