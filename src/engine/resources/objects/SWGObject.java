@@ -507,7 +507,9 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 	}
 	
 	public void makeAware(final SWGObject obj) {
-		
+		/* Note From Waverunner - This seems to be completley normal behaviour, especially in trading. Throwing an exception here will make it so recieving trader
+		 * will not be able to see the item put up for trade if it's in inventory from another player. I don't think an exception needs to be thrown here nor should
+		 * it cause any crashes.
 		if (obj.getContainer() != null && !awareObjects.contains(obj.getContainer()) && !obj.getContainer().getTemplate().startsWith("object/creature/player/")) {
 			System.out.println("Error: Sending a child object for container that client isn't aware of: " + obj.getTemplate() + " with parent " + obj.getContainer().getTemplate());
 			try {
@@ -516,7 +518,7 @@ public abstract class SWGObject implements ISWGObject, Serializable {
 				e.printStackTrace();
 			}
 			return;
-		}
+		}*/
 		
 		if(awareObjects.contains(obj) || !obj.getPermissions().canView(this, obj)) {
 			//System.out.println("Already aware of: " + obj.getTemplate());
